@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Stock {
+public class CompanyStocks {
     private final String companyName;
     private final String symbol;
     private float sharePrice;
     private List<Transaction> stockTransactions; // Transactions that already been done (to calculate the full value of the transactions)
 
-    public Stock(String name, String symbol, float startPrice) {
+    public CompanyStocks(String name, String symbol, float startPrice) {
         this.companyName = name;
         this.symbol = symbol.toUpperCase();
         this.sharePrice = startPrice;
@@ -18,7 +18,7 @@ public class Stock {
     @Override
     public String toString() {
         return (symbol + " (" + companyName + ") shares current price is: " + sharePrice+ ". " +
-                "Until now " + stockTransactions.size() + "has been made." +
+                "Until now " + stockTransactions.size() + " transactions has been made. " +
                 "Total transactions turn over is : " + getTransactionsTurnOver());
     }
 
@@ -26,8 +26,8 @@ public class Stock {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Stock stock = (Stock) o;
-        return Objects.equals(companyName, stock.companyName);
+        CompanyStocks companyStocks = (CompanyStocks) o;
+        return Objects.equals(companyName, companyStocks.companyName);
     }
 
     @Override

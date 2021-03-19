@@ -20,5 +20,8 @@ public class executionCommand {
         this.timeStamp =  new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
     }
 
-
+    @Override
+    public String toString() {
+        return timeStamp+ " - This is " + commandType+ " " +direction +" command for " +quantity +" "+symbol +" stocks.";
+    }
 }

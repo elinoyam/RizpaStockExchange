@@ -1,9 +1,8 @@
-
 import java.util.List;
 import java.util.Scanner;
 
+public class SystemMain {
 
-public class RizpaMain {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
 //        System.out.println("Please enter the XML full path: ");
@@ -11,16 +10,16 @@ public class RizpaMain {
         // add here reading the data from the file in the pathXML
 
         int op;
-        do{
+        do {
             printMainMenu();
-            op=in.nextInt();
+            op = in.nextInt();
             executeOperation(op, in);
 
-        }while(op !=6);
+        } while (op != 6);
         System.out.println("Thank you for using our program and goodbye!");
     }
 
-    private static void printMainMenu(){
+    private static void printMainMenu() {
         System.out.println("Operation options menu:");
         System.out.println("1. Read data from file. \n" +
                 "2. Show existing stocks.\n" +
@@ -31,8 +30,8 @@ public class RizpaMain {
         System.out.println("Please enter your next operation: (enter only number) ");
     }
 
-    private static void executeOperation(int chosen,Scanner in){
-        switch (chosen){
+    private static void executeOperation(int chosen, Scanner in) {
+        switch (chosen) {
             case 1:
                 // need to add here the method for getting data from XML file
                 testOne();
@@ -49,42 +48,42 @@ public class RizpaMain {
                 break;
         }
     }
-    public static void showAllStocks(){ // second option in the main menu
+
+    public static void showAllStocks() { // second option in the main menu
         CompanyStocks[] st = AllStocks.getListOfStocks().toArray(new CompanyStocks[0]);
-        for(CompanyStocks s :st){
+        for (CompanyStocks s : st) {
             System.out.println(s.toString());
         }
     }
 
-    public static void showStock(String stockName){
-        try{
+    public static void showStock(String stockName) {
+        try {
             CompanyStocks s = AllStocks.getSingleStock(stockName);
             System.out.println(s.toString());
             List<Transaction> lst = s.getStockTransactions();
-            if(lst.size() == 0)
+            if (lst.size() == 0)
                 System.out.println("There is no transactions in this company stocks.");
-            else{
+            else {
                 System.out.println("This company transactions are: ");
-                for(int i= lst.size()-1; i>=0;--i){
+                for (int i = lst.size() - 1; i >= 0; --i) {
                     Transaction t = lst.get(i);
                     System.out.println(t.toString());
-                    System.out.println("Total worth of transaction is " +t.getTurnOver()+". ");
+                    System.out.println("Total worth of transaction is " + t.getTurnOver() + ". ");
                 }
             }
 
-        } catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static void testOne(){
-        CompanyStocks company1 = new CompanyStocks("google","Gogle",100);
-        CompanyStocks company2 = new CompanyStocks("amazon","amzn",200);
-        CompanyStocks company3 = new CompanyStocks("tesla","TSla",300);
+    public static void testOne() {
+        CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
+        CompanyStocks company2 = new CompanyStocks("amazon", "amzn", 200);
+        CompanyStocks company3 = new CompanyStocks("tesla", "TSla", 300);
         AllStocks.addStock(company1);
         AllStocks.addStock(company2);
         AllStocks.addStock(company3);
         System.out.println("All the data has been uploaded. ");
     }
 }
-
