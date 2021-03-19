@@ -12,7 +12,7 @@ public class SystemMain {
         int op;
         do {
             printMainMenu();
-            op = in.nextInt();
+            op = Integer.parseInt(in.nextLine());//.praseInt(in.nextLine());//.getInteger(in.nextLine());
             executeOperation(op, in);
 
         } while (op != 6);
@@ -20,6 +20,7 @@ public class SystemMain {
     }
 
     private static void printMainMenu() {
+        System.out.println("\n");
         System.out.println("Operation options menu:");
         System.out.println("1. Read data from file. \n" +
                 "2. Show existing stocks.\n" +
@@ -41,10 +42,11 @@ public class SystemMain {
                 break;
             case 3:
                 System.out.println("Please enter the name of the stock you want to see: ");
+                //in.nextLine(); // ignore newline
                 String name = in.nextLine();
                 showStock(name);
             default:
-                System.out.println("You entered wrong number. Chose only options from the main menu. ");
+                System.out.println("\nYou entered wrong number. Chose only options from the main menu. ");
                 break;
         }
     }

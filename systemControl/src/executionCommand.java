@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class executionCommand {
     enum direction {BUY,SALE}
@@ -23,5 +24,18 @@ public class executionCommand {
     @Override
     public String toString() {
         return timeStamp+ " - This is " + commandType+ " " +direction +" command for " +quantity +" "+symbol +" stocks.";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        executionCommand that = (executionCommand) o;
+        return quantity == that.quantity && Float.compare(that.wantedPrice, wantedPrice) == 0 && symbol.equals(that.symbol) && direction == that.direction && timeStamp.equals(that.timeStamp) && commandType == that.commandType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(symbol, direction, quantity, wantedPrice, timeStamp, commandType);
     }
 }

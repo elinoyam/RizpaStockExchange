@@ -9,7 +9,11 @@ public class AllStocks {
     static private List<executionCommand> saleCommands;
 
 
-     static {stocks = new TreeMap<>();}
+     static {
+         stocks = new TreeMap<>();
+         buyCommands = new ArrayList<>();
+         saleCommands = new ArrayList<>();
+     }
    /* public AllStocks(){
             // need to add ctor from file - will automatically load all the data from the file
 
@@ -39,8 +43,16 @@ public class AllStocks {
     static public CompanyStocks getSingleStock(String symbol){
         if(!(stocks.containsKey(symbol.toUpperCase()))) // check if there is a company with this symbol
             throw new IllegalArgumentException("There is no stock with this symbol. ");
-        return stocks.get(symbol);
+        return stocks.get(symbol.toUpperCase());
     }
 
+//    static public void addCommand(executionCommand.direction dir, executionCommand.commandType type, String companyName, int howMany, float whatPrice){
+//        if(dir.equals(executionCommand.direction.BUY)){
+//            buyCommands.add(new executionCommand(dir,type,companyName,howMany,whatPrice));
+//        }
+//        ///////////////// I stopped here
+//
+//
+//    }
 
 }

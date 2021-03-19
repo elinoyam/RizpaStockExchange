@@ -5,7 +5,7 @@ import java.util.Objects;
 public class CompanyStocks {
     private final String companyName;
     private final String symbol;
-    private float sharePrice;
+    private float sharePrice; // NEED TO BE UPDATED
     private List<Transaction> stockTransactions; // Transactions that already been done (to calculate the full value of the transactions)
 
     public CompanyStocks(String name, String symbol, float startPrice) {
