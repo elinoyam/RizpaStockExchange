@@ -1,20 +1,12 @@
 import java.util.*;
 
 /*
-This class main purpose is to handle all the data to execute the sale and buy commands of all the companies stocks.
+This class main purpose is to handle all the data to execute the sell and buy commands of all the companies stocks.
  */
-public class AllStocks {
-    static private Map<String, CompanyStocks> stocks; // will be search with their symbol
-    static private List<executionCommand> buyCommands;
-    static private List<executionCommand> saleCommands;
+public class Engine implements Trader {
+     static private Map<String, CompanyStocks> stocks = new TreeMap<>(); // will be search with their symbol
 
-
-     static {
-         stocks = new TreeMap<>();
-         buyCommands = new ArrayList<>();
-         saleCommands = new ArrayList<>();
-     }
-   /* public AllStocks(){
+     /*public AllStocks(){
             // need to add ctor from file - will automatically load all the data from the file
 
     }*/

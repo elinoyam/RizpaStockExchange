@@ -2,17 +2,32 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SystemMain {
+    static private Trader data = new Engine(); // for interface use
+
+    public enum Operations {
+        LOAD(1,"load"),
+        SHOW_ALL_STOCKS(2,"show all stocks"),
+        SHOW_STOCK(3,"show stock"),
+        TRADE(4,"trade");
+
+        private int opNum;
+        private String opName;
+        Operations(int num, String name) {
+            this.opNum = num;
+            this.opName = name;
+        }
+    }
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-//        System.out.println("Please enter the XML full path: ");
-//        String pathXML = in.nextLine();
+        // System.out.println("Please enter the XML full path: ");
+        // String pathXML = in.nextLine();
         // add here reading the data from the file in the pathXML
 
         int op;
         do {
             printMainMenu();
-            op = Integer.parseInt(in.nextLine());//.praseInt(in.nextLine());//.getInteger(in.nextLine());
+            op = Integer.parseInt(in.nextLine());//.parseInt(in.nextLine());//.getInteger(in.nextLine());
             executeOperation(op, in);
 
         } while (op != 6);
@@ -52,29 +67,22 @@ public class SystemMain {
     }
 
     public static void showAllStocks() { // second option in the main menu
-        CompanyStocks[] st = AllStocks.getListOfStocks().toArray(new CompanyStocks[0]);
-        for (CompanyStocks s : st) {
-            System.out.println(s.toString());
+        StockDT[] stocks = data.showAllStocks().toArray(new StockDT[0]);
+        for(StockDT st:stocks){
+            System.out.println(st.toString());
         }
     }
 
     public static void showStock(String stockName) {
         try {
-            CompanyStocks s = AllStocks.getSingleStock(stockName);
-            System.out.println(s.toString());
-            List<Transaction> lst = s.getStockTransactions();
-            if (lst.size() == 0)
-                System.out.println("There is no transactions in this company stocks.");
-            else {
-                System.out.println("This company transactions are: ");
-                for (int i = lst.size() - 1; i >= 0; --i) {
-                    Transaction t = lst.get(i);
-                    System.out.println(t.toString());
-                    System.out.println("Total worth of transaction is " + t.getTurnOver() + ". ");
-                }
-            }
+            System.out.println("Please enter the name of the stock you want to see: ");
+            //in.nextLine(); // ignore newline
+            String stockName = in.nextLine();
 
-        } catch (IllegalArgumentException e) {
+            StockDT stock = data.showStock(stockName); // throws exception if there isn't any company stocks with the given symbol
+            System.out.println(stock.toString());
+            //stock.showAllTransactions();
+        } catch (InputMismatchException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -83,9 +91,9 @@ public class SystemMain {
         CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
         CompanyStocks company2 = new CompanyStocks("amazon", "amzn", 200);
         CompanyStocks company3 = new CompanyStocks("tesla", "TSla", 300);
-        AllStocks.addStock(company1);
-        AllStocks.addStock(company2);
-        AllStocks.addStock(company3);
+        Engine.addStock(company1);
+        Engine.addStock(company2);
+        Engine.addStock(company3);
         System.out.println("All the data has been uploaded. ");
     }
 }

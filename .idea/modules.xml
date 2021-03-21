@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/systemControl/systemControl.iml" filepath="$PROJECT_DIR$/systemControl/systemControl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dataTransfer/dataTransfer.iml" filepath="$PROJECT_DIR$/dataTransfer/dataTransfer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/systemEngine/systemEngine.iml" filepath="$PROJECT_DIR$/systemEngine/systemEngine.iml" />
       <module fileurl="file://$PROJECT_DIR$/systemUI/systemUI.iml" filepath="$PROJECT_DIR$/systemUI/systemUI.iml" />
     </modules>
   </component>

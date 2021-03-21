@@ -1,5 +1,5 @@
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /*
@@ -7,13 +7,16 @@ This class is to save the data of a stock transaction.
 The data will be saved for each transaction in separate and the stock will hold a list of all the transactions.
  */
 public class Transaction {
-    final private String dateStamp;
+    final static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss:SSS");
+    final private LocalDateTime dateStamp;
+    //final private User buyer;
+    //final private User seller;
     final private int quantity;
     final private float turnOver; // quantity*price
     final private float price; // save the price the shares really sold for
 
     public Transaction(int quantity,float soldPrice){
-        dateStamp = new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
+        dateStamp = LocalDateTime.now();
         this.quantity = quantity;
         this.price = soldPrice;
         this.turnOver = quantity*soldPrice;
@@ -27,6 +30,8 @@ public class Transaction {
     public float getTurnOver() {
         return turnOver;
     }
+
+    public float getPrice() { return price; }
 
     @Override
     public boolean equals(Object o) {
