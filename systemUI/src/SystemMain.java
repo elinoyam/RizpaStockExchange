@@ -1,22 +1,26 @@
 import java.util.List;
-import java.util.Scanner;
+import java.util.Locale;import java.util.Scanner;
+
+
+ enum Operations {
+    LOAD(1,"load"),
+    SHOW_ALL_STOCKS(2,"show all stocks"),
+    SHOW_STOCK(3,"show stock"),
+    TRADE(4,"trade"),
+    SHOW_ALL_COMMANDS(5,"show all commands"),
+    EXIT(6,"exit");
+
+    private int opNum;
+    private String opName;
+    Operations(int num, String name) {
+        this.opNum = num;
+        this.opName = name;
+    }
+
+}
 
 public class SystemMain {
     static private Trader data = new Engine(); // for interface use
-
-    public enum Operations {
-        LOAD(1,"load"),
-        SHOW_ALL_STOCKS(2,"show all stocks"),
-        SHOW_STOCK(3,"show stock"),
-        TRADE(4,"trade");
-
-        private int opNum;
-        private String opName;
-        Operations(int num, String name) {
-            this.opNum = num;
-            this.opName = name;
-        }
-    }
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
@@ -24,13 +28,19 @@ public class SystemMain {
         // String pathXML = in.nextLine();
         // add here reading the data from the file in the pathXML
 
-        int op;
+        Operations op = null;
+
         do {
             printMainMenu();
-            op = Integer.parseInt(in.nextLine());//.parseInt(in.nextLine());//.getInteger(in.nextLine());
+            try {
+            op =Operations.valueOf(in.nextLine().toLowerCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("You entered wrong input, Please try again.");
+                System.out.println(e.getMessage());
+             }
             executeOperation(op, in);
 
-        } while (op != 6);
+        } while (op != Operations.EXIT);
         System.out.println("Thank you for using our program and goodbye!");
     }
 
@@ -46,13 +56,13 @@ public class SystemMain {
         System.out.println("Please enter your next operation: (enter only number) ");
     }
 
-    private static void executeOperation(int chosen, Scanner in) {
-        switch (chosen) {
-            case 1:
+    private static void executeOperation(Operations op, Scanner in) {
+        switch (op) {
+            case LOAD:
                 // need to add here the method for getting data from XML file
                 testOne();
                 break;
-            case 2:
+            case SHOW_ALL_STOCKS:
                 showAllStocks();
                 break;
             case 3:
