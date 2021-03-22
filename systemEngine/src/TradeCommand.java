@@ -56,7 +56,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
 
     @Override
     public int hashCode() {
-        return Objects.hash(symbol, direction, quantity, wantedPrice, timeStamp, commandType);
+        return Objects.hash(symbol, direction, quantity, wantedPrice, dateTimeStamp, commandType);
     }
 
     @Override

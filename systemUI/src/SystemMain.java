@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;import java.util.Scanner;
 
@@ -65,11 +66,17 @@ public class SystemMain {
             case SHOW_ALL_STOCKS:
                 showAllStocks();
                 break;
-            case 3:
-                System.out.println("Please enter the name of the stock you want to see: ");
-                //in.nextLine(); // ignore newline
-                String name = in.nextLine();
-                showStock(name);
+            case SHOW_STOCK:
+                showStock(in);
+                break;
+            case TRADE:
+                addTradeCommand(in);
+                break;
+            case SHOW_ALL_COMMANDS:
+                showAllCommands();
+                break;
+            case EXIT:
+                System.exit(0);
             default:
                 System.out.println("\nYou entered wrong number. Chose only options from the main menu. ");
                 break;
@@ -83,7 +90,7 @@ public class SystemMain {
         }
     }
 
-    public static void showStock(String stockName) {
+    public static void showStock(Scanner in) {
         try {
             System.out.println("Please enter the name of the stock you want to see: ");
             //in.nextLine(); // ignore newline
@@ -96,6 +103,69 @@ public class SystemMain {
             System.out.println(e.getMessage());
         }
     }
+
+    public static void addTradeCommand(Scanner in){
+        try {
+            System.out.println("Please enter the symbol of the company you want to trade with it's stocks: ");
+            String symbol = in.nextLine();
+            System.out.println("Please choose the direction you want to trade: (enter: BUY/SELL) ");
+            TradeCommand.direction direction = TradeCommand.direction.valueOf(in.nextLine().toUpperCase());
+            System.out.println("Please choose the type of command you want to make: (enter: LMT/MKT/FOK/IOC)");
+            TradeCommand.commandType type = TradeCommand.commandType.valueOf(in.nextLine().toUpperCase());
+            System.out.println("Please enter how many stocks you want to trade in: (integer numbers only)");
+            int quantity = in.nextInt();
+            if(quantity<=0){
+                System.out.println("The minimum quantity of stocks to trade is 1. Please try again.");
+                return; // wrong input. cancel the command
+            }
+            System.out.println("Please enter the limit price you want to trade with: (floating point is permitted)");
+            float price = in.nextFloat();
+            in.nextLine();
+
+            data.addTradeCommand(symbol,direction,type,quantity,price);
+            System.out.println("The command entered to the system until a matching command will be found.");
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("You entered wrong input  Please try again.");
+            System.out.println(e.getMessage());
+        }
+ }
+
+    static public void showAllCommands(){
+        List<StockDT> stocks = data.showAllStocks();
+        for(StockDT s:stocks) {
+            System.out.print("The Stock: " + s.getSymbol() + " of " + s.getCompanyName() + "company ");
+            List<TradeCommandDT> buy = s.getBuysCommands();
+            System.out.println("has currently the following buy commands: ");
+            if(buy.size() == 0)
+                System.out.println("There is no buy commands.");
+            else
+                for(TradeCommandDT c: buy) {
+                    System.out.println(c.toString());
+                }
+            System.out.println("Total buy transaction commands turnover: "+ s.getBuyTransTurnover());
+            List<TradeCommandDT> sell = s.getSellsCommands();
+            System.out.println("The company has currently the following sell commands: ");
+            if(buy.size() ==0)
+                System.out.println("There is no sell commands.");
+            else
+                for(TradeCommandDT c: sell) {
+                    System.out.println(c.toString());
+                }
+            System.out.println("Total sell transaction commands turnover: "+ s.getSellTransTurnover());
+
+            List<Transaction> transactions = s.getTransactions();
+            System.out.println("The company's stock made transactions are: ");
+            if(transactions.size() ==0)
+                System.out.println("There are no transactions made.");
+            else
+                for(Transaction c: transactions) {
+                    System.out.println(c.toString());
+                }
+            System.out.println("Total transaction turnover is: " + s.getTransTurnover());
+        }
+    }
+
 
     public static void testOne() {
         CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
