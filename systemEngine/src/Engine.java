@@ -13,7 +13,7 @@ public class Engine implements Trader {
 
     }*/
 
-    static public Collection<CompanyStocks> getListOfStocks(){
+    static private Collection<CompanyStocks> getListOfStocks(){
         return stocks.values();
     }
 
@@ -27,24 +27,22 @@ public class Engine implements Trader {
     static public int stocksCount(){
         return stocks.size();
     }
-//    static public void printAllStocks(){
-//        CompanyStocks[] st = stocks.values().toArray(new CompanyStocks[0]);
-//        for(CompanyStocks s :st){
-//           System.out.println(s.toString());
-//        }
-//    }
 
-    static public CompanyStocks getSingleStock(String symbol){
+    static private CompanyStocks getSingleStock(String symbol){
         if(!(stocks.containsKey(symbol.toUpperCase()))) // check if there is a company with this symbol
             throw new InputMismatchException("There is no stock with this symbol. ");
         return stocks.get(symbol.toUpperCase());
     }
+    static public boolean isExistingStock(String symbol){
+        return stocks.containsKey(symbol.toUpperCase());
+    }
+
 
     public void uploadDataFromFile(String path) // first option
     {
     // need to upload all the stocks from xml file
     }
-    public List<StockDT> showAllStocks() // second option
+    public List<StockDT> showAllStocks() // second option in the main menu
     {
         List<StockDT> res = new ArrayList<>(stocksCount()); // make list in the size of the current number of stocks
         for(CompanyStocks cs : getListOfStocks()){
@@ -59,17 +57,12 @@ public class Engine implements Trader {
     }
 
     @Override
-    public void addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) {
-        try{
-            CompanyStocks stock = getSingleStock(companySymbol);
-            stock.addTradeCommand(dir, command, quantity, wantedPrice);
-        } catch (InputMismatchException e) {
-            System.out.println(e.getMessage());
-        }
+    public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) {
+        CompanyStocks stock = getSingleStock(companySymbol);
+        return stock.addTradeCommand(dir, command, quantity, wantedPrice);
     }
 
-    public List<StockDT> showAllCommands() // fifth option
-    {
-       return showAllStocks(); // same data is in both of them
+    public List<StockDT> showAllCommands(){ // fifth option - for future use. for now just return the same as showAllStocks()
+        return showAllStocks(); // same data is in both of them
     }
 }

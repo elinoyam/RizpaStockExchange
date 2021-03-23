@@ -1,24 +1,7 @@
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Locale;import java.util.Scanner;
+import java.util.*;
 
 
- enum Operations {
-    LOAD(1,"load"),
-    SHOW_ALL_STOCKS(2,"show all stocks"),
-    SHOW_STOCK(3,"show stock"),
-    TRADE(4,"trade"),
-    SHOW_ALL_COMMANDS(5,"show all commands"),
-    EXIT(6,"exit");
 
-    private int opNum;
-    private String opName;
-    Operations(int num, String name) {
-        this.opNum = num;
-        this.opName = name;
-    }
-
-}
 
 public class SystemMain {
     static private Trader data = new Engine(); // for interface use
@@ -28,21 +11,29 @@ public class SystemMain {
         // System.out.println("Please enter the XML full path: ");
         // String pathXML = in.nextLine();
         // add here reading the data from the file in the pathXML
+        try {
+            Operations op = null;
 
-        Operations op = null;
+            do {
+                printMainMenu();
+                try {
+                    op = Operations.valueOf(in.nextLine().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("You entered wrong input, Please try again.");
+                    System.out.println(e.getMessage());
+                }
+                executeOperation(op, in);
 
-        do {
-            printMainMenu();
-            try {
-            op =Operations.valueOf(in.nextLine().toLowerCase());
-            } catch (IllegalArgumentException e) {
-                System.out.println("You entered wrong input, Please try again.");
-                System.out.println(e.getMessage());
-             }
-            executeOperation(op, in);
+            } while (op != Operations.EXIT);
+            System.out.println("Thank you for using our program and goodbye!");
+            in.close();
+        }catch(Exception e){
+            System.out.println("There was a problem somewhere in the program.");
+            System.out.println(e.getMessage());
+            System.out.println("stack trace: ");
+            System.out.println(e.getStackTrace());
+        }
 
-        } while (op != Operations.EXIT);
-        System.out.println("Thank you for using our program and goodbye!");
     }
 
     private static void printMainMenu() {
@@ -84,21 +75,30 @@ public class SystemMain {
     }
 
     public static void showAllStocks() { // second option in the main menu
-        StockDT[] stocks = data.showAllStocks().toArray(new StockDT[0]);
-        for(StockDT st:stocks){
-            System.out.println(st.toString());
+        try {
+            StockDT[] stocks = data.showAllStocks().toArray(new StockDT[0]);
+            for (StockDT st : stocks) {
+                System.out.println(st.toString());
+            }
+        }catch (Exception e){
+            System.out.println("Exception was caught in showAllStocks in SystemMain. ");
+            System.out.println(e.getMessage());
         }
+
     }
 
     public static void showStock(Scanner in) {
         try {
             System.out.println("Please enter the name of the stock you want to see: ");
-            //in.nextLine(); // ignore newline
             String stockName = in.nextLine();
 
             StockDT stock = data.showStock(stockName); // throws exception if there isn't any company stocks with the given symbol
             System.out.println(stock.toString());
-            //stock.showAllTransactions();
+            System.out.println("This stock transactions are:");
+            for(Transaction transaction: stock.getTransactions()){
+                System.out.println(transaction.toString());
+            }
+
         } catch (InputMismatchException e) {
             System.out.println(e.getMessage());
         }
@@ -107,8 +107,16 @@ public class SystemMain {
     public static void addTradeCommand(Scanner in){
         try {
             System.out.println("Please enter the symbol of the company you want to trade with it's stocks: ");
-            String symbol = in.nextLine();
+            String symbol = getSymbol();
+
             System.out.println("Please choose the direction you want to trade: (enter: BUY/SELL) ");
+            /*String tempDir = in.nextLine().toUpperCase();
+            List<String> list = new ArrayList<>();
+            for (TradeCommand.direction direction1 : TradeCommand.direction.values()) {
+                list.add(direction1.name());
+            }
+            String [] check = list.toArray();
+            Enum.valueOf(TradeCommand.direction.,tempDir);*/
             TradeCommand.direction direction = TradeCommand.direction.valueOf(in.nextLine().toUpperCase());
             System.out.println("Please choose the type of command you want to make: (enter: LMT/MKT/FOK/IOC)");
             TradeCommand.commandType type = TradeCommand.commandType.valueOf(in.nextLine().toUpperCase());
@@ -122,11 +130,11 @@ public class SystemMain {
             float price = in.nextFloat();
             in.nextLine();
 
-            data.addTradeCommand(symbol,direction,type,quantity,price);
-            System.out.println("The command entered to the system until a matching command will be found.");
+
+            System.out.println(data.addTradeCommand(symbol,direction,type,quantity,price));
 
         } catch (IllegalArgumentException e) {
-            System.out.println("You entered wrong input  Please try again.");
+            System.out.println("You entered wrong input. There isn't any"+ e.getCause()+ "Please try again.");
             System.out.println(e.getMessage());
         }
  }
@@ -134,7 +142,7 @@ public class SystemMain {
     static public void showAllCommands(){
         List<StockDT> stocks = data.showAllStocks();
         for(StockDT s:stocks) {
-            System.out.print("The Stock: " + s.getSymbol() + " of " + s.getCompanyName() + "company ");
+            System.out.print("\nThe Stock: " + s.getSymbol() + " of " + s.getCompanyName() + " company ");
             List<TradeCommandDT> buy = s.getBuysCommands();
             System.out.println("has currently the following buy commands: ");
             if(buy.size() == 0)
@@ -145,8 +153,8 @@ public class SystemMain {
                 }
             System.out.println("Total buy transaction commands turnover: "+ s.getBuyTransTurnover());
             List<TradeCommandDT> sell = s.getSellsCommands();
-            System.out.println("The company has currently the following sell commands: ");
-            if(buy.size() ==0)
+            System.out.println("\nThe company has currently the following sell commands: ");
+            if(sell.size() ==0)
                 System.out.println("There is no sell commands.");
             else
                 for(TradeCommandDT c: sell) {
@@ -155,7 +163,7 @@ public class SystemMain {
             System.out.println("Total sell transaction commands turnover: "+ s.getSellTransTurnover());
 
             List<Transaction> transactions = s.getTransactions();
-            System.out.println("The company's stock made transactions are: ");
+            System.out.println("\nThe company's stock made transactions are: ");
             if(transactions.size() ==0)
                 System.out.println("There are no transactions made.");
             else
@@ -165,7 +173,6 @@ public class SystemMain {
             System.out.println("Total transaction turnover is: " + s.getTransTurnover());
         }
     }
-
 
     public static void testOne() {
         CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);

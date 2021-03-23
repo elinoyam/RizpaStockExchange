@@ -11,10 +11,10 @@ public class TradeCommand implements Comparable<TradeCommand>{
 
     final private direction direction;
     private int quantity;
-    private String symbol;
+    final private String symbol;
     private float wantedPrice;
     private LocalDateTime dateTimeStamp;
-    private commandType commandType;
+    final private commandType commandType;
 
     public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol){
         this.direction = dir;
@@ -40,6 +40,11 @@ public class TradeCommand implements Comparable<TradeCommand>{
     public LocalDateTime getDate(){
         return dateTimeStamp;
     }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
 
     @Override
     public String toString() {
