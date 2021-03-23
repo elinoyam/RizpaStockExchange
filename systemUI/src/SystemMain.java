@@ -1,25 +1,23 @@
 import java.util.*;
 
+enum Operations {
+    LOAD(1,"load"),
+    SHOW_ALL_STOCKS(2,"show all stocks"),
+    SHOW_STOCK(3,"show stock"),
+    TRADE(4,"trade"),
+    SHOW_ALL_COMMANDS(5,"show all commands"),
+    EXIT(6,"exit");
 
+    private int opNum;
+    private String opName;
+    Operations(int num, String name) {
+        this.opNum = num;
+        this.opName = name;
+    }
+}
 
 
 public class SystemMain {
-
-    enum Operations {
-        LOAD(1,"load"),
-        SHOW_ALL_STOCKS(2,"show all stocks"),
-        SHOW_STOCK(3,"show stock"),
-        TRADE(4,"trade"),
-        SHOW_ALL_COMMANDS(5,"show all commands"),
-        EXIT(6,"exit");
-
-        private int opNum;
-        private String opName;
-        Operations(int num, String name) {
-            this.opNum = num;
-            this.opName = name;
-        }
-    }
 
     static private Trader data = new Engine(); // for interface use
 
@@ -29,19 +27,21 @@ public class SystemMain {
         // String pathXML = in.nextLine();
         // add here reading the data from the file in the pathXML
         try {
-            Operations op = null;
-
+            //Operations op = null;
+            int op = 6;
             do {
                 printMainMenu();
                 try {
-                    op = Operations.valueOf(in.nextLine().toUpperCase());
+                    //op = Operations.valueOf(in.nextLine().toUpperCase());
+                    op = in.nextInt();
+                    in.nextLine();
                 } catch (IllegalArgumentException e) {
                     System.out.println("You entered wrong input, Please try again.");
                     System.out.println(e.getMessage());
                 }
                 executeOperation(op, in);
 
-            } while (op != Operations.EXIT);
+            } while (op!=6/*op != Operations.EXIT*/);
             System.out.println("Thank you for using our program and goodbye!");
             in.close();
         }catch(Exception e){
@@ -49,8 +49,8 @@ public class SystemMain {
             System.out.println(e.getMessage());
             System.out.println("stack trace: ");
             System.out.println(e.getStackTrace());
+            System.out.println("\n"+e.toString()+"\n");
         }
-
     }
 
     private static void printMainMenu() {
@@ -65,25 +65,25 @@ public class SystemMain {
         System.out.println("Please enter your next operation: (enter only number) ");
     }
 
-    private static void executeOperation(Operations op, Scanner in) {
+    private static void executeOperation(/*Operations*/int op, Scanner in) {
         switch (op) {
-            case LOAD:
+            case 1:
                 // need to add here the method for getting data from XML file
                 testOne();
                 break;
-            case SHOW_ALL_STOCKS:
+            case 2:
                 showAllStocks();
                 break;
-            case SHOW_STOCK:
+            case 3:
                 showStock(in);
                 break;
-            case TRADE:
+            case 4:
                 addTradeCommand(in);
                 break;
-            case SHOW_ALL_COMMANDS:
+            case 5:
                 showAllCommands();
                 break;
-            case EXIT:
+            case 6:
                 System.exit(0);
             default:
                 System.out.println("\nYou entered wrong number. Chose only options from the main menu. ");
@@ -127,31 +127,23 @@ public class SystemMain {
             String symbol = getSymbol();
 
             System.out.println("Please choose the direction you want to trade: (enter: BUY/SELL) ");
-            /*String tempDir = in.nextLine().toUpperCase();
-            List<String> list = new ArrayList<>();
-            for (TradeCommand.direction direction1 : TradeCommand.direction.values()) {
-                list.add(direction1.name());
-            }
-            String [] check = list.toArray();
-            Enum.valueOf(TradeCommand.direction.,tempDir);*/
-            TradeCommand.direction direction = TradeCommand.direction.valueOf(in.nextLine().toUpperCase());
+            TradeCommand.direction direction = getDir();
+
             System.out.println("Please choose the type of command you want to make: (enter: LMT/MKT/FOK/IOC)");
-            TradeCommand.commandType type = TradeCommand.commandType.valueOf(in.nextLine().toUpperCase());
+            TradeCommand.commandType type = getCommand();
+
             System.out.println("Please enter how many stocks you want to trade in: (integer numbers only)");
-            int quantity = in.nextInt();
-            if(quantity<=0){
-                System.out.println("The minimum quantity of stocks to trade is 1. Please try again.");
-                return; // wrong input. cancel the command
-            }
-            System.out.println("Please enter the limit price you want to trade with: (floating point is permitted)");
-            float price = in.nextFloat();
-            in.nextLine();
+            int quantity = (int)getPosNum(true);
+            System.out.println("Please enter the limit price you want to trade with: (a use of point  is permitted)");
+            float price = getPosNum(false);
 
 
             System.out.println(data.addTradeCommand(symbol,direction,type,quantity,price));
 
         } catch (IllegalArgumentException e) {
-            System.out.println("You entered wrong input. There isn't any"+ e.getCause()+ "Please try again.");
+            //System.out.println("You entered wrong input. There isn't any"+ e.getCause()+ "Please try again.");
+            System.out.println(e.getMessage());
+        }catch (InputMismatchException e) {
             System.out.println(e.getMessage());
         }
  }
@@ -201,10 +193,60 @@ public class SystemMain {
         }
     }
 
+    private static TradeCommand.direction getDir() {
+        Scanner in = new Scanner(System.in);
+        String dir = in.nextLine().toUpperCase();
+        TradeCommand.direction res = null;
+        try{
+            res.valueOf(dir);
+            return res;
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid option!");
+        }
+    }
+
+    private static TradeCommand.commandType getCommand() {
+        Scanner in = new Scanner(System.in);
+        String cmd = in.nextLine().toUpperCase();
+        TradeCommand.commandType res = null;
+        try{
+            res.valueOf(cmd);
+            return res;
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid option!");
+        }
+    }
+
+    private static float getPosNum(boolean isInteger) {
+        Scanner in = new Scanner(System.in);
+        float num;
+        try {
+            num = in.nextFloat();
+            in.nextLine();
+        } catch (InputMismatchException e) {
+            if(isInteger)
+                throw new InputMismatchException("Invalid input!, Enter an integer!");
+            else
+                throw new InputMismatchException("Invalid input!, Enter a real number!");
+        }
+        if (!(num >= 0))
+            throw new InputMismatchException("Invalid Input!, should be a positive value!");
+        else if (isInteger && (!(num - (int) num == 0)))
+            throw new InputMismatchException("Invalid Input!, should be an integer!");
+        else
+            return num;
+    }
+
     public static void testOne() {
-        CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
-        CompanyStocks company2 = new CompanyStocks("amazon", "amzn", 200);
-        CompanyStocks company3 = new CompanyStocks("tesla", "TSla", 300);
+        //CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
+        //CompanyStocks company2 = new CompanyStocks("amazon", "amzn", 200);
+        //CompanyStocks company3 = new CompanyStocks("tesla", "TSla", 300);
+        CompanyStocks company1 = new CompanyStocks("google", "GOGLE", 100);
+        CompanyStocks company2 = new CompanyStocks("amazon", "AMZN", 200);
+        CompanyStocks company3 = new CompanyStocks("tesla", "TSLA", 300);
+
         Engine.addStock(company1);
         Engine.addStock(company2);
         Engine.addStock(company3);

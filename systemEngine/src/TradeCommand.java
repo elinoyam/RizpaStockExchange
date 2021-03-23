@@ -22,7 +22,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
             throw new InputMismatchException("Invalid quantity value!, should be a positive integer");
         } else if(!(whatPrice>=0)) {
             throw new InputMismatchException("Invalid price value!, should be a positive real number");
-        } else if (CompanyStocks.symbolCheck(symbol)) {
+        } else if (!CompanyStocks.symbolCheck(symbol)) {
             throw new InputMismatchException("Invalid symbol, use upper letters only!");
         } else {
             this.direction = dir;
