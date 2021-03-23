@@ -4,6 +4,23 @@ import java.util.*;
 
 
 public class SystemMain {
+
+    enum Operations {
+        LOAD(1,"load"),
+        SHOW_ALL_STOCKS(2,"show all stocks"),
+        SHOW_STOCK(3,"show stock"),
+        TRADE(4,"trade"),
+        SHOW_ALL_COMMANDS(5,"show all commands"),
+        EXIT(6,"exit");
+
+        private int opNum;
+        private String opName;
+        Operations(int num, String name) {
+            this.opNum = num;
+            this.opName = name;
+        }
+    }
+
     static private Trader data = new Engine(); // for interface use
 
     public static void main(String[] args) {
@@ -170,7 +187,17 @@ public class SystemMain {
                 for(Transaction c: transactions) {
                     System.out.println(c.toString());
                 }
-            System.out.println("Total transaction turnover is: " + s.getTransTurnover());
+            System.out.println("Total transaction turnover is:" + s.getTransTurnover() + "\n");
+        }
+    }
+
+    private static String getSymbol() {
+        Scanner in = new Scanner(System.in);
+        String symbol = in.nextLine().toUpperCase();
+        if(!(CompanyStocks.symbolCheck(symbol))) {
+            throw new IllegalArgumentException("Invalid symbol, use upper letters only!");
+        } else {
+            return symbol;
         }
     }
 

@@ -1,5 +1,6 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.InputMismatchException;
 import java.util.Objects;
 
 public class TradeCommand implements Comparable<TradeCommand>{
@@ -16,13 +17,21 @@ public class TradeCommand implements Comparable<TradeCommand>{
     private LocalDateTime dateTimeStamp;
     final private commandType commandType;
 
-    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol){
-        this.direction = dir;
-        this.quantity = howMany;
-        this.symbol = symbol;
-        this.wantedPrice = whatPrice;
-        this.commandType = type;
-        this.dateTimeStamp = LocalDateTime.now();
+    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol) {
+        if (!(howMany>=0)) {
+            throw new InputMismatchException("Invalid quantity value!, should be a positive integer");
+        } else if(!(whatPrice>=0)) {
+            throw new InputMismatchException("Invalid price value!, should be a positive real number");
+        } else if (CompanyStocks.symbolCheck(symbol)) {
+            throw new InputMismatchException("Invalid symbol, use upper letters only!");
+        } else {
+            this.direction = dir;
+            this.quantity = howMany;
+            this.symbol = symbol;
+            this.wantedPrice = whatPrice;
+            this.commandType = type;
+            this.dateTimeStamp = LocalDateTime.now();
+        }
     }
 
     public direction getDirection() { return this.direction; }
@@ -48,7 +57,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
 
     @Override
     public String toString() {
-        return dateTimeStamp + " - This is " + commandType+ " " +direction +" command for " +quantity +" "+ symbol +" stocks.";
+        return dateTimeStamp.format(dateTimeFormat) + " - This is " + commandType+ " " +direction +" command for " +quantity +" "+ symbol +" stocks.";
     }
 
     @Override

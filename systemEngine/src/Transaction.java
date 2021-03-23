@@ -24,7 +24,7 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction made at "+dateStamp+ " of " +quantity +" shares at the price of " + price +" for each. ";
+        return "Transaction made at "+ dateStamp.format(dateTimeFormat) + " of " + quantity +" shares at the price of " + price +" for each. ";
     }
 
     public float getTurnOver() {
