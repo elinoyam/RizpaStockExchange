@@ -6,7 +6,7 @@
 //
 
 
-package jaxb.schema.generated;
+package schema.generated;
 
 import java.util.ArrayList;
 import java.util.List;

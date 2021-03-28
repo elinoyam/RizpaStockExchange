@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="dataTransfer" />
+    <orderEntry type="module" module-name="jaxb" />
+    <orderEntry type="module" module-name="resources" />
   </component>
 </module>
