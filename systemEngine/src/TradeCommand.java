@@ -6,7 +6,7 @@ import java.util.Objects;
 public class TradeCommand implements Comparable<TradeCommand>{
 
     enum direction {BUY, SELL}
-    enum commandType{LMT,MKT,FOK,IOC}
+    enum commandType{LMT,MKT/*TODO:,FOK,IOC*/}
 
     private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss:SSS");
 
@@ -77,7 +77,11 @@ public class TradeCommand implements Comparable<TradeCommand>{
     public int compareTo(TradeCommand other) {
         float res = this.wantedPrice - other.wantedPrice;
         if(res==0){
-            return this.dateTimeStamp.compareTo(other.dateTimeStamp);
+
+            if(other.getDirection() == direction.BUY)
+                return (-this.dateTimeStamp.compareTo(other.dateTimeStamp));
+            else
+                return this.dateTimeStamp.compareTo(other.dateTimeStamp);
         }
         return (int)res;
     }

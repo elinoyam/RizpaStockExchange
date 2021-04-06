@@ -107,7 +107,10 @@ public class Engine implements Trader {
     @Override
     public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) {
         CompanyStocks stock = getSingleStock(companySymbol);
-        return stock.addTradeCommand(dir, command, quantity, wantedPrice);
+        if(command != TradeCommand.commandType.MKT)
+            return stock.addTradeCommand(dir, command, quantity, wantedPrice);
+        else
+            return stock.addTradeCommand(dir, command, quantity, stock.getSharePrice());
     }
 
     public List<StockDT> showAllCommands(){ // fifth option - for future use. for now just return the same as showAllStocks()

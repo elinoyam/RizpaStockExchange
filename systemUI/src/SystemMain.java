@@ -24,29 +24,33 @@ public class SystemMain {
     //XMLFiles/ex1-small.xml
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-
         // System.out.println("Please enter the XML full path: ");
         // String pathXML = in.nextLine();
         // add here reading the data from the file in the pathXML
+        /*TODO: We would like to use enum and create an enabler that will define which operations available and which not.*/
         try {
             //Operations op = null;
-            int op = 6;
-            do {
+            int op = 0;
+            while(op!=6) {
                 printMainMenu();
                 try {
                     //op = Operations.valueOf(in.nextLine().toUpperCase());
                     op = in.nextInt();
                     in.nextLine();
+                    executeOperation(op, in);
                 } catch (IllegalArgumentException e) {
                     System.out.println("You entered wrong input, Please try again.");
                     System.out.println(e.getMessage());
-                }
-                executeOperation(op, in);
+                    in.nextLine();
 
-            } while (op!=6/*op != Operations.EXIT*/);
+                } catch (InputMismatchException e) {
+                    System.out.println("You entered wrong input, Please try again.");
+                    in.nextLine();
+                }
+            } //while (op!=6/*op != Operations.EXIT*/);
             System.out.println("Thank you for using our program and goodbye!");
             in.close();
-        }catch(Exception e){
+        }catch(Exception e){ //We dont want to get here
             System.out.println("There was a problem somewhere in the program.");
             System.out.println(e.getMessage());
             System.out.println("stack trace: ");
@@ -142,8 +146,12 @@ public class SystemMain {
 
             System.out.println("Please enter how many stocks you want to trade in: (integer numbers only)");
             int quantity = (int) getPositiveNum(true);
-            System.out.println("Please enter the limit price you want to trade with: (a use of point  is permitted)");
-            float price = getPositiveNum(false);
+
+            float price = -1;
+            if(type!= TradeCommand.commandType.MKT) {
+                System.out.println("Please enter the limit price you want to trade with: (a use of point  is permitted)");
+                price = getPositiveNum(false);
+            }
 
 
             System.out.println(engine.addTradeCommand(symbol,direction,type,quantity,price));

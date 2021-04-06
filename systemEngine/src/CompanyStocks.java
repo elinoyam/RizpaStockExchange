@@ -183,16 +183,18 @@ public class CompanyStocks {
     }
 
     public String commandHandler(TradeCommand command){
-        System.out.println(command);
         switch (command.getCommandType()) {
             case LMT:
                 return LMTHandler(command);
             case MKT:
-                return null;
+                return LMTHandler(command);
+            /*  TODO: add FOK and IOC
             case FOK:
                 return null;
             case IOC:
                 return null;
+
+            */
             default:
                 throw new IllegalArgumentException("No such command type.");
         }
