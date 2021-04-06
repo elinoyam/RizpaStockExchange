@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 
 enum Operations {
@@ -50,6 +51,10 @@ public class SystemMain {
             System.out.println("stack trace: ");
             System.out.println(e.getStackTrace());
             System.out.println("\n"+e.toString()+"\n");
+
+            System.out.println("\n"+e.getCause()+"\n");
+            e.printStackTrace();
+
         }
     }
 
@@ -65,11 +70,13 @@ public class SystemMain {
         System.out.println("Please enter your next operation: (enter only number) ");
     }
 
-    private static void executeOperation(/*Operations*/int op, Scanner in) {
+    private static void executeOperation(/*Operations*/int op, Scanner in) throws IOException {
         switch (op) {
             case 1:
                 // need to add here the method for getting data from XML file
-                testOne();
+                System.out.println("Insert the file's path: ");
+                String path = in.nextLine();
+                engine.uploadDataFromFile(path);
                 break;
             case 2:
                 showAllStocks();
@@ -124,7 +131,7 @@ public class SystemMain {
     public static void addTradeCommand(Scanner in){
         try {
             System.out.println("Please enter the symbol of the company you want to trade with it's stocks: ");
-            String symbol = getSymbol();
+            String symbol = getSymbol(in);
 
             System.out.println("Please choose the direction you want to trade: (enter: BUY/SELL) ");
             TradeCommand.direction direction = getDir();
@@ -133,9 +140,9 @@ public class SystemMain {
             TradeCommand.commandType type = getCommand();
 
             System.out.println("Please enter how many stocks you want to trade in: (integer numbers only)");
-            int quantity = (int)getPosNum(true);
+            int quantity = (int) getPositiveNum(true);
             System.out.println("Please enter the limit price you want to trade with: (a use of point  is permitted)");
-            float price = getPosNum(false);
+            float price = getPositiveNum(false);
 
 
             System.out.println(data.addTradeCommand(symbol,direction,type,quantity,price));
@@ -183,14 +190,14 @@ public class SystemMain {
         }
     }
 
-    private static String getSymbol() {
-        Scanner in = new Scanner(System.in);
+    private static String getSymbol(Scanner in) {
         String symbol = in.nextLine().toUpperCase();
-        if(!(CompanyStocks.symbolCheck(symbol))) {
-            throw new IllegalArgumentException("Invalid symbol, use upper letters only!");
-        } else {
+        if(!(engine.isSymbolExists(symbol)))
+            throw new IllegalArgumentException("There isn't any company with "+ symbol +" symbol.");
+        else if (!(CompanyStocks.symbolCheck(symbol)))
+            throw new InputMismatchException("The given symbol is not valid. Symbol contains English letters only!");
+        else
             return symbol;
-        }
     }
 
     private static TradeCommand.direction getDir() {
@@ -200,8 +207,7 @@ public class SystemMain {
         try{
             res.valueOf(dir);
             return res;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid option!");
         }
     }
@@ -219,7 +225,7 @@ public class SystemMain {
         }
     }
 
-    private static float getPosNum(boolean isInteger) {
+    private static float getPositiveNum(boolean isInteger) {
         Scanner in = new Scanner(System.in);
         float num;
         try {

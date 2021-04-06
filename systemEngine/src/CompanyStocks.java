@@ -173,6 +173,7 @@ public class CompanyStocks {
     }
 
     public String commandHandler(TradeCommand command){
+        System.out.println(command);
         switch (command.getCommandType()) {
             case LMT:
                 return LMTHandler(command);

@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/dataTransfer/dataTransfer.iml" filepath="$PROJECT_DIR$/dataTransfer/dataTransfer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jaxb/jaxb.iml" filepath="$PROJECT_DIR$/jaxb/jaxb.iml" />
       <module fileurl="file://$PROJECT_DIR$/resources/resources.iml" filepath="$PROJECT_DIR$/resources/resources.iml" />
       <module fileurl="file://$PROJECT_DIR$/systemEngine/systemEngine.iml" filepath="$PROJECT_DIR$/systemEngine/systemEngine.iml" />
       <module fileurl="file://$PROJECT_DIR$/systemUI/systemUI.iml" filepath="$PROJECT_DIR$/systemUI/systemUI.iml" />
