@@ -116,7 +116,18 @@ public class CompanyStocks {
     }
 
    public String addTradeCommand(TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice){
-        TradeCommand tr = new TradeCommand(dir, command, quantity, wantedPrice, this.getSymbol());
+       TradeCommand tr;
+        if(command != TradeCommand.commandType.MKT)
+           tr = new TradeCommand(dir, command, quantity, wantedPrice, this.getSymbol());
+        else{
+            float mktPrice;
+            if(dir == TradeCommand.direction.BUY)
+                mktPrice = getMKTSellPrice(quantity);
+            else // sell command
+                mktPrice = getMKTBuyPrice(quantity);
+            tr = new TradeCommand(dir, command, quantity, mktPrice, this.getSymbol());
+        }
+
         // search here for a matching command
        return commandHandler(tr);
    }
@@ -222,6 +233,45 @@ public class CompanyStocks {
 
         throw new UnknownError("Unknown Error Occurred In LMT command Handler");
     }
+
+    public float getMKTSellPrice(int quantity){
+        int count =0; // count the number of shares until it get to the wanted quantity
+        float savePrice=0;
+        boolean found = false;
+        Queue<TradeCommand> tmp = new PriorityQueue<>(1);
+        while(count<quantity && !sellCommands.isEmpty() && !found){
+            TradeCommand command = sellCommands.poll();
+            tmp.add(command); // saves the command
+            savePrice = command.getPrice();
+            count+=command.getQuantity();
+
+            if(count >= quantity) // checks if we counted enough shares
+                found = true;
+        }
+        while(!tmp.isEmpty())
+            sellCommands.add(tmp.poll());       // enters the commands back to the main priority queue
+        return savePrice;              // returns the highest price between the counted shares
+    }
+
+    public float getMKTBuyPrice(int quantity){
+        int count =0; // count the number of shares until it get to the wanted quantity
+        float savePrice=0;
+        boolean found = false;
+        Queue<TradeCommand> tmp = new PriorityQueue<>(1,Collections.reverseOrder());
+        while(count<quantity && !buyCommands.isEmpty()&& !found){
+            TradeCommand command = buyCommands.poll();
+            tmp.add(command); // saves the command
+            savePrice = command.getPrice();
+            count += command.getQuantity();
+
+            if(count >= quantity) // checks if we counted enough shares
+                found = true;
+        }
+        while(!tmp.isEmpty())
+            buyCommands.add(tmp.poll());       // enters the commands back to the main priority queue
+        return savePrice;              // returns the lowest price between the counted shares
+    }
+
 }
 
 
