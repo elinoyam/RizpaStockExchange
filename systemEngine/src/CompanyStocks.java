@@ -67,10 +67,15 @@ public class CompanyStocks {
     public int getSellCommandsCount(){ return sellCommands.size(); }
 
     public List<TradeCommandDT> getBuyCommandsList() {
+        int size = getBuyCommandsCount();
         List<TradeCommandDT> res = new ArrayList<>(getBuyCommandsCount());
-        for(TradeCommand command: buyCommands){
+        Queue<TradeCommand> tmp = new PriorityQueue<>(1, Collections.reverseOrder()); //Temporary Queue that will hold the values so we can run over all the
+        for(int i=0;i<size;++i) {
+            TradeCommand command = buyCommands.poll();
+            tmp.add(command);
             res.add(new TradeCommandDT(command.getDirection(),command.getCommandType(),command.getQuantity(),command.getPrice(),command.getSymbol(),command.getDate()));
         }
+        buyCommands = tmp;
         return res;
     }
     public List<TradeCommandDT> getSellCommandsList() {
