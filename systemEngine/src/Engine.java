@@ -65,8 +65,8 @@ public class Engine implements Trader {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         RizpaStockExchangeDescriptor rse = (RizpaStockExchangeDescriptor) u.unmarshal(in);
-        List<RseStock> stocks = rse.getRseStocks().getRseStock();
-        for(RseStock s : stocks)
+        List<RseStock> rseStocks = rse.getRseStocks().getRseStock();
+        for(RseStock s : rseStocks)
         {
             CompanyStocks tmp = castRseStockToStock(s);
             stocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);

@@ -20,10 +20,11 @@ enum Operations {
 
 public class SystemMain {
 
-    static private Trader data = new Engine(); // for interface use
-
+    private static Engine engine = Engine.getInstance();
+    //XMLFiles/ex1-small.xml
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
+
         // System.out.println("Please enter the XML full path: ");
         // String pathXML = in.nextLine();
         // add here reading the data from the file in the pathXML
@@ -100,7 +101,7 @@ public class SystemMain {
 
     public static void showAllStocks() { // second option in the main menu
         try {
-            StockDT[] stocks = data.showAllStocks().toArray(new StockDT[0]);
+            StockDT[] stocks = engine.showAllStocks().toArray(new StockDT[0]);
             for (StockDT st : stocks) {
                 System.out.println(st.toString());
             }
@@ -116,7 +117,7 @@ public class SystemMain {
             System.out.println("Please enter the name of the stock you want to see: ");
             String stockName = in.nextLine();
 
-            StockDT stock = data.showStock(stockName); // throws exception if there isn't any company stocks with the given symbol
+            StockDT stock = engine.showStock(stockName); // throws exception if there isn't any company stocks with the given symbol
             System.out.println(stock.toString());
             System.out.println("This stock transactions are:");
             for(Transaction transaction: stock.getTransactions()){
@@ -145,7 +146,7 @@ public class SystemMain {
             float price = getPositiveNum(false);
 
 
-            System.out.println(data.addTradeCommand(symbol,direction,type,quantity,price));
+            System.out.println(engine.addTradeCommand(symbol,direction,type,quantity,price));
 
         } catch (IllegalArgumentException e) {
             //System.out.println("You entered wrong input. There isn't any"+ e.getCause()+ "Please try again.");
@@ -156,7 +157,7 @@ public class SystemMain {
  }
 
     static public void showAllCommands(){
-        List<StockDT> stocks = data.showAllStocks();
+        List<StockDT> stocks = engine.showAllStocks();
         for(StockDT s:stocks) {
             System.out.print("\nThe Stock: " + s.getSymbol() + " of " + s.getCompanyName() + " company ");
             List<TradeCommandDT> buy = s.getBuysCommands();
@@ -205,7 +206,7 @@ public class SystemMain {
         String dir = in.nextLine().toUpperCase();
         TradeCommand.direction res = null;
         try{
-            res.valueOf(dir);
+            res = res.valueOf(dir);
             return res;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid option!");
@@ -217,7 +218,7 @@ public class SystemMain {
         String cmd = in.nextLine().toUpperCase();
         TradeCommand.commandType res = null;
         try{
-            res.valueOf(cmd);
+            res = res.valueOf(cmd);
             return res;
         }
         catch (IllegalArgumentException e) {
@@ -245,7 +246,7 @@ public class SystemMain {
             return num;
     }
 
-    public static void testOne() {
+/*    public static void testOne() {
         //CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
         //CompanyStocks company2 = new CompanyStocks("amazon", "amzn", 200);
         //CompanyStocks company3 = new CompanyStocks("tesla", "TSla", 300);
@@ -257,5 +258,5 @@ public class SystemMain {
         Engine.addStock(company2);
         Engine.addStock(company3);
         System.out.println("All the data has been uploaded. ");
-    }
+    }*/
 }
