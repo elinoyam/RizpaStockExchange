@@ -215,10 +215,10 @@ public class CompanyStocks {
             return("There isn't any opposite commands. The command entered to the waiting " + command.getDirection() + " commands list.");
         else if(res==0)
             return("The existing command rates aren't high enough for trade.The command entered to the waiting " + command.getDirection() + " commands list.");
-        else if(res == command.getQuantity())
+        else if(res == saveQuantity)
             return("The command was fully executed. ");
         else if(res < saveQuantity)
-            return("The command was partly executed. The rest of the shares was entered to the waiting "+command.getDirection() + " commands list.");
+            return("The command was partly executed. The rest of the "+command.getQuantity() +" shares was entered to the waiting "+command.getDirection() + " commands list.");
 
         throw new UnknownError("Unknown Error Occurred In LMT command Handler");
     }
