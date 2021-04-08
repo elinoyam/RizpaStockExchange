@@ -44,7 +44,7 @@ public class Engine implements Trader {
         return stocks.containsKey(symbol.toUpperCase());
     }
 
-    public void uploadDataFromFile(String path) throws IOException // first option
+    public void uploadDataFromFile(String path) throws FileNotFoundException,JAXBException // first option
     {
     // need to upload all the stocks from xml file
         MultiKeyMap<String,CompanyStocks> tmpStocks = new MultiKeyMap<>();
@@ -75,15 +75,15 @@ public class Engine implements Trader {
             return false;
     }
 
-    private void deserializeFrom(InputStream in) throws JAXBException {
+    private void deserializeFrom(InputStream in,MultiKeyMap<String,CompanyStocks> tmpStocks) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         RizpaStockExchangeDescriptor rse = (RizpaStockExchangeDescriptor) u.unmarshal(in);
         List<RseStock> rseStocks = rse.getRseStocks().getRseStock();
         for(RseStock s : rseStocks)
         {
-            CompanyStocks tmp = castRseStockToStock(s);
-            stocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);
+            CompanyStocks tmp = castRseStockToStock(s,tmpStocks);
+            tmpStocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);
         }
     }
 

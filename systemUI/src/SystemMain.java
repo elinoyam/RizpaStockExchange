@@ -5,36 +5,70 @@ import java.util.List;
 import java.util.Scanner;
 
 enum Operations {
-    LOAD(1,"load"),
-    SHOW_ALL_STOCKS(2,"show all stocks"),
-    SHOW_STOCK(3,"show stock"),
-    TRADE(4,"trade"),
-    SHOW_ALL_COMMANDS(5,"show all commands"),
-    EXIT(6,"exit");
+    LOAD(1,"load",true),
+    SHOW_ALL_STOCKS(2,"show stocks",false),
+    SHOW_STOCK(3,"show stock",false),
+    TRADE(4,"trade",false),
+    SHOW_ALL_COMMANDS(5,"show commands",false),
+    EXIT(6,"exit",true);
 
     private int opNum;
     private String opName;
-    Operations(int num, String name) {
+    private boolean isEnabled;
+    Operations(int num, String name, boolean isEnabled) {
         this.opNum = num;
         this.opName = name;
         this.isEnabled = isEnabled;
+    }
+    public static Operations getOperation(int num){
+        for(Operations o : Operations.values()){
+            if(o.opNum == num) {
+                return o;
+            }
+        }
+        return null;
+    }
+
+    public static Operations getOperation(String name){
+        for(Operations o : Operations.values()){
+            if(o.opName.equals(name.toLowerCase())) {
+                return o;
+            }
+        }
+        return null;
+    }
+
+    public int getNum() {
+        return opNum;
+    }
+    public void enable() {
+        this.isEnabled = true;
+    }
+    static public void enableAll(){
+        for(Operations o : Operations.values()){
+            o.enable();
+        }
+    }
+
+    public void disable() {
+        this.isEnabled = false;
+    }
+    public boolean isEnabled() {
+        return this.isEnabled;
     }
 }
 
 public class SystemMain {
 
     private static Engine engine = Engine.getInstance();
-    //XMLFiles/ex1-small.xml
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         try {
             Operations op = null;
             while(op != Operations.EXIT) {
                 printMainMenu();
-                try {
-                    //op = Operations.valueOf(in.nextLine().toUpperCase());
-                    op = in.nextInt();
-                    in.nextLine();
+                try{
+                    op = getInputOperation(in);
                     executeOperation(op, in);
 
                 } catch (JAXBException | InputMismatchException | IOException | IllegalArgumentException e) {
