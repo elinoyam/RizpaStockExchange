@@ -1,5 +1,8 @@
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
 
 enum Operations {
     LOAD(1,"load"),
@@ -14,9 +17,9 @@ enum Operations {
     Operations(int num, String name) {
         this.opNum = num;
         this.opName = name;
+        this.isEnabled = isEnabled;
     }
 }
-
 
 public class SystemMain {
 
@@ -24,64 +27,67 @@ public class SystemMain {
     //XMLFiles/ex1-small.xml
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        // System.out.println("Please enter the XML full path: ");
-        // String pathXML = in.nextLine();
-        // add here reading the data from the file in the pathXML
-        /*TODO: We would like to use enum and create an enabler that will define which operations available and which not.*/
         try {
-            //Operations op = null;
-            int op = 0;
-            while(op!=6) {
+            Operations op = null;
+            while(op != Operations.EXIT) {
                 printMainMenu();
                 try {
                     //op = Operations.valueOf(in.nextLine().toUpperCase());
                     op = in.nextInt();
                     in.nextLine();
                     executeOperation(op, in);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("You entered wrong input, Please try again.");
-                    System.out.println(e.getMessage());
-                    in.nextLine();
 
-                } catch (InputMismatchException e) {
-                    System.out.println("You entered wrong input, Please try again.");
-                    in.nextLine();
+                } catch (JAXBException | InputMismatchException | IOException | IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
                 }
-            } //while (op!=6/*op != Operations.EXIT*/);
+            }
             System.out.println("Thank you for using our program and goodbye!");
             in.close();
         }catch(Exception e){ //We dont want to get here
             System.out.println("There was a problem somewhere in the program.");
-            System.out.println(e.getMessage());
-            System.out.println("stack trace: ");
-            System.out.println(e.getStackTrace());
-            System.out.println("\n"+e.toString()+"\n");
-
-            System.out.println("\n"+e.getCause()+"\n");
-            e.printStackTrace();
-
         }
+    }
+    private static Operations getInputOperation(Scanner in) throws InputMismatchException{
+        if(in==null)
+            in = new Scanner(System.in);
+        Operations op;
+        if(in.hasNextInt()){
+            op = Operations.getOperation(in.nextInt());
+            in.nextLine();
+        } else
+            op = Operations.getOperation(in.nextLine());
+        if(op==null)
+            throw new InputMismatchException("The given input of operation, doesn't exists!");
+        return op;
     }
 
     private static void printMainMenu() {
         System.out.println("\n");
         System.out.println("Operation options menu:");
-        System.out.println("1. Read data from file. \n" +
-                "2. Show existing stocks.\n" +
-                "3. Show chosen stock data. \n" +
-                "4. Execution of a trading order. \n" +
-                "5. View the lists of commands to execute. \n" +
-                "6. Exit the program.\n");
-        System.out.println("Please enter your next operation: (enter only number) ");
+        System.out.println("1. Read data from file. (type \"load\" or 1) \n" +
+                "2. Show existing stocks. (type \"show stocks\" or 2)\n" +
+                "3. Show chosen stock data. (type \"show stock\" or 3)\n" +
+                "4. Execution of a trading order. (type \"trade\" or 4)\n" +
+                "5. View the lists of commands to execute. (type \"show commands\" or 5)\n" +
+                "6. Exit the program. (type \"exit\" or 6)\n");
+        System.out.println("Please enter your next operation:");
     }
 
-    private static void executeOperation(/*Operations*/int op, Scanner in) throws IOException {
-        switch (op) {
+    private static void executeOperation(Operations/*int*/ op, Scanner in) throws IOException, JAXBException {
+        if(!(op.isEnabled())){
+            System.out.println("This option is not enabled yet.\n" +
+                    "You need to load XML file first.");
+            return;
+        }
+
+        switch (op.getNum()) {
             case 1:
                 // need to add here the method for getting data from XML file
                 System.out.println("Insert the file's path: ");
                 String path = in.nextLine();
                 engine.uploadDataFromFile(path);
+                System.out.println("The file loaded successfully.");
+                Operations.enableAll();
                 break;
             case 2:
                 showAllStocks();

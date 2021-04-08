@@ -47,18 +47,32 @@ public class Engine implements Trader {
     public void uploadDataFromFile(String path) throws IOException // first option
     {
     // need to upload all the stocks from xml file
-        stocks.clear();
-        File xmlPath = new File(path);
-        if(xmlPath.exists()) {
-            try {
-                InputStream inputStream = new FileInputStream(new File(path));
-                deserializeFrom(inputStream);
-            } catch (JAXBException | FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        MultiKeyMap<String,CompanyStocks> tmpStocks = new MultiKeyMap<>();
+
+        try {
+            File xmlPath = new File(path);
+            InputStream inputStream = new FileInputStream(new File(path));
+            if(!isXMLFile(path))
+                throw new IllegalArgumentException("The given file is not a xml file.");
+            deserializeFrom(inputStream,tmpStocks);
+            stocks.clear();
+            stocks = tmpStocks;
+        } catch (JAXBException e){
+            throw new JAXBException("JAXB Exception detected.");
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("There is no such a XML file.");
         }
+    }
+    private boolean isXMLFile(String path){
+        String extension = "";
+        int i = path.lastIndexOf('.');
+        if (i > 0) {
+            extension = path.substring(i+1);
+        }
+        if(extension.toLowerCase().equals("xml"))
+            return true;
         else
-            throw new IOException("There is no such a XML file.");
+            return false;
     }
 
     private void deserializeFrom(InputStream in) throws JAXBException {
@@ -73,13 +87,13 @@ public class Engine implements Trader {
         }
     }
 
-    private CompanyStocks castRseStockToStock(RseStock rs){
+    private CompanyStocks castRseStockToStock(RseStock rs, MultiKeyMap<String,CompanyStocks> map){
         String symbol = rs.getRseSymbol();
-        if(isSymbolExists(symbol))
+        if(map.containsKey(symbol))
             throw new IllegalArgumentException("The "+ symbol + " symbol is already exist, the stock's symbol should be unique!");
 
         String company = rs.getRseCompanyName();
-        if(isCompanyNameExists(company))
+        if(map.containsKey(company))
             throw new IllegalArgumentException("The "+ company + " company is already exist, each company should have a single stock!");
 
         float price = rs.getRsePrice();
