@@ -34,7 +34,8 @@ public class Engine implements Trader {
     public int stocksCount(){
         return stocks.size();
     }
-    private CompanyStocks getSingleStock(String symbol){
+
+    private CompanyStocks getSingleStock(String symbol) throws InputMismatchException {
         if(!(stocks.containsKey(symbol.toUpperCase()))) // check if there is a company with this symbol
             throw new InputMismatchException("There is no stock with this symbol. ");
         return stocks.get(symbol.toUpperCase());
@@ -112,14 +113,14 @@ public class Engine implements Trader {
         return res;
     }
 
-    public StockDT showStock(String companySymbol) // third option
+    public StockDT showStock(String companySymbol) throws InputMismatchException// third option
     {
         CompanyStocks s = getSingleStock(companySymbol);
         return new StockDT(s.getCompanyName(), s.getSymbol(), s.getSharePrice(), s.getStockTransactions(), s.getTransactionsTurnOver(),s.getBuyCommandsList(),s.getSellCommandsList());
     }
 
     @Override
-    public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) {
+    public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) throws InputMismatchException {
         CompanyStocks stock = getSingleStock(companySymbol);
         if(command != TradeCommand.commandType.MKT)
             return stock.addTradeCommand(dir, command, quantity, wantedPrice);
