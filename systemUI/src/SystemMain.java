@@ -1,5 +1,4 @@
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -242,7 +241,7 @@ public class SystemMain {
 
     /**
      * A method that prints out the full data about a specific stock.
-     * @param in an input of Scanner that from it we will get an input of an operation (it can be null as well).
+     * @param in an input of Scanner that from it we will get an input of a stock symbol (it can be null as well).
      */
     public static void showStock(Scanner in) {
         if(in==null)                        //in case we didn't get a specific Scanner we will create by default an input Scanner from the console.
@@ -299,10 +298,13 @@ public class SystemMain {
             System.out.println(e.getMessage());
         }
  }
- //TODO: I Stopped here with the javadoc documentation.
+
+    /**
+     * A method that prints out all the trade commands that are in the system.
+     */
     static public void showAllCommands(){
-        List<StockDT> stocks = engine.showAllStocks();
-        for(StockDT s:stocks) {
+        List<StockDT> stocks = engine.showAllStocks();  //gets a list of all the stocks
+        for(StockDT s:stocks) {                         //for each stock prints the stock's details, and all the buy and sell commands.
             System.out.print("\nThe Stock: " + s.getSymbol() + " of " + s.getCompanyName() + " company ");
             List<TradeCommandDT> buy = s.getBuysCommands();
             System.out.println("has currently the following buy commands: ");
@@ -335,72 +337,84 @@ public class SystemMain {
         }
     }
 
-    private static String getSymbol(Scanner in) throws  InputMismatchException,IllegalArgumentException{
-        String symbol = in.nextLine().toUpperCase();
-        if(!(engine.isSymbolExists(symbol)))
-            throw new IllegalArgumentException("There isn't any company with "+ symbol +" symbol.");
-        else if (!(CompanyStocks.symbolCheck(symbol)))
+    /**
+     * A method that gets an input of a stock symbol and checks that it is a valid and an existing symbol.
+     * @param in an input of Scanner that from it we will get an input of stock symbol (it can be null as well).
+     * @return a symbol of existing stock.
+     * @throws InputMismatchException will be thrown in case the given input is not valid.
+     * @throws IllegalArgumentException will be thrown in case the given input is not an existing stock symbol.
+     */
+    private static String getSymbol(Scanner in) throws InputMismatchException,IllegalArgumentException {
+        if(in==null)                        //in case we didn't get a specific Scanner we will create by default an input Scanner from the console.
+            in = new Scanner(System.in);
+
+        String symbol = in.nextLine().toUpperCase();        //gets an input of string and turns all the characters to upper case.
+        if(!(CompanyStocks.symbolCheck(symbol)))            //checks if the given symbol is valid.
             throw new InputMismatchException("The given symbol is not valid. Symbol contains English letters only!");
+        else if (!(engine.isSymbolExists(symbol)))          //checks if the given symbol exists.
+            throw new IllegalArgumentException("There isn't any company with "+ symbol +" symbol.");
         else
-            return symbol;
+            return symbol;                                  //returns the symbol.
     }
 
+    /**
+     * A method that gets an input of a trade direction and checks if it's a valid input.
+     * @return  a valid trade direction (buy/sell)
+     * @throws IllegalArgumentException will be thrown in case that the given input of direction is invalid.
+     */
     private static TradeCommand.direction getDir() throws IllegalArgumentException {
-        Scanner in = new Scanner(System.in);
-        String dir = in.nextLine().toUpperCase();
-        TradeCommand.direction res = null;
+        Scanner in = new Scanner(System.in);        //TODO: why don't we get the Scanner as variable and support a case that the variable will be null?
+        String dir = in.nextLine().toUpperCase();   //gets an input of string that represents a trade direction.
+        TradeCommand.direction res = null;          //initialization
         try{
             res = TradeCommand.direction.valueOf(dir);
             return res;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid option!");
+        } catch (IllegalArgumentException e) {      //in case the input is invalid.
+            throw new IllegalArgumentException("Invalid option!"); //TODO: do we want to send a better error message?
         }
     }
 
+    /**
+     * A method that gets an input of command type and checks if it's a valid input.
+     * @return a valid command type
+     * @throws IllegalArgumentException will be thrown in case that the given input of command type is invalid.
+     */
     private static TradeCommand.commandType getCommand() throws IllegalArgumentException {
-        Scanner in = new Scanner(System.in);
-        String cmd = in.nextLine().toUpperCase();
-        TradeCommand.commandType res = null;
+        Scanner in = new Scanner(System.in);       //TODO: why don't we get the Scanner as variable and support a case that the variable will be null?
+        String cmd = in.nextLine().toUpperCase();  //gets an input of string that represents a command type.
+        TradeCommand.commandType res = null;       //initialization
         try{
             res = TradeCommand.commandType.valueOf(cmd);
             return res;
         }
-        catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException e) {       //in case the input is invalid.
             throw new IllegalArgumentException("Invalid option!");
         }
     }
 
+    /**
+     * A method that gets an input of positive number and checks if it's a valid input.
+     * @param isInteger an boolean variable that acts as a flag and changes the operation of the method so the result will be an integer.
+     * @return returns a positive number.
+     * @throws InputMismatchException will be thrown in case that the given input of positive number is invalid.
+     */
     private static float getPositiveNum(boolean isInteger) throws InputMismatchException {
-        Scanner in = new Scanner(System.in);
+        Scanner in = new Scanner(System.in);       //TODO: why don't we get the Scanner as variable and support a case that the variable will be null?
         float num;
         try {
-            num = in.nextFloat();
+            num = in.nextFloat();                  //gets an input of a real number.
             in.nextLine();
-        } catch (InputMismatchException e) {
+        } catch (InputMismatchException e) {       //checks that the input is valid.
             if(isInteger)
                 throw new InputMismatchException("Invalid input!, Enter an integer!");
             else
                 throw new InputMismatchException("Invalid input!, Enter a real number!");
         }
-        if (!(num >= 0))
+        if (!(num >= 0))                          //checks that the input is positive.
             throw new InputMismatchException("Invalid Input!, should be a positive value!");
-        else if (isInteger && (!(num - (int) num == 0)))
+        else if (isInteger && (!(num - (int) num == 0))) //in case the needed number is an integer number, it checks that it is an integer number.
             throw new InputMismatchException("Invalid Input!, should be an integer!");
         else
             return num;
     }
-
-/*    public static void testOne() {
-        //CompanyStocks company1 = new CompanyStocks("google", "Gogle", 100);
-        //CompanyStocks company2 = new CompanyStocks("amazon", "amzn", 200);
-        //CompanyStocks company3 = new CompanyStocks("tesla", "TSla", 300);
-        CompanyStocks company1 = new CompanyStocks("google", "GOGLE", 100);
-        CompanyStocks company2 = new CompanyStocks("amazon", "AMZN", 200);
-        CompanyStocks company3 = new CompanyStocks("tesla", "TSLA", 300);
-
-        Engine.addStock(company1);
-        Engine.addStock(company2);
-        Engine.addStock(company3);
-        System.out.println("All the data has been uploaded. ");
-    }*/
 }
