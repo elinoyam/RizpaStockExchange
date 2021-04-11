@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="systemEngine:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/systemEngine_jar</output-path>
+    <root id="archive" name="systemEngine.jar">
+      <element id="module-output" name="systemEngine" />
+      <element id="module-output" name="dataTransfer" />
+      <element id="module-output" name="systemUI" />
+    </root>
+  </artifact>
+</component>
