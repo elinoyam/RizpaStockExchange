@@ -227,16 +227,10 @@ public class SystemMain {
      * A method that prints out all the existing stocks in the system and the full data for each one of them
      */
     public static void showAllStocks() {
-        try {
-            StockDT[] stocks = engine.showAllStocks().toArray(new StockDT[0]); //gets an array of the existing stocks
-            for (StockDT st : stocks) {                                        //for each stock it prints the full data about the stock.
-                System.out.println(st.toString());
-            }
-        }catch (Exception e){                                                   //TODO: why do we need this catch, isn't it overkill?
-            System.out.println("Exception was caught in showAllStocks in SystemMain. ");
-            System.out.println(e.getMessage());
+        StockDT[] stocks = engine.showAllStocks().toArray(new StockDT[0]); //gets an array of the existing stocks
+        for (StockDT st : stocks) {                                        //for each stock it prints the full data about the stock.
+            System.out.println(st.toString());
         }
-
     }
 
     /**
@@ -349,7 +343,7 @@ public class SystemMain {
             in = new Scanner(System.in);
 
         String symbol = in.nextLine().toUpperCase();        //gets an input of string and turns all the characters to upper case.
-        if(!(CompanyStocks.symbolCheck(symbol)))            //checks if the given symbol is valid.
+        if(!(Stock.symbolCheck(symbol)))            //checks if the given symbol is valid.
             throw new InputMismatchException("The given symbol is not valid. Symbol contains English letters only!");
         else if (!(engine.isSymbolExists(symbol)))          //checks if the given symbol exists.
             throw new IllegalArgumentException("There isn't any company with "+ symbol +" symbol.");
@@ -359,28 +353,33 @@ public class SystemMain {
 
     /**
      * A method that gets an input of a trade direction and checks if it's a valid input.
-     * @return  a valid trade direction (buy/sell)
+     * @param in an input of Scanner that from it we will get an input of the trade direction (it can be null as well).
+     * @return a valid trade direction (buy/sell)
      * @throws IllegalArgumentException will be thrown in case that the given input of direction is invalid.
      */
-    private static TradeCommand.direction getDir() throws IllegalArgumentException {
-        Scanner in = new Scanner(System.in);        //TODO: why don't we get the Scanner as variable and support a case that the variable will be null?
+    private static TradeCommand.direction getDir(Scanner in) throws IllegalArgumentException {
+        if(in==null)
+            in = new Scanner(System.in);
         String dir = in.nextLine().toUpperCase();   //gets an input of string that represents a trade direction.
         TradeCommand.direction res = null;          //initialization
         try{
             res = TradeCommand.direction.valueOf(dir);
             return res;
         } catch (IllegalArgumentException e) {      //in case the input is invalid.
-            throw new IllegalArgumentException("Invalid option!"); //TODO: do we want to send a better error message?
+            throw new IllegalArgumentException("Invalid direction option! (type only buy or sell).");
         }
     }
 
     /**
      * A method that gets an input of command type and checks if it's a valid input.
+     * @param in an input of Scanner that from it we will get an input of a command type (it can be null as well).
      * @return a valid command type
      * @throws IllegalArgumentException will be thrown in case that the given input of command type is invalid.
      */
-    private static TradeCommand.commandType getCommand() throws IllegalArgumentException {
-        Scanner in = new Scanner(System.in);       //TODO: why don't we get the Scanner as variable and support a case that the variable will be null?
+    private static TradeCommand.commandType getCommand(Scanner in) throws IllegalArgumentException {
+        if (in==null)
+            in = new Scanner(System.in);
+
         String cmd = in.nextLine().toUpperCase();  //gets an input of string that represents a command type.
         TradeCommand.commandType res = null;       //initialization
         try{
@@ -394,12 +393,15 @@ public class SystemMain {
 
     /**
      * A method that gets an input of positive number and checks if it's a valid input.
+     * @param in an input of Scanner that from it we will get an input of a real number (it can be null as well).
      * @param isInteger an boolean variable that acts as a flag and changes the operation of the method so the result will be an integer.
      * @return returns a positive number.
      * @throws InputMismatchException will be thrown in case that the given input of positive number is invalid.
      */
-    private static float getPositiveNum(boolean isInteger) throws InputMismatchException {
-        Scanner in = new Scanner(System.in);       //TODO: why don't we get the Scanner as variable and support a case that the variable will be null?
+    private static float getPositiveNum(Scanner in,boolean isInteger) throws InputMismatchException {
+        if (in==null)
+            in = new Scanner(System.in);
+
         float num;
         try {
             num = in.nextFloat();                  //gets an input of a real number.

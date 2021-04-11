@@ -13,7 +13,7 @@ import java.util.*;
 public class Engine implements Trader {
      private static Engine instance = new Engine();                                 //the single instance of the class.
      private static final String JAXB_XML_PACKAGE_NAME = "jaxb.schema.generated";
-     private MultiKeyMap<String,CompanyStocks> stocks = new MultiKeyMap<>();        //will be search with their symbol
+     private MultiKeyMap<String, Stock> stocks = new MultiKeyMap<>();        //will be search with their symbol
 
     private Engine(){ }                                                             //private to prevent a creation of instances
 
@@ -29,19 +29,19 @@ public class Engine implements Trader {
      * A getter of the list of stocks.
      * @return
      */
-    private Collection<CompanyStocks> getListOfStocks(){
+    private Collection<Stock> getListOfStocks(){
         return stocks.values();
     }
 
     /**
      * A method that adds a new stock to the MultiKeyMap of stocks.
-     * @param companyStocks the stock that we would like to add to the MultiKeyMap of stocks.
+     * @param stock the stock that we would like to add to the MultiKeyMap of stocks.
      * @throws InputMismatchException will be thrown in case that the stock is already exists.
      */
-    public void addStock(CompanyStocks companyStocks) throws InputMismatchException{
-        if(stocks.containsKey(companyStocks.getSymbol()))                                       //checks if the stock is already exists in the MultiKeyMap of stocks.
+    public void addStock(Stock stock) throws InputMismatchException{
+        if(stocks.containsKey(stock.getSymbol()))                                       //checks if the stock is already exists in the MultiKeyMap of stocks.
             throw new InputMismatchException("This company already have stocks in the system.");
-        stocks.put(companyStocks.getSymbol(),companyStocks.getCompanyName(), companyStocks);    //adds the stock to the MultiKeyMap of stocks.
+        stocks.put(stock.getSymbol(), stock.getCompanyName(), stock);    //adds the stock to the MultiKeyMap of stocks.
     }
 
     /**
@@ -58,7 +58,7 @@ public class Engine implements Trader {
      * @return the stock that matches the symbol.
      * @throws InputMismatchException will be thrown in case there isn't a stock with this symbol.
      */
-    private CompanyStocks getSingleStock(String symbol) throws InputMismatchException {
+    private Stock getSingleStock(String symbol) throws InputMismatchException {
         if(!(stocks.containsKey(symbol.toUpperCase()))) // check if there is a company with this symbol
             throw new InputMismatchException("There is no stock with this symbol. ");
         return stocks.get(symbol.toUpperCase());
@@ -83,7 +83,7 @@ public class Engine implements Trader {
     public void uploadDataFromFile(String path) throws FileNotFoundException,JAXBException,IllegalArgumentException // first option
     {
     // need to upload all the stocks from xml file
-        MultiKeyMap<String,CompanyStocks> tmpStocks = new MultiKeyMap<>();
+        MultiKeyMap<String, Stock> tmpStocks = new MultiKeyMap<>();
 
         try {
             File xmlPath = new File(path);
@@ -123,14 +123,14 @@ public class Engine implements Trader {
      * @param tmpStocks a temporary MultiKeyMap of system's stocks (prevents a deletion of the previous system data in case there will be a failure).
      * @throws JAXBException will be thrown in case there is a problem in the process of JAXB.
      */
-    private void deserializeFrom(InputStream in,MultiKeyMap<String,CompanyStocks> tmpStocks) throws JAXBException {
+    private void deserializeFrom(InputStream in,MultiKeyMap<String, Stock> tmpStocks) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         RizpaStockExchangeDescriptor rse = (RizpaStockExchangeDescriptor) u.unmarshal(in); //Converts the XML file content into an instance of the generated class.
         List<RseStock> rseStocks = rse.getRseStocks().getRseStock();                       //gets a list of all the stocks
         for(RseStock s : rseStocks)                                                        //casts each generated stock class instance to the system's stock class and inserts them into the MultiKeyMap.
         {
-            CompanyStocks tmp = castRseStockToStock(s,tmpStocks);                               //casts the generated stock class to system's stock class.
+            Stock tmp = castRseStockToStock(s,tmpStocks);                               //casts the generated stock class to system's stock class.
             tmpStocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);                            //inserts the stock into the MultiKeyMap.
         }
     }
@@ -142,7 +142,7 @@ public class Engine implements Trader {
      * @return a stock instance.
      * @throws IllegalArgumentException will be thrown in case that the stock is invalid application wise.
      */
-    private CompanyStocks castRseStockToStock(RseStock rs, MultiKeyMap<String,CompanyStocks> map) throws  IllegalArgumentException{
+    private Stock castRseStockToStock(RseStock rs, MultiKeyMap<String, Stock> map) throws  IllegalArgumentException{
         String symbol = rs.getRseSymbol();
         if(map.containsKey(symbol))             //checks if there is a stock with this symbol.
             throw new IllegalArgumentException("The "+ symbol + " symbol is already exist, the stock's symbol should be unique!");
@@ -155,7 +155,7 @@ public class Engine implements Trader {
         if(price<=0)                            //checks that the stock price is valid (positive real number).
             throw new IllegalArgumentException("The price ("+ price +") is not a positive number, stock's price should be a real positive number.");
 
-        return new CompanyStocks(company,symbol,price);
+        return new Stock(company,symbol,price);
     }
 
     /**
@@ -165,7 +165,7 @@ public class Engine implements Trader {
     public List<StockDT> showAllStocks() // second option in the main menu
     {
         List<StockDT> res = new ArrayList<>(stocksCount()); // make list in the size of the current number of stocks
-        for(CompanyStocks cs : getListOfStocks()){
+        for(Stock cs : getListOfStocks()){
             res.add(new StockDT(cs.getCompanyName(),cs.getSymbol(),cs.getSharePrice(),cs.getStockTransactions(), cs.getTransactionsTurnOver(), cs.getBuyCommandsList(),cs.getSellCommandsList()));
         }
         return res;
@@ -179,7 +179,7 @@ public class Engine implements Trader {
      */
     public StockDT showStock(String companySymbol) throws InputMismatchException
     {
-        CompanyStocks s = getSingleStock(companySymbol);
+        Stock s = getSingleStock(companySymbol);
         return new StockDT(s.getCompanyName(), s.getSymbol(), s.getSharePrice(), s.getStockTransactions(), s.getTransactionsTurnOver(),s.getBuyCommandsList(),s.getSellCommandsList());
     }
 
@@ -195,7 +195,7 @@ public class Engine implements Trader {
      */
     @Override
     public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) throws InputMismatchException {
-        CompanyStocks stock = getSingleStock(companySymbol);
+        Stock stock = getSingleStock(companySymbol);
         if(command != TradeCommand.commandType.MKT)                             //in MKT command there isn't a need to ask the user for a desired price.
             return stock.addTradeCommand(dir, command, quantity, wantedPrice);
         else

@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class CompanyStocks {
+public class Stock {
     private final String companyName;
     private final String symbol;
     private float sharePrice; // NEED TO BE UPDATED
@@ -8,7 +8,7 @@ public class CompanyStocks {
     private Queue <TradeCommand> buyCommands;
     private Queue <TradeCommand> sellCommands;
 
-    CompanyStocks(String companyName, String symbol, float startPrice) {
+    Stock(String companyName, String symbol, float startPrice) {
         if (!symbolCheck(symbol))
             throw new InputMismatchException("Invalid symbol, use upper letters only!");
         else if(!(startPrice>=0))
@@ -42,8 +42,8 @@ public class CompanyStocks {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CompanyStocks companyStocks = (CompanyStocks) o;
-        return Objects.equals(companyName, companyStocks.companyName);
+        Stock stock = (Stock) o;
+        return Objects.equals(companyName, stock.companyName);
     }
 
     @Override
