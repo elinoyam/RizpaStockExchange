@@ -145,15 +145,15 @@ public class Engine implements Trader {
     private Stock castRseStockToStock(RseStock rs, MultiKeyMap<String, Stock> map) throws  IllegalArgumentException{
         String symbol = rs.getRseSymbol();
         if(map.containsKey(symbol))             //checks if there is a stock with this symbol.
-            throw new IllegalArgumentException("The "+ symbol + " symbol is already exist, the stock's symbol should be unique!");
+            throw new IllegalArgumentException("The file loading failed!, since the "+ symbol + " symbol is already exist, the stock's symbol should be unique!");
 
         String company = rs.getRseCompanyName();
         if(map.containsKey(company))            //checks if there is a stock that is owned by this company.
-            throw new IllegalArgumentException("The "+ company + " company is already exist, each company should have a single stock!");
+            throw new IllegalArgumentException("The file loading failed!, since the "+ company + " company is already exist, each company should have a single stock!");
 
         float price = rs.getRsePrice();
         if(price<=0)                            //checks that the stock price is valid (positive real number).
-            throw new IllegalArgumentException("The price ("+ price +") is not a positive number, stock's price should be a real positive number.");
+            throw new IllegalArgumentException("The file loading failed!, since the price ("+ price +") is not a positive number, stock's price should be a real positive number.");
 
         return new Stock(company,symbol,price);
     }

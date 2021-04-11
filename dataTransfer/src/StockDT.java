@@ -74,7 +74,7 @@ public class StockDT {
      */
     public String toString() {
         return (symbol + " (" + companyName + ") shares current price is: " + sharePrice+ ". " +
-                "Until now " + stockTransactions.size() + " transactions has been made. " +
+                "Until now " + stockTransactions.size() + " transactions have been made. " +
                 "Total transactions turn over is : " + transactionsTurnOver);
     }
 

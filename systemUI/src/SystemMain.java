@@ -270,18 +270,18 @@ public class SystemMain {
             String symbol = getSymbol(in); //gets a symbol of a stock.
 
             System.out.println("Please choose the direction you want to trade: (enter: BUY/SELL) ");
-            TradeCommand.direction direction = getDir(); //gets a direction (buy/sell).
+            TradeCommand.direction direction = getDir(in); //gets a direction (buy/sell).
 
             System.out.println("Please choose the type of command you want to make: (enter: LMT/MKT/FOK/IOC)");
-            TradeCommand.commandType type = getCommand(); //gets a type of command (LMT/MKT/FOK/IOC).
+            TradeCommand.commandType type = getCommand(in); //gets a type of command (LMT/MKT/FOK/IOC).
 
             System.out.println("Please enter how many stocks you want to trade in: (integer numbers only)");
-            int quantity = (int) getPositiveNum(true); //gets an integer that represents the number of stocks that we would like to buy or sell.
+            int quantity = (int) getPositiveNum(in,true); //gets an integer that represents the number of stocks that we would like to buy or sell.
 
             float price = -1;   //initialization
             if(type!= TradeCommand.commandType.MKT) { //in case it's an MKT type of trade command, the price is the market price so an input of the desired price per stock is irrelevant
                 System.out.println("Please enter the limit price you want to trade with: (a use of point  is permitted)");
-                price = getPositiveNum(false);
+                price = getPositiveNum(in,false);
             }
 
             System.out.println(engine.addTradeCommand(symbol,direction,type,quantity,price)); //adds the trade command and print out a suitable message
@@ -322,7 +322,7 @@ public class SystemMain {
             List<Transaction> transactions = s.getTransactions();
             System.out.println("\nThe company's stock made transactions are: ");
             if(transactions.size() ==0)
-                System.out.println("There are no transactions made.");
+                System.out.println("There are no made transactions.");
             else
                 for(Transaction c: transactions) {
                     System.out.println(c.toString());
@@ -358,8 +358,9 @@ public class SystemMain {
      * @throws IllegalArgumentException will be thrown in case that the given input of direction is invalid.
      */
     private static TradeCommand.direction getDir(Scanner in) throws IllegalArgumentException {
-        if(in==null)
+        if(in==null)                        //in case we didn't get a specific Scanner we will create by default an input Scanner from the console.
             in = new Scanner(System.in);
+
         String dir = in.nextLine().toUpperCase();   //gets an input of string that represents a trade direction.
         TradeCommand.direction res = null;          //initialization
         try{
@@ -377,7 +378,7 @@ public class SystemMain {
      * @throws IllegalArgumentException will be thrown in case that the given input of command type is invalid.
      */
     private static TradeCommand.commandType getCommand(Scanner in) throws IllegalArgumentException {
-        if (in==null)
+        if (in==null)                       //in case we didn't get a specific Scanner we will create by default an input Scanner from the console.
             in = new Scanner(System.in);
 
         String cmd = in.nextLine().toUpperCase();  //gets an input of string that represents a command type.
@@ -399,7 +400,7 @@ public class SystemMain {
      * @throws InputMismatchException will be thrown in case that the given input of positive number is invalid.
      */
     private static float getPositiveNum(Scanner in,boolean isInteger) throws InputMismatchException {
-        if (in==null)
+        if (in==null)                       //in case we didn't get a specific Scanner we will create by default an input Scanner from the console.
             in = new Scanner(System.in);
 
         float num;
