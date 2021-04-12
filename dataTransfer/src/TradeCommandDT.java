@@ -84,7 +84,11 @@ public class TradeCommandDT {
      * @return string with all the data about the trade command.
      */
     public String toString(){
-        return DateTimeStamp + " - " + quantity + " stocks for " + wantedPrice + " each. " +
+        return DateTimeStamp.format(dateTimeFormat) + " - " + quantity + " stocks for " + wantedPrice + " each. " +
                 "Total turn over for command is " + (quantity*wantedPrice);
+    }
+
+    public LocalDateTime getDateTimeStamp() {
+        return DateTimeStamp;
     }
 }

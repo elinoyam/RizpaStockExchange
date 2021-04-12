@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -33,6 +34,31 @@ public class Stock {
             stockTransactions = new LinkedList<>();
             buyCommands = new PriorityQueue<>(1, Collections.reverseOrder()); //Max Queue
             sellCommands = new PriorityQueue<>(1);                            //Min Queue
+        }
+    }
+
+    /**
+     * A ctor of stock instance. (for load of a save)
+     * @param companyName the name of the company that holds the stock.
+     * @param symbol the symbol of the stock.
+     * @param startPrice the initial price of the stock.
+     * @param buyCommands max queue of buy trade commands.
+     * @param sellCommands min queue of sell trade commands.
+     * @param transactions list of the made transactions.
+     * @throws InputMismatchException will be thrown when one of the variables from above isn't valid.
+     */
+    Stock(String companyName, String symbol, float startPrice,Queue<TradeCommand> buyCommands,Queue<TradeCommand> sellCommands, List<Transaction> transactions) throws InputMismatchException {
+        if (!symbolCheck(symbol))   //checks if the symbol is valid.
+            throw new InputMismatchException("Invalid symbol, use upper letters only!");
+        else if(!(startPrice>=0))   //checks if the start price is valid.
+            throw new InputMismatchException("Invalid stock's start price value!, should be a positive real number");
+        else {
+            this.companyName = companyName;
+            this.symbol = symbol;
+            this.sharePrice = startPrice;
+            this.stockTransactions = transactions==null ? new LinkedList<>():transactions;
+            this.buyCommands = buyCommands==null ? new PriorityQueue<>(1,Comparator.reverseOrder()):buyCommands; //Max Queue
+            this.sellCommands = sellCommands==null ? new PriorityQueue<>(1):sellCommands;                        //Min Queue
         }
     }
 
@@ -250,9 +276,10 @@ public class Stock {
 
     /**
      * A method that searches for a matching trade command for a LMT trade command.
+     * @param priorityFlag the direction of the last inserted trade, needed to set a priority to the price per share of the trade.
      * @return -1 if there isn't any matching commands, otherwise the number of shares that were traded.
      */
-    public int searchMatchingLMTCommand() {
+    public int searchMatchingLMTCommand(TradeCommand.direction priorityFlag) {
         if (buyCommands.isEmpty() || sellCommands.isEmpty())
             return -1; // there isn't any matching command
 
@@ -261,15 +288,16 @@ public class Stock {
         boolean flag = true;
         int sumShares = 0;
 
-        while (flag) {
-            if (buy.getPrice() < sell.getPrice())
-                flag = false; // the buying rate isn't high enough
+        if (buy.getPrice() < sell.getPrice())
+            return -1;
 
+        while (flag && !(buy.getPrice() < sell.getPrice())) {
             // get the minimum quantity for the trade
             int finalQuantity = Arrays.stream(new int[]{buy.getQuantity(), sell.getQuantity()}).min().getAsInt();
-            Transaction transaction = new Transaction(finalQuantity, sell.getPrice());
+            float price = (priorityFlag==TradeCommand.direction.BUY) ? sell.getPrice():buy.getPrice();
+            Transaction transaction = new Transaction(finalQuantity, price);
             stockTransactions.add(0, transaction); // add the new transaction
-            sharePrice = sell.getPrice();
+            sharePrice = price;
             sumShares += finalQuantity; // add the shares that been traded until now
 
             // need to check if there's any leftover shares
@@ -333,7 +361,7 @@ public class Stock {
                 break;
         }
         int saveQuantity = command.getQuantity();
-        int res = searchMatchingLMTCommand(); // generic method, for both buy\sell commands. returns the number of shares that been traded
+        int res = searchMatchingLMTCommand(command.getDirection()); // generic method, for both buy\sell commands. returns the number of shares that been traded
         if(res == -1)
             return("There isn't any opposite commands. The command entered to the waiting " + command.getDirection() + " commands list.");
         else if(res==0)
@@ -343,7 +371,7 @@ public class Stock {
         else if(res < saveQuantity)
             return("The command was partly executed. The rest of the "+command.getQuantity() +" shares was entered to the waiting "+command.getDirection() + " commands list.");
 
-        throw new UnknownError("Unknown Error Occurred In LMT command Handler");
+        throw new UnknownError("Unknown Error Occurred In LMT command Handler: " + res);
     }
 
     /**
@@ -353,7 +381,7 @@ public class Stock {
      */
     public float getMKTSellPrice(int quantity){
         int count =0; // count the number of shares until it get to the wanted quantity
-        float savePrice=0;
+        float savePrice=sharePrice;
         boolean found = false;
         Queue<TradeCommand> tmp = new PriorityQueue<>(1);
         while(count<quantity && !sellCommands.isEmpty() && !found){
@@ -377,7 +405,7 @@ public class Stock {
      */
     public float getMKTBuyPrice(int quantity){
         int count =0; // count the number of shares until it get to the wanted quantity
-        float savePrice=0;
+        float savePrice=sharePrice;
         boolean found = false;
         Queue<TradeCommand> tmp = new PriorityQueue<>(1,Collections.reverseOrder());
         while(count<quantity && !buyCommands.isEmpty()&& !found){

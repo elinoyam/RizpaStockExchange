@@ -59,6 +59,23 @@ public class TradeCommand implements Comparable<TradeCommand>{
         }
     }
 
+    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol,LocalDateTime dateTimeStamp) throws InputMismatchException {
+        if (!(howMany>=0)) {    //checks that the number of shares that we would like to trade with is a positive number.
+            throw new InputMismatchException("Invalid quantity value!, should be a positive integer");
+        } else if(!(whatPrice>=0)) { //checks that the desired price per share is a positive number.
+            throw new InputMismatchException("Invalid price value!, should be a positive real number");
+        } else if (!Stock.symbolCheck(symbol)) { //checks the validity of the stock symbol.
+            throw new InputMismatchException("Invalid symbol, use upper letters only!");
+        } else {
+            this.direction = dir;
+            this.quantity = howMany;
+            this.symbol = symbol;
+            this.wantedPrice = whatPrice;
+            this.commandType = type;
+            this.dateTimeStamp = dateTimeStamp;
+        }
+    }
+
     /**
      * A getter of the trade direction.
      * @return the trade direction.
@@ -116,7 +133,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
      */
     @Override
     public String toString() {
-        return dateTimeStamp.format(dateTimeFormat) + " - This is " + commandType+ " " +direction +" command for " +quantity +" "+ symbol +" stocks.";
+        return dateTimeStamp.format(dateTimeFormat) + " - This is " + commandType + " " + direction +" command for " +quantity +" "+ symbol +" stocks.";
     }
 
     /**
@@ -157,5 +174,9 @@ public class TradeCommand implements Comparable<TradeCommand>{
                 return this.dateTimeStamp.compareTo(other.dateTimeStamp);
         }
         return (int)res;
+    }
+
+    public static DateTimeFormatter getDateTimeFormat() {
+        return dateTimeFormat;
     }
 }

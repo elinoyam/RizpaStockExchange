@@ -1,5 +1,6 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.InputMismatchException;
 import java.util.Objects;
 
 /**
@@ -28,12 +29,30 @@ public class Transaction {
      * @param soldPrice the per share price of the trade.
      */
     public Transaction(int quantity,float soldPrice){
-        dateStamp = LocalDateTime.now();
-        this.quantity = quantity;
-        this.price = soldPrice;
-        this.turnOver = quantity*soldPrice;
+        if(quantity<=0)
+            throw new InputMismatchException("Invalid number of traded shares, should be a positive integer.");
+        else if(soldPrice<=0)
+            throw new InputMismatchException("Invalid price per share, should be a positive real number.");
+        else {
+            dateStamp = LocalDateTime.now();
+            this.quantity = quantity;
+            this.price = soldPrice;
+            this.turnOver = quantity * soldPrice;
+        }
     }
 
+    public Transaction(int quantity,float soldPrice,LocalDateTime datetimeStamp){
+        if(quantity<=0)
+            throw new InputMismatchException("Invalid number of traded shares, should be a positive integer.");
+        else if(soldPrice<=0)
+            throw new InputMismatchException("Invalid price per share, should be a positive real number.");
+        else {
+            dateStamp = datetimeStamp;
+            this.quantity = quantity;
+            this.price = soldPrice;
+            this.turnOver = quantity * soldPrice;
+        }
+    }
     /**
      * A method that creates a string with all the data about the transaction.
      * @return all the data about the transaction.
@@ -77,5 +96,17 @@ public class Transaction {
     @Override
     public int hashCode() {
         return Objects.hash(dateStamp, quantity, price);
+    }
+
+    public LocalDateTime getDateStamp() {
+        return dateStamp;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public static DateTimeFormatter getDateTimeFormat() {
+        return dateTimeFormat;
     }
 }

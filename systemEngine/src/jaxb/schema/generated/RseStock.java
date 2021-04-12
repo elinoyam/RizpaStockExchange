@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.List;
 
 
 /**
@@ -38,7 +39,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-
 })
 @XmlRootElement(name = "rse-stock")
 public class RseStock {
@@ -49,6 +49,12 @@ public class RseStock {
     protected String rseCompanyName;
     @XmlElement(name = "rse-price")
     protected int rsePrice;
+    @XmlElement(name = "rse-buy-trade-commands")
+    protected List<RseTradeCommand> rseBuyCommands;
+    @XmlElement(name = "rse-sell-trade-commands")
+    protected List<RseTradeCommand> rseSellCommands;
+    @XmlElement(name = "rse-transactions")
+    protected List<RseTransactions> rseTransactions;
 
     /**
      * Gets the value of the rseSymbol property.
@@ -114,4 +120,27 @@ public class RseStock {
         this.rsePrice = value;
     }
 
+    public List<RseTradeCommand> getRseBuyCommands() {
+        return rseBuyCommands;
+    }
+
+    public void setRseBuyCommands(List<RseTradeCommand> rseBuyCommands) {
+        this.rseBuyCommands = rseBuyCommands;
+    }
+
+    public List<RseTradeCommand> getRseSellCommands() {
+        return rseSellCommands;
+    }
+
+    public void setRseSellCommands(List<RseTradeCommand> rseSellCommands) {
+        this.rseSellCommands = rseSellCommands;
+    }
+
+    public List<RseTransactions> getRseTransactions() {
+        return rseTransactions;
+    }
+
+    public void setRseTransactions(List<RseTransactions> rseTransactions) {
+        this.rseTransactions = rseTransactions;
+    }
 }

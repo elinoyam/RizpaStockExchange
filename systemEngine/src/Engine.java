@@ -2,8 +2,13 @@
 import jaxb.schema.generated.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -74,6 +79,108 @@ public class Engine implements Trader {
     }
 
     /**
+     * Saves the data of the system into a xml file.
+     * @param path
+     * @throws IOException
+     * @throws JAXBException
+     * @throws IllegalArgumentException
+     */
+    public void saveDataToFile(String path) throws IOException,JAXBException,IllegalArgumentException {
+        String tmpPath = "./tmpSave.xml";
+        try {
+            File XMLFilePath = new File(path);
+            File tmpXMLFilePath = new File(tmpPath);
+            if (!isXMLFile(path))
+                throw new IllegalArgumentException("The given file is not a xml file.");
+            if (!tmpXMLFilePath.createNewFile()) {
+                tmpXMLFilePath.delete();
+                if (!tmpXMLFilePath.createNewFile())
+                    throw new IOException("Error occurred in the creation of a temporary XML file.");
+            }
+            OutputStream outputStream = new FileOutputStream(new File(tmpPath));
+            serializeFrom(outputStream, tmpPath);
+            Files.copy(tmpXMLFilePath.toPath(), XMLFilePath.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            tmpXMLFilePath.delete();
+        } catch (JAXBException e) {
+            throw new JAXBException("JAXB Exception detected.");
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("There is no such a XML file.");
+        }
+    }
+
+    /**
+     * serializes the data into a xml file.
+     * @param out
+     * @param tmpPath
+     * @throws JAXBException
+     */
+    private void serializeFrom(OutputStream out,String tmpPath) throws JAXBException {
+        RizpaStockExchangeDescriptor rse = new RizpaStockExchangeDescriptor();
+        Collection<Stock> stocksCollection = stocks.values();
+        RseStocks rseStocks = new RseStocks();
+        for(Stock s: stocksCollection)
+        {
+            RseStock newRseStock = new RseStock();
+            newRseStock.setRseCompanyName(s.getCompanyName());  //casts the data from the program classes into the generated classes.
+            newRseStock.setRsePrice((int) s.getSharePrice());
+            newRseStock.setRseSymbol(s.getSymbol());
+
+            List<TradeCommandDT> buyTradeCommands = s.getBuyCommandsList(); //cast the but commands
+            List<RseTradeCommand> rseBuyTradeCommands = new LinkedList<>();
+            for(TradeCommandDT tc: buyTradeCommands)
+            {
+                RseTradeCommand newRseTC = new RseTradeCommand();
+                newRseTC.setRseDir(tc.getDirection().name());
+                newRseTC.setRseDateTime(tc.getDateTimeStamp().toString());
+                newRseTC.setRsePrice(tc.getPrice());
+                newRseTC.setRseQuantity(tc.getQuantity());
+                newRseTC.setRseSymbol(tc.getSymbol());
+                newRseTC.setRseType(tc.getCommandType().name());
+                rseBuyTradeCommands.add(newRseTC);
+            }
+            newRseStock.setRseBuyCommands(rseBuyTradeCommands);
+
+            List<TradeCommandDT> sellTradeCommands = s.getSellCommandsList(); //casts the sell commands
+            List<RseTradeCommand> rseSellTradeCommands = new LinkedList<>();
+            for(TradeCommandDT tc: sellTradeCommands)
+            {
+                RseTradeCommand newRseTC = new RseTradeCommand();
+                newRseTC.setRseDir(tc.getDirection().name());
+                newRseTC.setRseDateTime(tc.getDateTimeStamp().toString());
+                newRseTC.setRsePrice(tc.getPrice());
+                newRseTC.setRseQuantity(tc.getQuantity());
+                newRseTC.setRseSymbol(tc.getSymbol());
+                newRseTC.setRseType(tc.getCommandType().name());
+                rseSellTradeCommands.add(newRseTC);
+            }
+            newRseStock.setRseSellCommands(rseSellTradeCommands);
+
+            List<Transaction> transactions = s.getStockTransactions(); // casts the transactions
+            List<RseTransactions> rseTransactions = new LinkedList<>();
+            for(Transaction tran: transactions)
+            {
+                RseTransactions newRseTran = new RseTransactions();
+                newRseTran.setRsePrice(tran.getPrice());
+                newRseTran.setRseTurnover(tran.getTurnOver());
+                newRseTran.setRseDateTime(tran.getDateStamp().toString());
+                newRseTran.setRseQuantity(tran.getQuantity());
+                rseTransactions.add(newRseTran);
+            }
+            newRseStock.setRseTransactions(rseTransactions);
+
+            rseStocks.getRseStock().add(newRseStock);
+        }
+        rse.setRseStocks(rseStocks);
+
+        JAXBContext jc = JAXBContext.newInstance(RizpaStockExchangeDescriptor.class);
+        Marshaller m =  jc.createMarshaller();
+
+        m.setProperty(m.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        m.marshal(rse, new File(tmpPath)); //marshals the data into a xml file.
+
+    }
+
+    /**
      * A method that uploads a system instance from an xml file.
      * @param path a path to a xml file that contains the required data.
      * @throws FileNotFoundException will be thrown in case the file isn't exits.
@@ -123,15 +230,15 @@ public class Engine implements Trader {
      * @param tmpStocks a temporary MultiKeyMap of system's stocks (prevents a deletion of the previous system data in case there will be a failure).
      * @throws JAXBException will be thrown in case there is a problem in the process of JAXB.
      */
-    private void deserializeFrom(InputStream in,MultiKeyMap<String, Stock> tmpStocks) throws JAXBException {
+    private void deserializeFrom(InputStream in,MultiKeyMap<String, Stock> tmpStocks) throws JAXBException,IllegalArgumentException,InputMismatchException, DateTimeException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         RizpaStockExchangeDescriptor rse = (RizpaStockExchangeDescriptor) u.unmarshal(in); //Converts the XML file content into an instance of the generated class.
         List<RseStock> rseStocks = rse.getRseStocks().getRseStock();                       //gets a list of all the stocks
         for(RseStock s : rseStocks)                                                        //casts each generated stock class instance to the system's stock class and inserts them into the MultiKeyMap.
         {
-            Stock tmp = castRseStockToStock(s,tmpStocks);                               //casts the generated stock class to system's stock class.
-            tmpStocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);                            //inserts the stock into the MultiKeyMap.
+            Stock tmp = castRseStockToStock(s,tmpStocks);                                   //casts the generated stock class to system's stock class.
+            tmpStocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);                        //inserts the stock into the MultiKeyMap.
         }
     }
 
@@ -142,7 +249,7 @@ public class Engine implements Trader {
      * @return a stock instance.
      * @throws IllegalArgumentException will be thrown in case that the stock is invalid application wise.
      */
-    private Stock castRseStockToStock(RseStock rs, MultiKeyMap<String, Stock> map) throws  IllegalArgumentException{
+    private Stock castRseStockToStock(RseStock rs, MultiKeyMap<String, Stock> map) throws  IllegalArgumentException, InputMismatchException{
         String symbol = rs.getRseSymbol();
         if(map.containsKey(symbol))             //checks if there is a stock with this symbol.
             throw new IllegalArgumentException("The file loading failed!, since the "+ symbol + " symbol is already exist, the stock's symbol should be unique!");
@@ -155,7 +262,31 @@ public class Engine implements Trader {
         if(price<=0)                            //checks that the stock price is valid (positive real number).
             throw new IllegalArgumentException("The file loading failed!, since the price ("+ price +") is not a positive number, stock's price should be a real positive number.");
 
-        return new Stock(company,symbol,price);
+        Queue<TradeCommand> buyCommands=null;
+        List<RseTradeCommand> rseBuyCommands = null;
+        if(rs.getRseBuyCommands()!=null) {
+            buyCommands = new PriorityQueue<>(1, Collections.reverseOrder());
+            rseBuyCommands = rs.getRseBuyCommands();
+            for (RseTradeCommand tc : rseBuyCommands)
+                buyCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime())));
+        }
+        Queue<TradeCommand> sellCommands = null;
+        List<RseTradeCommand> rseSellCommands = null;
+        if(rs.getRseSellCommands()!=null) {
+            sellCommands = new PriorityQueue<>(1);
+            rseSellCommands = rs.getRseSellCommands();
+            for (RseTradeCommand tc : rseSellCommands)
+                sellCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(),LocalDateTime.parse(tc.getRseDateTime())));
+        }
+        List<Transaction> transactions = null;
+        List<RseTransactions> rseTransactions = null;
+        if(rs.getRseTransactions()!=null) {
+            transactions = new LinkedList<>();
+            rseTransactions = rs.getRseTransactions();
+            for (RseTransactions tran : rseTransactions)
+                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime())));
+        }
+        return new Stock(company,symbol,price,buyCommands,sellCommands,transactions);
     }
 
     /**

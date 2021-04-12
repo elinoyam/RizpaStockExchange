@@ -19,7 +19,9 @@ enum Operations {
     SHOW_STOCK(3,"show stock",false),
     TRADE(4,"trade",false),
     SHOW_ALL_COMMANDS(5,"show commands",false),
-    EXIT(6,"exit",true);
+    SAVE(6,"save",false),
+    EXIT(7,"exit",true);
+
 
     /**
      * Items' data
@@ -139,7 +141,7 @@ public class SystemMain {
         }catch(Exception e){ //We don't want to get here ;-), but in case we do, it will make sure that
                              //The program won't crush right after an unexpected exception is being thrown.
                              //Instead we will get the following message:
-            System.out.println("An unexpected error occurred:\n"+e.toString());
+            System.out.println("An unexpected error occurred:\n"+e.toString()+"\n"+e.getStackTrace());
         }
     }
 
@@ -174,7 +176,8 @@ public class SystemMain {
                 "3. Show chosen stock data. (type \"show stock\" or 3)\n" +
                 "4. Execution of a trading order. (type \"trade\" or 4)\n" +
                 "5. View the lists of commands to execute. (type \"show commands\" or 5)\n" +
-                "6. Exit the program. (type \"exit\" or 6)\n");
+                "6. Save the data of the system into a file. (type \"save\" or 6)\n" +
+                "7. Exit the program. (type \"exit\" or 7)\n");
         System.out.println("Please enter your next operation:");
     }
 
@@ -195,10 +198,12 @@ public class SystemMain {
         if(in==null)  //in case we didn't get a specific Scanner we will create by default an input Scanner from the console.
             in = new Scanner(System.in);
 
+        String path = null;
+
         switch (op.getNum()) { //preforms different set of command for each operation.
             case 1: //Load
                 System.out.println("Insert the file's path: ");
-                String path = in.nextLine();
+                path = in.nextLine();
                 engine.uploadDataFromFile(path);
                 System.out.println("The file loaded successfully.");
                 Operations.enableAll();
@@ -215,8 +220,15 @@ public class SystemMain {
             case 5: //Show commands
                 showAllCommands();
                 break;
-            case 6: //Exit
+            case 6: //Save
+                System.out.println("Insert the file's path and name with .xml extension (Example: \"c:\\Users\\Admin\\Desktop\\Filename.xml\"):");
+                path = in.nextLine();
+                engine.saveDataToFile(path);
+                System.out.println("The file saved successfully.");
+                break;
+            case 7: //Exit
                 System.exit(0);
+                break;
             default://An unknown operation.
                 System.out.println("\nYou entered wrong number. Chose only options from the main menu. ");
                 break;
@@ -272,7 +284,7 @@ public class SystemMain {
             System.out.println("Please choose the direction you want to trade: (enter: BUY/SELL) ");
             TradeCommand.direction direction = getDir(in); //gets a direction (buy/sell).
 
-            System.out.println("Please choose the type of command you want to make: (enter: LMT/MKT/FOK/IOC)");
+            System.out.println("Please choose the type of command you want to make: (enter: LMT/MKT)"/*TODO: /FOK/IOC*/);
             TradeCommand.commandType type = getCommand(in); //gets a type of command (LMT/MKT/FOK/IOC).
 
             System.out.println("Please enter how many stocks you want to trade in: (integer numbers only)");
