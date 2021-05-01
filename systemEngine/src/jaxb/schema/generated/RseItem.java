@@ -10,7 +10,7 @@ package jaxb.schema.generated;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -24,10 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;all>
- *         &lt;element ref="{}rse-stocks"/>
- *         &lt;element ref="{}rse-users"/>
- *       &lt;/all>
+ *       &lt;attribute name="symbol" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="quantity" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -36,63 +34,53 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
+@XmlType(name = "")
+@XmlRootElement(name = "rse-item")
+public class RseItem {
 
-})
-@XmlRootElement(name = "rizpa-stock-exchange-descriptor")
-public class RizpaStockExchangeDescriptor {
-
-    @XmlElement(name = "rse-stocks", required = true)
-    protected RseStocks rseStocks;
-    @XmlElement(name = "rse-users", required = true)
-    protected RseUsers rseUsers;
+    @XmlAttribute(name = "symbol", required = true)
+    protected String symbol;
+    @XmlAttribute(name = "quantity", required = true)
+    protected int quantity;
 
     /**
-     * Gets the value of the rseStocks property.
+     * Gets the value of the symbol property.
      * 
      * @return
      *     possible object is
-     *     {@link RseStocks }
+     *     {@link String }
      *     
      */
-    public RseStocks getRseStocks() {
-        return rseStocks;
+    public String getSymbol() {
+        return symbol;
     }
 
     /**
-     * Sets the value of the rseStocks property.
+     * Sets the value of the symbol property.
      * 
      * @param value
      *     allowed object is
-     *     {@link RseStocks }
+     *     {@link String }
      *     
      */
-    public void setRseStocks(RseStocks value) {
-        this.rseStocks = value;
+    public void setSymbol(String value) {
+        this.symbol = value;
     }
 
     /**
-     * Gets the value of the rseUsers property.
+     * Gets the value of the quantity property.
      * 
-     * @return
-     *     possible object is
-     *     {@link RseUsers }
-     *     
      */
-    public RseUsers getRseUsers() {
-        return rseUsers;
+    public int getQuantity() {
+        return quantity;
     }
 
     /**
-     * Sets the value of the rseUsers property.
+     * Sets the value of the quantity property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link RseUsers }
-     *     
      */
-    public void setRseUsers(RseUsers value) {
-        this.rseUsers = value;
+    public void setQuantity(int value) {
+        this.quantity = value;
     }
 
 }
