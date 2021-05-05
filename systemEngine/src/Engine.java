@@ -1,4 +1,5 @@
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import jaxb.schema.generated.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -19,6 +20,7 @@ public class Engine implements Trader {
      private static Engine instance = new Engine();                                 //the single instance of the class.
      private static final String JAXB_XML_PACKAGE_NAME = "jaxb.schema.generated";
      private MultiKeyMap<String, Stock> stocks = new MultiKeyMap<>();        //will be search with their symbol
+     private Map<String,User> users = new TreeMap<>();
 
     private Engine(){ }                                                             //private to prevent a creation of instances
 
@@ -362,5 +364,37 @@ public class Engine implements Trader {
            return true;
         return false;
     }
+
+    // ******* Methods about users ******* //
+    public User getUser(String name){
+        return users.get(name);
+    }
+
+    /**
+     *
+     * @param name the name of the new user
+     * @param stocks the stocks the user hold shares
+     * @throws InvalidArgumentException if there is already a user with the given name
+     */
+    public void addUser(String name, Map<Stock,Integer> stocks) throws InvalidArgumentException {
+        if(users.containsKey(name))
+            throw new InvalidArgumentException(new String[]{"A user with this name " + name + " is already in the system."});
+
+        users.put(name,new User(name, stocks));
+    }
+
+    /**
+     *
+     * @param name the name of the new user
+     * @throws InvalidArgumentException if there is already a user with the given name
+     */
+    public void addUser(String name) throws InvalidArgumentException {
+        if(users.containsKey(name))
+            throw new InvalidArgumentException(new String[]{"A user with this name " + name + " is already in the system."});
+
+        users.put(name,new User(name));
+    }
+
+
 }
 
