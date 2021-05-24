@@ -28,7 +28,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PrimaryController">
    <right>
       <ScrollPane BorderPane.alignment="CENTER">
          <content>
@@ -36,17 +36,25 @@
                <children>
                   <ToolBar maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="240.0">
                      <items>
-                        <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@saveImage.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@loadImage.png" />
-                           </image>
-                        </ImageView>
-                        <ChoiceBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="131.0" snapToPixel="false">
+                        <Button fx:id="BtnSave" disable="true" mnemonicParsing="false" onAction="#Save" prefHeight="30.0" prefWidth="31.0">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@saveImage.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="BtnLoad" mnemonicParsing="false" onAction="#Load" prefHeight="55.0" prefWidth="58.0">
+                           <graphic>
+                              <ImageView fitHeight="31.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@loadImage.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <ChoiceBox fx:id="ChbUser" disable="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="131.0" snapToPixel="false">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
@@ -55,7 +63,7 @@
                   </ToolBar>
                   <HBox alignment="CENTER" prefHeight="23.0" prefWidth="227.0">
                      <children>
-                        <RadioButton contentDisplay="CENTER" mnemonicParsing="false" selected="true" text="Buy">
+                        <RadioButton fx:id="RdioBuy" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#BuyStockClicked" selected="true" text="Buy">
                            <HBox.margin>
                               <Insets bottom="2.0" left="2.0" right="30.0" top="2.0" />
                            </HBox.margin>
@@ -63,7 +71,7 @@
                               <ToggleGroup fx:id="BuySell1" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="Sell" toggleGroup="$BuySell1">
+                        <RadioButton fx:id="RdioSell" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#SellStockClicked" text="Sell" toggleGroup="$BuySell1">
                            <HBox.margin>
                               <Insets bottom="2.0" left="30.0" right="2.0" top="2.0" />
                            </HBox.margin>
@@ -81,7 +89,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <ChoiceBox maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefHeight="35.0" prefWidth="200.0">
+                  <ChoiceBox fx:id="ChbSymbol" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefHeight="35.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -91,7 +99,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <ChoiceBox maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefHeight="35.0" prefWidth="200.0">
+                  <ChoiceBox fx:id="ChbType" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefHeight="35.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -101,7 +109,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
+                  <TextField fx:id="TxtPrice" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -111,7 +119,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
+                  <TextField fx:id="TxtQuantity" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -121,12 +129,12 @@
                         <Cursor fx:constant="DEFAULT" />
                      </cursor>
                      <children>
-                        <Button mnemonicParsing="false" text="Submit">
+                        <Button fx:id="BtnSubmit" disable="true" mnemonicParsing="false" onAction="#Submit" text="Submit">
                            <HBox.margin>
                               <Insets bottom="2.0" left="2.0" right="25.0" top="2.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" text="Reset">
+                        <Button fx:id="BtnReset" disable="true" mnemonicParsing="false" onAction="#Reset" text="Reset">
                            <HBox.margin>
                               <Insets bottom="2.0" left="25.0" right="2.0" top="2.0" />
                            </HBox.margin>
@@ -136,12 +144,12 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
-                  <Label text="Status Text">
+                  <Label fx:id="LblStatus" text="Status Text" visible="false">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <ProgressBar prefHeight="30.0" prefWidth="200.0" progress="0.0">
+                  <ProgressBar fx:id="PBarStatus" disable="true" prefHeight="30.0" prefWidth="200.0" progress="0.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -172,7 +180,7 @@
                                     <Label text="Effects" />
                                     <Pane>
                                        <children>
-                                          <Slider layoutX="13.0" majorTickUnit="1.0" max="1.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
+                                          <Slider fx:id="SlidEffects" layoutX="13.0" majorTickUnit="1.0" max="1.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
                                           <HBox alignment="TOP_CENTER" layoutY="30.0" prefHeight="13.0" prefWidth="282.0">
                                              <children>
                                                 <Label text="Off">
@@ -195,7 +203,7 @@
                                     <Label text="Theme" />
                                     <Pane>
                                        <children>
-                                          <Slider layoutX="13.0" majorTickUnit="1.0" max="2.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
+                                          <Slider fx:id="SlidTheme" layoutX="13.0" majorTickUnit="1.0" max="2.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
                                           <HBox alignment="TOP_CENTER" layoutY="30.0" prefHeight="13.0" prefWidth="282.0">
                                              <children>
                                                 <Label text="Light">
@@ -229,7 +237,7 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab text="Stock Details">
+                <Tab fx:id="TabStock" disable="true" text="Stock Details">
                      <content>
                         <ScrollPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="500.0">
                            <content>
@@ -239,13 +247,13 @@
                                        <children>
                                           <Pane prefHeight="101.0" prefWidth="161.0">
                                              <children>
-                                                <Label layoutX="40.0" layoutY="11.0" prefHeight="20.0" prefWidth="88.0" text="&lt;name&gt; owns:" underline="true">
+                                                <Label fx:id="LblOwnerName" layoutX="40.0" layoutY="11.0" prefHeight="20.0" prefWidth="88.0" text="&lt;name&gt; owns:" underline="true">
                                                    <font>
                                                       <Font name="System Bold" size="13.0" />
                                                    </font>
                                                 </Label>
-                                                <Label layoutX="21.0" layoutY="42.0" text="Quantity:  &lt;number&gt;" />
-                                                <Label layoutX="21.0" layoutY="68.0" text="Total Value:  &lt;number&gt;" />
+                                                <Label fx:id="LblQuantity" layoutX="21.0" layoutY="42.0" text="Quantity:  &lt;number&gt;" />
+                                                <Label fx:id="LblTotalValue" layoutX="21.0" layoutY="68.0" text="Total Value:  &lt;number&gt;" />
                                              </children>
                                              <opaqueInsets>
                                                 <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
@@ -253,16 +261,16 @@
                                           </Pane>
                                           <Pane prefHeight="101.0" prefWidth="378.0">
                                              <children>
-                                                <ComboBox layoutX="73.0" layoutY="37.0" prefHeight="27.0" prefWidth="126.0" promptText="Choose Stock" />
+                                                <ChoiceBox fx:id="ChbStock" layoutX="73.0" layoutY="37.0" prefHeight="27.0" prefWidth="126.0" />
                                                 <Label layoutX="140.0" layoutY="12.0" text="Stock Information:" underline="true">
                                                    <font>
                                                       <Font name="System Bold" size="13.0" />
                                                    </font>
                                                 </Label>
-                                                <Label layoutX="225.0" layoutY="42.0" text="Market Price: &lt;number&gt;" />
-                                                <Label layoutX="21.0" layoutY="68.0" text="Company: &lt;name&gt;" />
+                                                <Label fx:id="LblMktPrice" layoutX="225.0" layoutY="42.0" text="Market Price: &lt;number&gt;" />
+                                                <Label fx:id="LblCompany" layoutX="21.0" layoutY="68.0" text="Company: &lt;name&gt;" />
                                                 <Label layoutX="21.0" layoutY="42.0" text="Symbol:" />
-                                                <ComboBox layoutX="224.0" layoutY="68.0" prefHeight="27.0" prefWidth="133.0" promptText="Choose View" />
+                                                <ChoiceBox fx:id="ChbView" layoutX="224.0" layoutY="68.0" prefHeight="27.0" prefWidth="133.0" />
                                              </children>
                                           </Pane>
                                        </children>
@@ -285,7 +293,7 @@
                         </ScrollPane>
                      </content>
                 </Tab>
-                <Tab text="All Stocks">
+                <Tab fx:id="TabAllStocks" disable="true" text="All Stocks">
                      <content>
                         <ScrollPane fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="200.0">
                            <content>
@@ -293,7 +301,7 @@
                                  <children>
                                     <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" VBox.vgrow="NEVER">
                                        <children>
-                                          <RadioButton mnemonicParsing="false" text="Mine">
+                                          <RadioButton fx:id="RdioMine" mnemonicParsing="false" text="Mine">
                                              <HBox.margin>
                                                 <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
                                              </HBox.margin>
@@ -301,7 +309,7 @@
                                                 <ToggleGroup fx:id="MineAll1" />
                                              </toggleGroup>
                                           </RadioButton>
-                                          <RadioButton mnemonicParsing="false" selected="true" text="All" toggleGroup="$MineAll1">
+                                          <RadioButton fx:id="RdioAll" mnemonicParsing="false" selected="true" text="All" toggleGroup="$MineAll1">
                                              <HBox.margin>
                                                 <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
                                              </HBox.margin>

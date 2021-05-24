@@ -395,6 +395,8 @@ public class Engine implements Trader {
         users.put(name,new User(name));
     }
 
-
+    public Map<String, User> getUsers() { //TODO:Use DTO
+        return users;
+    }
 }
 
