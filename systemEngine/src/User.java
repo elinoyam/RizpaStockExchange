@@ -7,6 +7,11 @@ import java.util.TreeMap;
  */
 public class User {
     private final String userName;
+
+    public Map<String, UserHoldings> getUserStocks() {
+        return userStocks;
+    }
+
     private Map<String,UserHoldings> userStocks;
     private float totalHoldingsValue;
 
@@ -46,6 +51,11 @@ public class User {
         if(!userStocks.containsKey(stock.getSymbol()))
             throw new InvalidKeyException("The user "+ userName +" don't have shares of the stock " + stock.getSymbol());
         return userStocks.get(stock.getSymbol()).getQuantity();
+    }
+    public int getUserStockHoldings(String stockSymbol){
+        if(!userStocks.containsKey(stockSymbol))
+            throw new InvalidKeyException("The user "+ userName +" don't have shares of the stock " + stockSymbol);
+        return userStocks.get(stockSymbol).getQuantity();
     }
 
 

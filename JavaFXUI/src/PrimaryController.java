@@ -1,8 +1,5 @@
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableListValue;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -13,6 +10,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -38,6 +36,8 @@ public class PrimaryController implements Initializable {
     public Label LblTotalValue;
     public Label LblCompany;
     public Label LblMktPrice;
+    public Label LblOwnerName;
+    private User currentUser;
 
     private Engine RSEEngine;
 
@@ -51,11 +51,15 @@ public class PrimaryController implements Initializable {
         RSEEngine = Engine.getInstance();
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
             ChbType.getItems().add(c.toString());
-        ChbStock.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+        ChbStock.valueProperty().addListener(new ChangeListener(){
             @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                LblMktPrice.setText("Market Price: " + RSEEngine.showAllStocks().get(newValue.intValue()).getSharePrice());
-                LblCompany.setText(("Company: " + RSEEngine.showAllStocks().get(newValue.intValue()).getCompanyName()));
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                StockDT chosenStock = RSEEngine.getSingleStockData(ChbStock.getValue().toString());
+                int numberOfHoldings = currentUser.getUserStockHoldings(ChbStock.getValue().toString());
+                LblQuantity.setText("Quantity:  " + numberOfHoldings);
+                LblCompany.setText("Company: " +chosenStock.getCompanyName());
+                LblTotalValue.setText("Total Value: "+chosenStock.getSharePrice()*numberOfHoldings);
+                LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
             }
         });
 
@@ -124,11 +128,47 @@ public class PrimaryController implements Initializable {
     }
 
     public void BuyStockClicked(ActionEvent actionEvent) {
+        ChbSymbol.getItems().clear();
+        List<StockDT> Stocks = RSEEngine.showAllStocks();
+        for(StockDT Stock:Stocks) {
+            ChbSymbol.getItems().add(Stock.getSymbol());
+        }
     }
 
     public void SellStockClicked(ActionEvent actionEvent) {
+        if(currentUser== null)
+            return;
+        if(currentUser.getUserName().equals("Admin"))
+            throw new InputMismatchException("Admin can't make buy/sell commands. You must pick a user.");
+
+        ChbSymbol.getItems().clear();
+
+        for(UserHoldings hold:currentUser.getUserStocks().values()) {
+            ChbSymbol.getItems().add(hold.getSymbol());
+        }
     }
 
     public void Submit(ActionEvent actionEvent) {
     }
+
+    public void userChosen(ActionEvent actionEvent) {
+        if(ChbUser.getValue().equals(null))
+            return;
+        // for the show stock tab
+       ChbStock.getItems().clear();
+        String currentUserName = ChbUser.getValue().toString();
+        currentUser = RSEEngine.getUser(currentUserName);
+        for(UserHoldings hold:currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
+            ChbStock.getItems().add(hold.getSymbol());
+        }
+        LblOwnerName.setText(currentUserName + " owns: ");
+        if(RdioSell.isSelected()){
+            ChbSymbol.getItems().clear();
+
+            for(UserHoldings hold:currentUser.getUserStocks().values()) {
+                ChbSymbol.getItems().add(hold.getSymbol());
+            }
+        }
+    }
+
 }

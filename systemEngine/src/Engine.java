@@ -70,6 +70,11 @@ public class Engine implements Trader {
             throw new InputMismatchException("There is no stock with this symbol. ");
         return stocks.get(symbol.toUpperCase());
     }
+    public StockDT getSingleStockData(String symbol) throws InputMismatchException {
+        if(!(stocks.containsKey(symbol.toUpperCase()))) // check if there is a company with this symbol
+            throw new InputMismatchException("There is no stock with this symbol. ");
+        return new StockDT(stocks.get(symbol.toUpperCase()));
+    }
 
     /**
      * A method that checks by a stock symbol if the stock exists in the system.
