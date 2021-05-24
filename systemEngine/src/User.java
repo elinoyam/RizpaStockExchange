@@ -7,7 +7,7 @@ import java.util.TreeMap;
  */
 public class User {
     private final String userName;
-    private Map<Stock,Integer> userStocks;
+    private Map<String,UserHoldings> userStocks;
     private float totalHoldingsValue;
 
     User(String name){
@@ -16,15 +16,15 @@ public class User {
         totalHoldingsValue =0;
 
     }
-    User(String name,Map<Stock,Integer> stocks){
+    User(String name,Map<String,UserHoldings> stocks){
         this.userName = name;
         if(!stocks.equals(null))
             this.userStocks = stocks;
         else
             this.userStocks = new TreeMap<>();
         totalHoldingsValue =0;
-        for(Stock stock : userStocks.keySet()){
-            totalHoldingsValue += (stock.getSharePrice()*userStocks.get(stock));
+        for(UserHoldings stock : userStocks.values()){
+            totalHoldingsValue += (stock.getStock().getSharePrice()*stock.getQuantity());
         }
     }
 
@@ -43,9 +43,9 @@ public class User {
      * @throws InvalidKeyException The method throws exception if the user do not hold shares of the desired stock
      */
     public int getUserStockHoldings(Stock stock){
-        if(!userStocks.containsKey(stock))
+        if(!userStocks.containsKey(stock.getSymbol()))
             throw new InvalidKeyException("The user "+ userName +" don't have shares of the stock " + stock.getSymbol());
-        return userStocks.get(stock);
+        return userStocks.get(stock.getSymbol()).getQuantity();
     }
 
 

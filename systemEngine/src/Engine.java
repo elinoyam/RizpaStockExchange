@@ -242,6 +242,13 @@ public class Engine implements Trader {
             Stock tmp = castRseStockToStock(s,tmpStocks);                                   //casts the generated stock class to system's stock class.
             tmpStocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);                        //inserts the stock into the MultiKeyMap.
         }
+        for(RseUser user : rse.getRseUsers().getRseUser()){
+            Map<String,UserHoldings> holdings = new TreeMap<>();
+            for(RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
+                holdings.put(item.getSymbol(),new UserHoldings(item.getSymbol(),tmpStocks.get(item.getSymbol()) , item.getQuantity()));
+            users.put(user.getName(),new User(user.getName(),holdings));
+        }
+
     }
 
     /**
@@ -376,7 +383,7 @@ public class Engine implements Trader {
      * @param stocks the stocks the user hold shares
      * @throws InvalidArgumentException if there is already a user with the given name
      */
-    public void addUser(String name, Map<Stock,Integer> stocks) throws InvalidArgumentException {
+    public void addUser(String name, Map<String,UserHoldings> stocks) throws InvalidArgumentException {
         if(users.containsKey(name))
             throw new InvalidArgumentException(new String[]{"A user with this name " + name + " is already in the system."});
 
