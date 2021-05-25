@@ -23,12 +23,26 @@ public class Transaction {
     final private float turnOver; // =quantity * price
     final private float price; // save the price the shares really sold for
 
+    public User getBuyer() {
+        return buyer;
+    }
+
+    public User getSeller() {
+        return seller;
+    }
+
+    final private User buyer;
+    final private User seller;
+
     /**
      * A ctor of a transaction instance.
      * @param quantity the quantity of share that were traded
      * @param soldPrice the per share price of the trade.
+     * @param buyer
+     * @param seller
      */
-    public Transaction(int quantity,float soldPrice){
+    public Transaction(int quantity, float soldPrice, User buyer, User seller,Stock stock){
+
         if(quantity<=0)
             throw new InputMismatchException("Invalid number of traded shares, should be a positive integer.");
         else if(soldPrice<=0)
@@ -38,10 +52,23 @@ public class Transaction {
             this.quantity = quantity;
             this.price = soldPrice;
             this.turnOver = quantity * soldPrice;
+            this.buyer = buyer;
+            this.seller = seller;
+
+            if(seller.getUserStockHoldings(stock.getSymbol()) == quantity){
+                seller.getUserStocks().remove(stock.getSymbol());
+                buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
+            }
+            else{
+                seller.getUserStocks().get(stock.getSymbol()).setQuantity( seller.getUserStocks().get(stock.getSymbol()).getQuantity()-quantity);
+                buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
+            }
+
         }
     }
 
-    public Transaction(int quantity,float soldPrice,LocalDateTime datetimeStamp){
+    public Transaction(int quantity, float soldPrice, LocalDateTime datetimeStamp, User buyer, User seller){
+
         if(quantity<=0)
             throw new InputMismatchException("Invalid number of traded shares, should be a positive integer.");
         else if(soldPrice<=0)
@@ -51,6 +78,8 @@ public class Transaction {
             this.quantity = quantity;
             this.price = soldPrice;
             this.turnOver = quantity * soldPrice;
+            this.buyer = buyer;
+            this.seller = seller;
         }
     }
     /**

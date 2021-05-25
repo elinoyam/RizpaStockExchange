@@ -9,7 +9,6 @@
 package jaxb.schema.generated;
 
 import javax.xml.bind.annotation.*;
-import java.time.LocalDateTime;
 
 
 /**
@@ -52,6 +51,17 @@ public class RseTradeCommand {
     protected String rseType;
     @XmlElement(name = "rse-date-and-time",required = true)
     protected String rseDateTime;
+
+    public String getRseUser() {
+        return rseUser;
+    }
+
+    public void setRseUser(String rseUser) {
+        this.rseUser = rseUser;
+    }
+
+    @XmlElement (name = "rse-user")
+    protected String rseUser;
 
     public String getRseDir() {
         return rseDir;

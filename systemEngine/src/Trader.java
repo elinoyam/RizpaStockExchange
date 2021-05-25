@@ -43,6 +43,6 @@ public interface Trader {
   * @param wantedPrice the desired price per share.
   * @return a string with the initial status of the stock (Example: the trade command was executed successfully).
   */
- String addTradeCommand(String symbol,TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice);
+ String addTradeCommand(String symbol,TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice,User user);
 
 }

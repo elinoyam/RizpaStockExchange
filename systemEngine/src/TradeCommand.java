@@ -8,6 +8,10 @@ import java.util.Objects;
  */
 public class TradeCommand implements Comparable<TradeCommand>{
 
+    public User getUser() {
+        return user;
+    }
+
     /**
      * A enum of possible trade directions.
      */
@@ -32,6 +36,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
     private float wantedPrice;
     private LocalDateTime dateTimeStamp;
     final private commandType commandType;
+    final private User user;
 
     /**
      * A ctor of trade command instance.
@@ -42,7 +47,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
      * @param symbol the symbol of the stock.
      * @throws InputMismatchException will be thrown in case one of the variables above is invalid. (Example: howMany variable is a negative number)
      */
-    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol) throws InputMismatchException {
+    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol,User usr) throws InputMismatchException {
         if (!(howMany>=0)) {    //checks that the number of shares that we would like to trade with is a positive number.
             throw new InputMismatchException("Invalid quantity value!, should be a positive integer");
         } else if(!(whatPrice>=0)) { //checks that the desired price per share is a positive number.
@@ -56,10 +61,11 @@ public class TradeCommand implements Comparable<TradeCommand>{
             this.wantedPrice = whatPrice;
             this.commandType = type;
             this.dateTimeStamp = LocalDateTime.now();
+            this.user = usr;
         }
     }
 
-    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol,LocalDateTime dateTimeStamp) throws InputMismatchException {
+    public TradeCommand(direction dir, commandType type, int howMany, float whatPrice, String symbol,LocalDateTime dateTimeStamp,User usr) throws InputMismatchException {
         if (!(howMany>=0)) {    //checks that the number of shares that we would like to trade with is a positive number.
             throw new InputMismatchException("Invalid quantity value!, should be a positive integer");
         } else if(!(whatPrice>=0)) { //checks that the desired price per share is a positive number.
@@ -73,6 +79,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
             this.wantedPrice = whatPrice;
             this.commandType = type;
             this.dateTimeStamp = dateTimeStamp;
+            this.user = usr;
         }
     }
 

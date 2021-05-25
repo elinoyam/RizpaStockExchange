@@ -9,7 +9,6 @@
 package jaxb.schema.generated;
 
 import javax.xml.bind.annotation.*;
-import java.time.LocalDateTime;
 
 
 /**
@@ -48,6 +47,27 @@ public class RseTransactions {
     protected float rsePrice;
     @XmlElement(name = "rse-turn-over", required = true)
     protected float rseTurnover;
+
+    public String getRseBuyer() {
+        return rseBuyer;
+    }
+
+    public void setRseBuyer(String rseBuyer) {
+        this.rseBuyer = rseBuyer;
+    }
+
+    public String getRseSeller() {
+        return rseSeller;
+    }
+
+    public void setRseSeller(String rseSeller) {
+        this.rseSeller = rseSeller;
+    }
+
+    @XmlElement(name = "rse-buyer")
+    protected String rseBuyer;
+    @XmlElement(name="rse-seller")
+    protected String rseSeller;
 
     public String getRseDateTime() {
         return rseDateTime;

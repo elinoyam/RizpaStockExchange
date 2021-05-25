@@ -296,7 +296,7 @@ public class SystemMain {
                 price = getPositiveNum(in,false);
             }
 
-            System.out.println(engine.addTradeCommand(symbol,direction,type,quantity,price)); //adds the trade command and print out a suitable message
+           // System.out.println(engine.addTradeCommand(symbol,direction,type,quantity,price)); //adds the trade command and print out a suitable message
 
         } catch (IllegalArgumentException e) { //will catch an exception in case there is an invalid input.
             System.out.println(e.getMessage());

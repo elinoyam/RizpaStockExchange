@@ -149,6 +149,20 @@ public class PrimaryController implements Initializable {
     }
 
     public void Submit(ActionEvent actionEvent) {
+        if(ChbSymbol.getValue() == null || ChbType.getValue() == null ||TxtQuantity.getText().isEmpty() || TxtPrice.getText().isEmpty()) {
+            LblStatus.setText("All fields must be filled to submit a trade command request.");
+            return;
+        }
+        TradeCommand.direction dir;
+        TradeCommand.commandType type = TradeCommand.commandType.valueOf(ChbType.getValue().toString());
+        if (RdioSell.isSelected())
+            dir = TradeCommand.direction.SELL;
+        else
+            dir = TradeCommand.direction.BUY;
+        String msg = RSEEngine.addTradeCommand(ChbSymbol.getValue().toString(),dir,type,Integer.parseInt(TxtQuantity.getText()),Float.parseFloat(TxtPrice.getText()),RSEEngine.getUser(ChbUser.getValue().toString()));
+        LblStatus.setText(msg);
+        LblStatus.setVisible(true);
+        Reset(null);
     }
 
     public void userChosen(ActionEvent actionEvent) {

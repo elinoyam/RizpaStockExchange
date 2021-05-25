@@ -250,7 +250,7 @@ public class Engine implements Trader {
         for(RseUser user : rse.getRseUsers().getRseUser()){
             Map<String,UserHoldings> holdings = new TreeMap<>();
             for(RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
-                holdings.put(item.getSymbol(),new UserHoldings(item.getSymbol(),tmpStocks.get(item.getSymbol()) , item.getQuantity()));
+                holdings.put(item.getSymbol(),new UserHoldings(item.getSymbol(),tmpStocks.get(item.getSymbol()) , item.getQuantity(),item.getSharePrice()));
             users.put(user.getName(),new User(user.getName(),holdings));
         }
 
@@ -282,7 +282,7 @@ public class Engine implements Trader {
             buyCommands = new PriorityQueue<>(1, Collections.reverseOrder());
             rseBuyCommands = rs.getRseBuyCommands();
             for (RseTradeCommand tc : rseBuyCommands)
-                buyCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime())));
+                buyCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime()),users.get(tc.getRseUser())));
         }
         Queue<TradeCommand> sellCommands = null;
         List<RseTradeCommand> rseSellCommands = null;
@@ -290,7 +290,7 @@ public class Engine implements Trader {
             sellCommands = new PriorityQueue<>(1);
             rseSellCommands = rs.getRseSellCommands();
             for (RseTradeCommand tc : rseSellCommands)
-                sellCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(),LocalDateTime.parse(tc.getRseDateTime())));
+                sellCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(),LocalDateTime.parse(tc.getRseDateTime()),users.get(tc.getRseUser())));
         }
         List<Transaction> transactions = null;
         List<RseTransactions> rseTransactions = null;
@@ -298,7 +298,7 @@ public class Engine implements Trader {
             transactions = new LinkedList<>();
             rseTransactions = rs.getRseTransactions();
             for (RseTransactions tran : rseTransactions)
-                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime())));
+                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime()), users.get(tran.getRseBuyer()),users.get(tran.getRseSeller())));
         }
         return new Stock(company,symbol,price,buyCommands,sellCommands,transactions);
     }
@@ -339,12 +339,12 @@ public class Engine implements Trader {
      * @throws InputMismatchException will be thrown in case there isn't a stock will this symbol.
      */
     @Override
-    public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice) throws InputMismatchException {
+    public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice,User user) throws InputMismatchException {
         Stock stock = getSingleStock(companySymbol);
         if(command != TradeCommand.commandType.MKT)                             //in MKT command there isn't a need to ask the user for a desired price.
-            return stock.addTradeCommand(dir, command, quantity, wantedPrice);
+            return stock.addTradeCommand(dir, command, quantity, wantedPrice,user);
         else
-            return stock.addTradeCommand(dir, command, quantity, stock.getSharePrice());
+            return stock.addTradeCommand(dir, command, quantity, stock.getSharePrice(),user);
     }
 
     /**

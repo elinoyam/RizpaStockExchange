@@ -1,4 +1,3 @@
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -203,9 +202,11 @@ public class Stock {
      * A method that add a new made transaction to the list of transactions.
      * @param quantity the number of share that were traded.
      * @param price the price per share of the trade.
+     * @param buyer
+     * @param seller
      */
-    public void addTransaction(int quantity, float price){
-        stockTransactions.add(0,new Transaction(quantity,price));
+    public void addTransaction(int quantity, float price, User buyer, User seller){
+        stockTransactions.add(0,new Transaction(quantity,price, buyer, seller,this));
         sharePrice = price;
     }
 
@@ -226,17 +227,17 @@ public class Stock {
      * @param wantedPrice the desired price per share.
      * @return A string with the initial status of the added trade.
      */
-   public String addTradeCommand(TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice){
+   public String addTradeCommand(TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice, User user){
        TradeCommand tr;
         if(command != TradeCommand.commandType.MKT)
-           tr = new TradeCommand(dir, command, quantity, wantedPrice, this.getSymbol());
+           tr = new TradeCommand(dir, command, quantity, wantedPrice, this.getSymbol(),user);
         else{
             float mktPrice;
             if(dir == TradeCommand.direction.BUY)
                 mktPrice = getMKTSellPrice(quantity);
             else // sell command
                 mktPrice = getMKTBuyPrice(quantity);
-            tr = new TradeCommand(dir, command, quantity, mktPrice, this.getSymbol());
+            tr = new TradeCommand(dir, command, quantity, mktPrice, this.getSymbol(),user);
         }
 
         // search here for a matching command
@@ -295,7 +296,7 @@ public class Stock {
             // get the minimum quantity for the trade
             int finalQuantity = Arrays.stream(new int[]{buy.getQuantity(), sell.getQuantity()}).min().getAsInt();
             float price = (priorityFlag==TradeCommand.direction.BUY) ? sell.getPrice():buy.getPrice();
-            Transaction transaction = new Transaction(finalQuantity, price);
+            Transaction transaction = new Transaction(finalQuantity, price, buy.getUser(), sell.getUser(),this);
             stockTransactions.add(0, transaction); // add the new transaction
             sharePrice = price;
             sumShares += finalQuantity; // add the shares that been traded until now
