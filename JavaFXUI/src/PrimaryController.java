@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -42,6 +43,14 @@ public class PrimaryController implements Initializable {
     public Label LblCompany;
     public Label LblMktPrice;
     public Label LblOwnerName;
+    public TableView stocksViewTable;
+    public TableColumn IDClmn;
+    public TableColumn SymbolClmn;
+    public TableColumn CompanyNameClmn;
+    public TableColumn MKTPriceClmn;
+    public TableColumn TurnOverClmn;
+    public RadioButton RdioMine;
+    public RadioButton RdioAll;
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
@@ -89,6 +98,18 @@ public class PrimaryController implements Initializable {
         statusString.addListener((observable, oldValue, newValue) -> {
             Platform.runLater(()->{LblStatus.setText(statusString.getValue());});
         });
+        ///////////// Table View
+
+        //IDClmn = new TableColumn<StockDT,String>()
+        SymbolClmn = new TableColumn<StockDT,String>("Symbol");
+        CompanyNameClmn = new TableColumn<StockDT,String>("Company");
+        MKTPriceClmn = new TableColumn<StockDT, Float>("Market Price");
+        TurnOverClmn = new TableColumn<StockDT, Float>("Turnover");
+
+        SymbolClmn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+        CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<>("companyName"));
+        MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<>("sharePrice"));
+        TurnOverClmn.setCellValueFactory(new PropertyValueFactory<>("TransTurnover"));
 
     }
 
@@ -146,6 +167,8 @@ public class PrimaryController implements Initializable {
 //                            ChbStock.getItems().add(Stock.getSymbol());
 //                        }
                         updateSymbolsToAll("All",true,true);
+                        updateStocksTView("All");
+                        //ObservableList data = FXCollections.observableList(RSEEngine.showAllStocks());
 
                         for(User u:RSEEngine.getUsers().values())
                             ChbUser.getItems().add(u.getUserName());
@@ -157,7 +180,6 @@ public class PrimaryController implements Initializable {
                     e.printStackTrace();
                 }
             }).start();
-
 
         }
     }
@@ -204,6 +226,7 @@ public class PrimaryController implements Initializable {
         LblStatus.setText(msg);
         LblStatus.setVisible(true);
         Reset(null);
+        updateSymbolsToAll(currentUser.getUserName(),false,true);
     }
 
     public void userChosen(ActionEvent actionEvent) {
@@ -262,5 +285,31 @@ public class PrimaryController implements Initializable {
             }
 
         }
+    }
+
+    private void updateStocksTView(String string){
+        stocksViewTable.getItems().clear();
+
+        if(string == "All"){
+            List<StockDT> Stocks = RSEEngine.showAllStocks();
+            for(StockDT stock:Stocks) {
+                stocksViewTable.getItems().add(stock);
+            }
+        }
+        else{
+            currentUser = RSEEngine.getUser(string);
+            for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
+                StockDT stock = RSEEngine.showStock(hold.getStock().getSymbol());
+                stocksViewTable.getItems().add(stock);
+            }
+        }
+    }
+
+    public void RdioAllClicked(ActionEvent actionEvent) {
+        updateStocksTView("All");
+    }
+
+    public void RdioMineClicked(ActionEvent actionEvent) {
+        updateStocksTView(currentUser.getUserName());
     }
 }
