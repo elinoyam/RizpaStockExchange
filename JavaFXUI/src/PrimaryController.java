@@ -62,12 +62,19 @@ public class PrimaryController implements Initializable {
         ChbStock.valueProperty().addListener(new ChangeListener(){
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                StockDT chosenStock = RSEEngine.getSingleStockData(ChbStock.getValue().toString());
-                int numberOfHoldings = currentUser.getUserStockHoldings(ChbStock.getValue().toString());
-                LblQuantity.setText("Quantity:  " + numberOfHoldings);
-                LblCompany.setText("Company: " +chosenStock.getCompanyName());
-                LblTotalValue.setText("Total Value: "+chosenStock.getSharePrice()*numberOfHoldings);
-                LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
+                if (ChbStock.getItems().isEmpty()) {
+                    LblQuantity.setText("Quantity:  <number>");
+                    LblCompany.setText("Company: <name>");
+                    LblTotalValue.setText("Total Value:  <number>");
+                    LblMktPrice.setText("Market Price: <number>");
+                } else {
+                    StockDT chosenStock = RSEEngine.getSingleStockData(ChbStock.getValue().toString());
+                    int numberOfHoldings = currentUser.getUserStockHoldings(ChbStock.getValue().toString());
+                    LblQuantity.setText("Quantity:  " + numberOfHoldings);
+                    LblCompany.setText("Company: " + chosenStock.getCompanyName());
+                    LblTotalValue.setText("Total Value: " + chosenStock.getSharePrice() * numberOfHoldings);
+                    LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
+                }
             }
         });
         readingProgress.addListener(new ChangeListener<Number>() {
@@ -123,10 +130,7 @@ public class PrimaryController implements Initializable {
                     LblStatus.setVisible(true);
                     lock1.wait(1000);
                     RSEEngine.uploadDataFromFile(selectedFile.getAbsolutePath(),readingProgress,statusString);
-//                    for (double i = 0; readingProgress.get() < 1; i += 0.1) {
-//                        readingProgress.setValue(i);
-//                        lock1.wait(500);
-//                    }
+
                     lock1.wait(500);
                     statusString.setValue("Reading of file completed!");
                     readingProgress.setValue(1);
@@ -136,11 +140,12 @@ public class PrimaryController implements Initializable {
                             System.out.println(st.toString());
                         } // TODO: before submission we need to delete it
 
-                        List<StockDT> Stocks = RSEEngine.showAllStocks();
-                        for(StockDT Stock:Stocks) {
-                            ChbSymbol.getItems().add(Stock.getSymbol());
-                            ChbStock.getItems().add(Stock.getSymbol());
-                        }
+//                        List<StockDT> Stocks = RSEEngine.showAllStocks();
+//                        for(StockDT Stock:Stocks) {
+//                            ChbSymbol.getItems().add(Stock.getSymbol());
+//                            ChbStock.getItems().add(Stock.getSymbol());
+//                        }
+                        updateSymbolsToAll("All",true,true);
 
                         for(User u:RSEEngine.getUsers().values())
                             ChbUser.getItems().add(u.getUserName());
@@ -159,20 +164,16 @@ public class PrimaryController implements Initializable {
 
     public void Reset(ActionEvent actionEvent) {
         RdioBuy.setSelected(true);
+        updateSymbolsToAll("All",true,false);
         TxtPrice.clear();
         TxtQuantity.clear();
         ChbType.getSelectionModel().clearSelection();
         ChbSymbol.getSelectionModel().clearSelection();
-
-
     }
 
     public void BuyStockClicked(ActionEvent actionEvent) {
-        ChbSymbol.getItems().clear();
-        List<StockDT> Stocks = RSEEngine.showAllStocks();
-        for(StockDT Stock:Stocks) {
-            ChbSymbol.getItems().add(Stock.getSymbol());
-        }
+
+        updateSymbolsToAll("All",true,false);
     }
 
     public void SellStockClicked(ActionEvent actionEvent) {
@@ -181,16 +182,16 @@ public class PrimaryController implements Initializable {
         if(currentUser.getUserName().equals("Admin"))
             throw new InputMismatchException("Admin can't make buy/sell commands. You must pick a user.");
 
-        ChbSymbol.getItems().clear();
-
-        for(UserHoldings hold:currentUser.getUserStocks().values()) {
-            ChbSymbol.getItems().add(hold.getSymbol());
-        }
+        updateSymbolsToAll(currentUser.getUserName(),true,false);
     }
 
     public void Submit(ActionEvent actionEvent) {
-        if(ChbSymbol.getValue() == null || ChbType.getValue() == null ||TxtQuantity.getText().isEmpty() || TxtPrice.getText().isEmpty()) {
+        if(ChbSymbol.getValue() == null || ChbType.getValue() == null ||TxtQuantity.getText().isEmpty() /*|| TxtPrice.getText().isEmpty()*/) {
             LblStatus.setText("All fields must be filled to submit a trade command request.");
+            return;
+        }
+        else if(!ChbType.getValue().equals("MKT") && TxtPrice.getText().isEmpty() ){
+            LblStatus.setText("If not MKT command, you must enter a wanted price.");
             return;
         }
         TradeCommand.direction dir;
@@ -209,30 +210,57 @@ public class PrimaryController implements Initializable {
         if (ChbUser.getValue().equals(null))
             return;
         if (ChbUser.getValue().equals("Admin")) {
-            List<StockDT> Stocks = RSEEngine.showAllStocks();
-            for(StockDT Stock:Stocks) {
-                ChbSymbol.getItems().add(Stock.getSymbol());
-                ChbStock.getItems().add(Stock.getSymbol());
-            }
+            BtnSubmit.setDisable(true);
+            updateSymbolsToAll("All",true,true);
+
             TabStock.setDisable(true);
+            currentUser = null;
         } else {
             // for the show stock tab
+            BtnSubmit.setDisable(false);
             TabStock.setDisable(false);
             ChbStock.getItems().clear();
             String currentUserName = ChbUser.getValue().toString();
             currentUser = RSEEngine.getUser(currentUserName);
-            for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
-                ChbStock.getItems().add(hold.getSymbol());
-            }
-            LblOwnerName.setText(currentUserName + " owns: ");
-            if (RdioSell.isSelected()) {
-                ChbSymbol.getItems().clear();
 
-                for (UserHoldings hold : currentUser.getUserStocks().values()) {
-                    ChbSymbol.getItems().add(hold.getSymbol());
-                }
-            }
+            LblOwnerName.setText(currentUserName + " owns: ");
+            if (RdioSell.isSelected())
+                updateSymbolsToAll(currentUserName,true,true);
+
+            else
+                updateSymbolsToAll(currentUserName,false,true);
         }
     }
 
+    /**
+     * @param string the name of the user that we want to update according to his holdings OR "All" if we want to update to all the stocks in the system
+     * @param symbol true if we want to update the items of the symbol choice box (in the add command part)
+     * @param stock  true if we want to update the items of the stock choice box (in the show stock tab)
+     */
+    private void updateSymbolsToAll(String string, boolean symbol, boolean stock){
+        if(symbol)
+            ChbSymbol.getItems().clear();
+        if(stock)
+            ChbStock.getItems().clear();
+
+        if(string == "All"){        // all the stocks in the engine
+            List<StockDT> Stocks = RSEEngine.showAllStocks();
+            for(StockDT Stock:Stocks) {
+                if(symbol)
+                    ChbSymbol.getItems().add(Stock.getSymbol());
+                if(stock)
+                    ChbStock.getItems().add(Stock.getSymbol());
+            }
+        }
+        else{   // need to update to a specified user holdings
+            currentUser = RSEEngine.getUser(string);
+            for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
+                if(symbol)
+                    ChbSymbol.getItems().add(hold.getSymbol());
+                if(stock)
+                    ChbStock.getItems().add(hold.getSymbol());
+            }
+
+        }
+    }
 }
