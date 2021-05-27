@@ -1,3 +1,6 @@
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
+
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -26,7 +29,7 @@ public interface Trader {
   * @throws FileNotFoundException will be thrown in case the file won't be found.
   * @throws JAXBException will be thrown in case JAXB will fail to read the data from the file.
   */
- void uploadDataFromFile(String path) throws FileNotFoundException, JAXBException;
+ void uploadDataFromFile(String path, DoubleProperty doubleProperty, StringProperty stringProperty) throws FileNotFoundException, JAXBException;
 
  /**
   * A method that creates a list of all stocks output buffers in order to show late all the trade commands in the system.

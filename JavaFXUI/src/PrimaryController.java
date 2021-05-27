@@ -1,3 +1,8 @@
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -38,6 +43,9 @@ public class PrimaryController implements Initializable {
     public Label LblMktPrice;
     public Label LblOwnerName;
     private User currentUser;
+    private DoubleProperty readingProgress = new SimpleDoubleProperty();
+    private StringProperty statusString = new SimpleStringProperty();
+    private Object lock1 = new Object();
 
     private Engine RSEEngine;
 
@@ -62,6 +70,18 @@ public class PrimaryController implements Initializable {
                 LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
             }
         });
+        readingProgress.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                PBarStatus.progressProperty().bind(readingProgress);
+
+            }
+        });
+        PBarStatus.setDisable(false);
+        readingProgress.setValue(0);
+        statusString.addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(()->{LblStatus.setText(statusString.getValue());});
+        });
 
     }
 
@@ -69,7 +89,7 @@ public class PrimaryController implements Initializable {
     public void Save(ActionEvent actionEvent) {
     }
 
-    public void Load(ActionEvent actionEvent) throws JAXBException, FileNotFoundException {
+    public void Load(ActionEvent actionEvent) throws JAXBException, FileNotFoundException, InterruptedException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open XML File");
         fileChooser.getExtensionFilters().addAll(
@@ -85,7 +105,6 @@ public class PrimaryController implements Initializable {
             ChbType.setDisable(false);
             TxtQuantity.setDisable(false);
             TxtPrice.setDisable(false);
-            PBarStatus.setDisable(false);
             TabStock.setDisable(false);
             TabAllStocks.setDisable(false);
             RdioSell.setDisable(false);
@@ -97,24 +116,45 @@ public class PrimaryController implements Initializable {
             ChbUser.getItems().removeAll(ChbUser.getItems());
             ChbSymbol.getItems().removeAll(ChbSymbol.getItems());
 
-            RSEEngine.uploadDataFromFile(selectedFile.getAbsolutePath());
-            StockDT[] stocks = RSEEngine.showAllStocks().toArray(new StockDT[0]); //gets an array of the existing stocks
-            for (StockDT st : stocks) {                                        //for each stock it prints the full data about the stock.
-                System.out.println(st.toString());
-            }
+            new Thread(()->{
+                try {synchronized (lock1) {
+                    readingProgress.setValue(0);
+                    statusString.setValue("Fetching File..");
+                    LblStatus.setVisible(true);
+                    lock1.wait(1000);
+                    RSEEngine.uploadDataFromFile(selectedFile.getAbsolutePath(),readingProgress,statusString);
+//                    for (double i = 0; readingProgress.get() < 1; i += 0.1) {
+//                        readingProgress.setValue(i);
+//                        lock1.wait(500);
+//                    }
+                    lock1.wait(500);
+                    statusString.setValue("Reading of file completed!");
+                    readingProgress.setValue(1);
+                    Platform.runLater(()->{
+                        StockDT[] stocks = RSEEngine.showAllStocks().toArray(new StockDT[0]); //gets an array of the existing stocks
+                        for (StockDT st : stocks) {                                        //for each stock it prints the full data about the stock.
+                            System.out.println(st.toString());
+                        } // TODO: before submission we need to delete it
 
-            List<StockDT> Stocks = RSEEngine.showAllStocks();
-            for(StockDT Stock:Stocks) {
-                ChbSymbol.getItems().add(Stock.getSymbol());
-                ChbStock.getItems().add(Stock.getSymbol());
-            }
+                        List<StockDT> Stocks = RSEEngine.showAllStocks();
+                        for(StockDT Stock:Stocks) {
+                            ChbSymbol.getItems().add(Stock.getSymbol());
+                            ChbStock.getItems().add(Stock.getSymbol());
+                        }
 
-            for(User u:RSEEngine.getUsers().values())
-                ChbUser.getItems().add(u.getUserName());
-            ChbUser.getItems().add("Admin");
+                        for(User u:RSEEngine.getUsers().values())
+                            ChbUser.getItems().add(u.getUserName());
+                        ChbUser.getItems().add("Admin");
+                    });
+                }
+                } catch (FileNotFoundException | JAXBException | InterruptedException e) {
+                    System.out.println("Problem in reading the Xml file.\n");
+                    e.printStackTrace();
+                }
+            }).start();
+
+
         }
-
-
     }
 
     public void Reset(ActionEvent actionEvent) {
@@ -166,21 +206,31 @@ public class PrimaryController implements Initializable {
     }
 
     public void userChosen(ActionEvent actionEvent) {
-        if(ChbUser.getValue().equals(null))
+        if (ChbUser.getValue().equals(null))
             return;
-        // for the show stock tab
-       ChbStock.getItems().clear();
-        String currentUserName = ChbUser.getValue().toString();
-        currentUser = RSEEngine.getUser(currentUserName);
-        for(UserHoldings hold:currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
-            ChbStock.getItems().add(hold.getSymbol());
-        }
-        LblOwnerName.setText(currentUserName + " owns: ");
-        if(RdioSell.isSelected()){
-            ChbSymbol.getItems().clear();
+        if (ChbUser.getValue().equals("Admin")) {
+            List<StockDT> Stocks = RSEEngine.showAllStocks();
+            for(StockDT Stock:Stocks) {
+                ChbSymbol.getItems().add(Stock.getSymbol());
+                ChbStock.getItems().add(Stock.getSymbol());
+            }
+            TabStock.setDisable(true);
+        } else {
+            // for the show stock tab
+            TabStock.setDisable(false);
+            ChbStock.getItems().clear();
+            String currentUserName = ChbUser.getValue().toString();
+            currentUser = RSEEngine.getUser(currentUserName);
+            for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
+                ChbStock.getItems().add(hold.getSymbol());
+            }
+            LblOwnerName.setText(currentUserName + " owns: ");
+            if (RdioSell.isSelected()) {
+                ChbSymbol.getItems().clear();
 
-            for(UserHoldings hold:currentUser.getUserStocks().values()) {
-                ChbSymbol.getItems().add(hold.getSymbol());
+                for (UserHoldings hold : currentUser.getUserStocks().values()) {
+                    ChbSymbol.getItems().add(hold.getSymbol());
+                }
             }
         }
     }

@@ -1,5 +1,7 @@
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
 import jaxb.schema.generated.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -21,6 +23,7 @@ public class Engine implements Trader {
      private static final String JAXB_XML_PACKAGE_NAME = "jaxb.schema.generated";
      private MultiKeyMap<String, Stock> stocks = new MultiKeyMap<>();        //will be search with their symbol
      private Map<String,User> users = new TreeMap<>();
+     private Object lock2 = new Object();
 
     private Engine(){ }                                                             //private to prevent a creation of instances
 
@@ -194,7 +197,7 @@ public class Engine implements Trader {
      * @throws JAXBException will be thrown in case the JAXB process failed.
      * @throws IllegalArgumentException will be thrown in case the the file isn't a xml file.
      */
-    public void uploadDataFromFile(String path) throws FileNotFoundException,JAXBException,IllegalArgumentException // first option
+    public void uploadDataFromFile(String path, DoubleProperty doubleProperty,StringProperty stringProperty) throws FileNotFoundException,JAXBException,IllegalArgumentException // first option
     {
     // need to upload all the stocks from xml file
         MultiKeyMap<String, Stock> tmpStocks = new MultiKeyMap<>();
@@ -202,11 +205,13 @@ public class Engine implements Trader {
         try {
             File xmlPath = new File(path);
             InputStream inputStream = new FileInputStream(new File(path));
+            stringProperty.setValue("Opening file.. ");
             if(!isXMLFile(path))
                 throw new IllegalArgumentException("The given file is not a xml file.");
-            deserializeFrom(inputStream,tmpStocks);
+            deserializeFrom(inputStream,tmpStocks,doubleProperty,stringProperty);
             stocks.clear();
             stocks = tmpStocks;
+            stringProperty.setValue("Fetching data from file ended.");
         } catch (JAXBException e){
             throw new JAXBException("JAXB Exception detected.");
         } catch (FileNotFoundException e) {
@@ -237,23 +242,37 @@ public class Engine implements Trader {
      * @param tmpStocks a temporary MultiKeyMap of system's stocks (prevents a deletion of the previous system data in case there will be a failure).
      * @throws JAXBException will be thrown in case there is a problem in the process of JAXB.
      */
-    private void deserializeFrom(InputStream in,MultiKeyMap<String, Stock> tmpStocks) throws JAXBException,IllegalArgumentException,InputMismatchException, DateTimeException {
-        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
-        Unmarshaller u = jc.createUnmarshaller();
-        RizpaStockExchangeDescriptor rse = (RizpaStockExchangeDescriptor) u.unmarshal(in); //Converts the XML file content into an instance of the generated class.
-        List<RseStock> rseStocks = rse.getRseStocks().getRseStock();                       //gets a list of all the stocks
-        for(RseStock s : rseStocks)                                                        //casts each generated stock class instance to the system's stock class and inserts them into the MultiKeyMap.
-        {
-            Stock tmp = castRseStockToStock(s,tmpStocks);                                   //casts the generated stock class to system's stock class.
-            tmpStocks.put(tmp.getSymbol(),tmp.getCompanyName(),tmp);                        //inserts the stock into the MultiKeyMap.
-        }
-        for(RseUser user : rse.getRseUsers().getRseUser()){
-            Map<String,UserHoldings> holdings = new TreeMap<>();
-            for(RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
-                holdings.put(item.getSymbol(),new UserHoldings(item.getSymbol(),tmpStocks.get(item.getSymbol()) , item.getQuantity(),item.getSharePrice()));
-            users.put(user.getName(),new User(user.getName(),holdings));
-        }
+    private void deserializeFrom(InputStream in, MultiKeyMap<String, Stock> tmpStocks, DoubleProperty doubleProperty, StringProperty stringProperty) throws JAXBException,IllegalArgumentException,InputMismatchException, DateTimeException {
+        try {
+            synchronized (lock2) {
+                JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
+                Unmarshaller u = jc.createUnmarshaller();
+                RizpaStockExchangeDescriptor rse = (RizpaStockExchangeDescriptor) u.unmarshal(in); //Converts the XML file content into an instance of the generated class.
+                List<RseStock> rseStocks = rse.getRseStocks().getRseStock();                       //gets a list of all the stocks
+                stringProperty.setValue("Starting to read stocks data...");
+                doubleProperty.setValue(0.1);
+                lock2.wait(500);
 
+                for (RseStock s : rseStocks)                                                        //casts each generated stock class instance to the system's stock class and inserts them into the MultiKeyMap.
+                {
+                    Stock tmp = castRseStockToStock(s, tmpStocks);                                   //casts the generated stock class to system's stock class.
+                    tmpStocks.put(tmp.getSymbol(), tmp.getCompanyName(), tmp);                        //inserts the stock into the MultiKeyMap.
+                }
+                doubleProperty.setValue(0.4);
+                stringProperty.setValue("Starting to read users data...");
+                lock2.wait(500);
+                for (RseUser user : rse.getRseUsers().getRseUser()) {
+                    Map<String, UserHoldings> holdings = new TreeMap<>();
+                    for (RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
+                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity(), item.getSharePrice()));
+                    users.put(user.getName(), new User(user.getName(), holdings));
+                }
+                doubleProperty.setValue(0.8);
+                lock2.wait(500);
+            }
+    }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
