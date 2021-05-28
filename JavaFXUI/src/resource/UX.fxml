@@ -31,7 +31,7 @@
    <right>
       <ScrollPane BorderPane.alignment="CENTER">
          <content>
-            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="245.0">
+            <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="245.0">
                <children>
                   <ToolBar maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="240.0">
                      <items>
@@ -98,7 +98,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <ChoiceBox fx:id="ChbType" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" onAction="#SetType" prefHeight="35.0" prefWidth="200.0">
+                  <ChoiceBox fx:id="ChbType" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" onAction="#typeChosen" prefHeight="35.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -143,7 +143,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
-                  <Label fx:id="LblStatus" alignment="CENTER" contentDisplay="CENTER" text="Status Text" textAlignment="CENTER" textFill="#1f10ef" visible="false" wrapText="true" VBox.vgrow="ALWAYS">
+                  <Label fx:id="LblStatus" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" prefHeight="43.0" prefWidth="189.0" text="Status Text" textAlignment="CENTER" textFill="#1f10ef" visible="false" wrapText="true" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -266,17 +266,17 @@
                                                       <Font name="System Bold" size="13.0" />
                                                    </font>
                                                 </Label>
-                                                <Label fx:id="LblMktPrice" layoutX="225.0" layoutY="42.0" text="Market Price: &lt;number&gt;" />
+                                                <Label fx:id="LblMktPrice" layoutX="225.0" layoutY="42.0" prefHeight="17.0" prefWidth="137.0" text="Market Price: &lt;number&gt;" />
                                                 <Label fx:id="LblCompany" layoutX="21.0" layoutY="68.0" text="Company: &lt;name&gt;" />
                                                 <Label layoutX="21.0" layoutY="42.0" text="Symbol:" />
-                                                <ChoiceBox fx:id="ChbView" layoutX="224.0" layoutY="68.0" prefHeight="27.0" prefWidth="133.0" />
+                                                <ChoiceBox fx:id="ChbView" layoutX="224.0" layoutY="68.0" onAction="#viewChosen" prefHeight="27.0" prefWidth="139.0" />
                                              </children>
                                           </Pane>
                                        </children>
                                     </HBox>
-                                    <Pane>
+                                    <Pane fx:id="PaneView">
                                        <children>
-                                          <LineChart prefHeight="325.0" prefWidth="541.0">
+                                          <LineChart fx:id="ChrtView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="325.0" prefWidth="541.0" visible="false">
                                             <xAxis>
                                               <CategoryAxis side="BOTTOM" />
                                             </xAxis>
@@ -284,6 +284,15 @@
                                               <NumberAxis side="LEFT" />
                                             </yAxis>
                                           </LineChart>
+                                          <TableView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="325.0" prefWidth="541.0">
+                                            <columns>
+                                              <TableColumn prefWidth="75.0" text="C1" />
+                                              <TableColumn prefWidth="75.0" text="C2" />
+                                            </columns>
+                                             <columnResizePolicy>
+                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                             </columnResizePolicy>
+                                          </TableView>
                                        </children>
                                     </Pane>
                                  </children>

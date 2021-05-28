@@ -7,15 +7,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -44,7 +46,6 @@ public class PrimaryController implements Initializable {
     public Label LblMktPrice;
     public Label LblOwnerName;
     public TableView stocksViewTable;
-    public TableColumn IDClmn;
     public TableColumn SymbolClmn;
     public TableColumn CompanyNameClmn;
     public TableColumn MKTPriceClmn;
@@ -52,6 +53,9 @@ public class PrimaryController implements Initializable {
     public TableColumn QuantityClmn;
     public RadioButton RdioMine;
     public RadioButton RdioAll;
+    public Pane PaneView;
+    public LineChart<LocalDateTime,Float> ChrtView;
+
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
@@ -59,16 +63,59 @@ public class PrimaryController implements Initializable {
 
     private Engine RSEEngine;
 
+enum View {
 
+    TREND(1,"Share Price Tendency"),
+    BUY_COMMANDS(2,"Buy Trade Commands"),
+    SELL_COMMANDS(3,"Sell Trade Commands"),
+    ALL_COMMANDS(4,"All Trade Commands"),
+    TRANSACTIONS(5,"Transactions");
 
+    private final int opNum;
+    private final String opText;
 
+    View(int num, String text) {
+        this.opNum = num;
+        this.opText = text;
+    }
 
+    public static View getView(int num){
+        for(View o : View.values()){
+            if(o.opNum == num) {
+                return o;
+            }
+        }
+        return null;
+    }
+
+    public static View getView(String text){
+        for(View o : View.values()){
+            if(o.opText.equals(text)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
+    public int getNum() {
+        return opNum;
+    }
+
+    public String getOpText() {
+        return opText;
+    }
+}
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         RSEEngine = Engine.getInstance();
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
             ChbType.getItems().add(c.toString());
+
+        for(View v:View.values())
+            ChbView.getItems().add(v.opText);
+
+
         ChbStock.valueProperty().addListener(new ChangeListener(){
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -87,6 +134,7 @@ public class PrimaryController implements Initializable {
                 }
             }
         });
+
         readingProgress.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -99,30 +147,13 @@ public class PrimaryController implements Initializable {
         statusString.addListener((observable, oldValue, newValue) -> {
             Platform.runLater(()->{LblStatus.setText(statusString.getValue());});
         });
-        ///////////// Table View
-
-        /*stocksViewTable = new TableView<StockDT>();
-        IDClmn = new TableColumn<StockDT,String>();
-        SymbolClmn = new TableColumn<StockDT,String>("Symbol");
-        CompanyNameClmn = new TableColumn<StockDT,String>("Company");
-        MKTPriceClmn = new TableColumn<StockDT, Float>("Market Price");
-        TurnOverClmn = new TableColumn<StockDT, Float>("Turnover");
-
-        SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
-        CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<>("companyName"));
-        MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<>("sharePrice"));
-        TurnOverClmn.setCellValueFactory(new PropertyValueFactory<>("TransTurnover"));
-*/
 
         SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
         CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<StockDT, String>("companyName"));
         QuantityClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Integer>("quantity"));
         MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("sharePrice"));
         TurnOverClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("transactionsTurnOver"));
-
-
     }
-
 
     public void Save(ActionEvent actionEvent) {
     }
@@ -135,19 +166,6 @@ public class PrimaryController implements Initializable {
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
-            BtnSave.setDisable(false);
-            ChbUser.setDisable(false);
-            BtnReset.setDisable(false);
-            BtnSubmit.setDisable(false);
-            ChbSymbol.setDisable(false);
-            ChbType.setDisable(false);
-            TxtQuantity.setDisable(false);
-            TxtPrice.setDisable(false);
-            TabStock.setDisable(false);
-            TabAllStocks.setDisable(false);
-            RdioSell.setDisable(false);
-            RdioBuy.setDisable(false);
-            RdioBuy.setSelected(true);
 
             //ChbSymbol.getItems().re
             ChbStock.getItems().removeAll(ChbStock.getItems());
@@ -156,6 +174,20 @@ public class PrimaryController implements Initializable {
 
             new Thread(()->{
                 try {synchronized (lock1) {
+                    BtnSave.setDisable(true);
+                    ChbUser.setDisable(true);
+                    BtnReset.setDisable(true);
+                    BtnSubmit.setDisable(true);
+                    ChbSymbol.setDisable(true);
+                    ChbType.setDisable(true);
+                    TxtQuantity.setDisable(true);
+                    TxtPrice.setDisable(true);
+                    TabStock.setDisable(true);
+                    TabAllStocks.setDisable(true);
+                    RdioSell.setDisable(true);
+                    RdioBuy.setDisable(true);
+
+
                     readingProgress.setValue(0);
                     statusString.setValue("Fetching File..");
                     LblStatus.setVisible(true);
@@ -186,6 +218,20 @@ public class PrimaryController implements Initializable {
                         ChbUser.setValue("Admin");
                         RdioMine.setDisable(true);
                         RdioMine.setSelected(false);
+
+                        BtnSave.setDisable(false);
+                        ChbUser.setDisable(false);
+                        BtnReset.setDisable(false);
+                        BtnSubmit.setDisable(false);
+                        ChbSymbol.setDisable(false);
+                        ChbType.setDisable(false);
+                        TxtQuantity.setDisable(false);
+                        TxtPrice.setDisable(false);
+                        TabStock.setDisable(false);
+                        TabAllStocks.setDisable(false);
+                        RdioSell.setDisable(false);
+                        RdioBuy.setDisable(false);
+                        RdioBuy.setSelected(true);
                     });
                 }
                 } catch (FileNotFoundException | JAXBException | InterruptedException e) {
@@ -247,7 +293,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void userChosen(ActionEvent actionEvent) {
-        if (ChbUser.getValue().equals(null))
+        if (ChbUser.getValue() == null)
             return;
         if (ChbUser.getValue().equals("Admin")) {
             BtnSubmit.setDisable(true);
@@ -341,7 +387,7 @@ public class PrimaryController implements Initializable {
         updateStocksTView(currentUser.getUserName());
     }
 
-    public void SetType(ActionEvent actionEvent) {
+    public void typeChosen(ActionEvent actionEvent) {
         if (ChbType.getValue() == null)
             TxtPrice.setDisable(false);
         else if(ChbType.getValue().equals(TradeCommand.commandType.MKT.toString())) {
@@ -351,4 +397,24 @@ public class PrimaryController implements Initializable {
         else
             TxtPrice.setDisable(false);
     }
+
+
+    public void viewChosen(ActionEvent actionEvent) {
+        View choice = View.getView(ChbView.getValue().toString());
+        switch (choice) {
+            case TREND:
+
+                break;
+            case BUY_COMMANDS:
+                break;
+            case SELL_COMMANDS:
+                break;
+            case ALL_COMMANDS:
+                break;
+            case TRANSACTIONS:
+                break;
+        }
+
+    }
 }
+
