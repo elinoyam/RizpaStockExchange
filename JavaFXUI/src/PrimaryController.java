@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
@@ -129,14 +130,19 @@ enum View {
                     LblCompany.setText("Company: <name>");
                     LblTotalValue.setText("Total Value:  <number>");
                     LblMktPrice.setText("Market Price: <number>");
+                    //ChrtView.getData().clear();
                 } else {
-                    StockDT chosenStock = RSEEngine.getSingleStockData(ChbStock.getValue().toString());
-                    int numberOfHoldings = currentUser.getUserStockHoldings(ChbStock.getValue().toString());
+                    String symbol = ChbStock.getValue().toString();
+                    StockDT chosenStock = RSEEngine.getSingleStockData(symbol);
+                    int numberOfHoldings = currentUser.getUserStockHoldings(symbol);
                     LblQuantity.setText("Quantity:  " + numberOfHoldings);
                     LblCompany.setText("Company: " + chosenStock.getCompanyName());
                     LblTotalValue.setText("Total Value: " + chosenStock.getSharePrice() * numberOfHoldings);
                     LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
+                    if(!(ChbView.getValue() == null) &&ChbView.getValue().toString()=="Share Price Tendency")
+                        showStockTransInLineChart(symbol);
                 }
+
             }
         });
 
@@ -338,6 +344,8 @@ enum View {
                 updateStocksTView(currentUserName);
             else
                 updateStocksTView("All");
+            if(TabStock.isSelected() && !(ChbView.getValue()== null) && ChbView.getValue().toString().equals("Share Price Tendency") && !(ChbStock.getValue()==(null)))
+                showStockTransInLineChart(ChbStock.getValue().toString());
         }
     }
 
@@ -418,7 +426,11 @@ enum View {
         View choice = View.getView(ChbView.getValue().toString());
         switch (choice) {
             case TREND:
-
+                if(ChbStock.getValue().equals(null))
+                    return;
+                else{
+                    showStockTransInLineChart(ChbStock.getValue().toString());
+                }
                 break;
             case BUY_COMMANDS:
                 break;
@@ -429,6 +441,23 @@ enum View {
             case TRANSACTIONS:
                 break;
         }
+
+    }
+
+    public void showStockTransInLineChart(String symbol){
+        if(!ChrtView.getData().isEmpty())
+            ChrtView.getData().clear();
+        StockDT stock = RSEEngine.showStock(symbol);
+        List<Transaction> transactions = stock.getTransactions();
+
+        XYChart.Series stockMKTPrice = new XYChart.Series();
+
+        stockMKTPrice.setName(stock.getSymbol() +" market price");
+        for(Transaction tran: transactions){
+            stockMKTPrice.getData().add(new XYChart.Data<>(tran.getDateStamp(),tran.getPrice()));
+        }
+
+        ChrtView.getData().add(stockMKTPrice);
 
     }
 }
