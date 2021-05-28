@@ -183,9 +183,17 @@ public class PrimaryController implements Initializable {
                         RdioMine.setSelected(false);
                     });
                 }
-                } catch (FileNotFoundException | JAXBException | InterruptedException e) {
+                } catch (FileNotFoundException | JAXBException | InterruptedException|NullPointerException e) {
                     System.out.println("Problem in reading the Xml file.\n");
+                    System.out.println(e.getMessage());
                     e.printStackTrace();
+
+                    Platform.runLater(()->{
+                        LblStatus.setText("Invalid File." /*+ e.getMessage()*/ + " Please select a new valid file.");
+                        readingProgress.setValue(0);}
+                        );
+                    Thread.currentThread().stop();
+
                 }
             }).start();
 
