@@ -130,7 +130,8 @@ enum View {
                     LblCompany.setText("Company: <name>");
                     LblTotalValue.setText("Total Value:  <number>");
                     LblMktPrice.setText("Market Price: <number>");
-                    //ChrtView.getData().clear();
+                    if(!ChrtView.getData().isEmpty())
+                        ChrtView.getData().clear();
                 } else {
                     String symbol = ChbStock.getValue().toString();
                     StockDT chosenStock = RSEEngine.getSingleStockData(symbol);
@@ -426,11 +427,8 @@ enum View {
         View choice = View.getView(ChbView.getValue().toString());
         switch (choice) {
             case TREND:
-                if(ChbStock.getValue().equals(null))
-                    return;
-                else{
+                if(!(ChbStock.getValue()==null))
                     showStockTransInLineChart(ChbStock.getValue().toString());
-                }
                 break;
             case BUY_COMMANDS:
                 break;
@@ -445,6 +443,7 @@ enum View {
     }
 
     public void showStockTransInLineChart(String symbol){
+        ChrtView.setDisable(false);
         if(!ChrtView.getData().isEmpty())
             ChrtView.getData().clear();
         StockDT stock = RSEEngine.showStock(symbol);
@@ -454,7 +453,7 @@ enum View {
 
         stockMKTPrice.setName(stock.getSymbol() +" market price");
         for(Transaction tran: transactions){
-            stockMKTPrice.getData().add(new XYChart.Data<>(tran.getDateStamp(),tran.getPrice()));
+            stockMKTPrice.getData().add(new XYChart.Data<>(tran.getDateStamp().toString(),tran.getPrice()));
         }
 
         ChrtView.getData().add(stockMKTPrice);
