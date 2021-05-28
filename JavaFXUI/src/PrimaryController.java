@@ -11,6 +11,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.xml.bind.JAXBException;
@@ -37,7 +38,7 @@ public class PrimaryController implements Initializable {
     public Tab TabAllStocks;
     public ChoiceBox ChbUser;
     public ProgressBar PBarStatus;
-    public Label LblStatus;
+    public Text txtStatus;
     public ChoiceBox ChbStock;
     public ChoiceBox ChbView;
     public Label LblQuantity;
@@ -145,7 +146,8 @@ enum View {
         PBarStatus.setDisable(false);
         readingProgress.setValue(0);
         statusString.addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(()->{LblStatus.setText(statusString.getValue());});
+            Platform.runLater(()->{
+                txtStatus.setText(statusString.getValue());});
         });
 
         SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
@@ -190,7 +192,7 @@ enum View {
 
                     readingProgress.setValue(0);
                     statusString.setValue("Fetching File..");
-                    LblStatus.setVisible(true);
+                    txtStatus.setVisible(true);
                     lock1.wait(1000);
                     RSEEngine.uploadDataFromFile(selectedFile.getAbsolutePath(),readingProgress,statusString);
 
@@ -235,7 +237,7 @@ enum View {
                     e.printStackTrace();
 
                     Platform.runLater(()->{
-                        LblStatus.setText("Invalid File." /*+ e.getMessage()*/ + " Please select a new valid file.");
+                        txtStatus.setText("Invalid File." /*+ e.getMessage()*/ + " Please select a new valid file.");
                         readingProgress.setValue(0);}
                         );
                     Thread.currentThread().stop();
@@ -271,11 +273,11 @@ enum View {
 
     public void Submit(ActionEvent actionEvent) {
         if(ChbSymbol.getValue() == null || ChbType.getValue() == null || TxtQuantity.getText().isEmpty()) {
-            LblStatus.setText("All fields must be filled to submit a trade command request.");
+            txtStatus.setText("All fields must be filled to submit a trade command request.");
             return;
         }
         else if((!ChbType.getValue().equals("MKT")) && TxtPrice.getText().isEmpty() ){
-            LblStatus.setText("If not MKT command, you must enter a wanted price.");
+            txtStatus.setText("If not MKT command, you must enter a wanted price.");
             return;
         }
         try {
@@ -288,14 +290,14 @@ enum View {
 
             float price = ChbType.getValue().equals("MKT") ? 0 : Float.parseFloat(TxtPrice.getText());
             String msg = RSEEngine.addTradeCommand(ChbSymbol.getValue().toString(), dir, type, Integer.parseInt(TxtQuantity.getText()), price, RSEEngine.getUser(ChbUser.getValue().toString()));
-            LblStatus.setText(msg);
-            LblStatus.setVisible(true);
+            txtStatus.setText(msg);
+            txtStatus.setVisible(true);
             Reset(null);
             updateSymbolsToAll(currentUser.getUserName(), false, true);
             updateStocksTView(RdioMine.isSelected() ? currentUser.getUserName() : "All");
         }catch (IllegalArgumentException e){
-            LblStatus.setText(e.getMessage());
-            LblStatus.setVisible(true);
+            txtStatus.setText(e.getMessage());
+            txtStatus.setVisible(true);
             Reset(null);
         }
     }

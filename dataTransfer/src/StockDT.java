@@ -17,7 +17,7 @@ public class StockDT {
     private final List<TradeCommandDT> buyCommandDTs;
     private final List<TradeCommandDT> sellCommandDTs;
 
-    /**
+    /*
      * A ctor of a class instance from all the needed variables.
      * @param companyName the name of the company that holds the share.
      * @param symbol the symbol of the stock.
