@@ -57,6 +57,7 @@ public class PrimaryController implements Initializable {
     public Pane PaneView;
     public LineChart<LocalDateTime,Float> ChrtView;
 
+
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
@@ -110,6 +111,9 @@ enum View {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         RSEEngine = Engine.getInstance();
+
+
+
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
             ChbType.getItems().add(c.toString());
 
@@ -155,6 +159,7 @@ enum View {
         QuantityClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Integer>("quantity"));
         MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("sharePrice"));
         TurnOverClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("transactionsTurnOver"));
+
     }
 
     public void Save(ActionEvent actionEvent) {
