@@ -226,10 +226,13 @@ public class Stock {
      * @param quantity the number of share to trade with.
      * @param wantedPrice the desired price per share.
      * @return A string with the initial status of the added trade.
+     * @throws IllegalArgumentException if the user want to sell more shares of the stock then he really has.
      */
    public String addTradeCommand(TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice, User user){
        TradeCommand tr;
-        if(command != TradeCommand.commandType.MKT)
+       if(dir == TradeCommand.direction.SELL && quantity> user.getUserStockHoldings(this.getSymbol()))
+           throw new IllegalArgumentException("Command has been canceled. \n"+user.getUserName() + " has only " + user.getUserStockHoldings(this.getSymbol())+ " shares of this stock.");
+       if(command != TradeCommand.commandType.MKT)
            tr = new TradeCommand(dir, command, quantity, wantedPrice, this.getSymbol(),user);
         else{
             float mktPrice;
@@ -237,6 +240,7 @@ public class Stock {
                 mktPrice = getMKTSellPrice(quantity);
             else // sell command
                 mktPrice = getMKTBuyPrice(quantity);
+
             tr = new TradeCommand(dir, command, quantity, mktPrice, this.getSymbol(),user);
         }
 
