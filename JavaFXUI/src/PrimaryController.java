@@ -171,14 +171,9 @@ public class PrimaryController implements Initializable {
                             System.out.println(st.toString());
                         } // TODO: before submission we need to delete it
 
-//                        List<StockDT> Stocks = RSEEngine.showAllStocks();
-//                        for(StockDT Stock:Stocks) {
-//                            ChbSymbol.getItems().add(Stock.getSymbol());
-//                            ChbStock.getItems().add(Stock.getSymbol());
-//                        }
+
                         updateSymbolsToAll("All",true,true);
                         updateStocksTView("All");
-                        //ObservableList data = FXCollections.observableList(RSEEngine.showAllStocks());
 
                         for(User u:RSEEngine.getUsers().values())
                             ChbUser.getItems().add(u.getUserName());
@@ -229,21 +224,26 @@ public class PrimaryController implements Initializable {
             LblStatus.setText("If not MKT command, you must enter a wanted price.");
             return;
         }
+        try {
+            TradeCommand.direction dir;
+            TradeCommand.commandType type = TradeCommand.commandType.valueOf(ChbType.getValue().toString());
+            if (RdioSell.isSelected())
+                dir = TradeCommand.direction.SELL;
+            else
+                dir = TradeCommand.direction.BUY;
 
-        TradeCommand.direction dir;
-        TradeCommand.commandType type = TradeCommand.commandType.valueOf(ChbType.getValue().toString());
-        if (RdioSell.isSelected())
-            dir = TradeCommand.direction.SELL;
-        else
-            dir = TradeCommand.direction.BUY;
-
-        float price = ChbType.getValue().equals("MKT") ? 0:Float.parseFloat(TxtPrice.getText());
-        String msg = RSEEngine.addTradeCommand(ChbSymbol.getValue().toString(),dir,type,Integer.parseInt(TxtQuantity.getText()),price,RSEEngine.getUser(ChbUser.getValue().toString()));
-        LblStatus.setText(msg);
-        LblStatus.setVisible(true);
-        Reset(null);
-        updateSymbolsToAll(currentUser.getUserName(),false,true);
-        updateStocksTView(RdioMine.isSelected() ? currentUser.getUserName():"All");
+            float price = ChbType.getValue().equals("MKT") ? 0 : Float.parseFloat(TxtPrice.getText());
+            String msg = RSEEngine.addTradeCommand(ChbSymbol.getValue().toString(), dir, type, Integer.parseInt(TxtQuantity.getText()), price, RSEEngine.getUser(ChbUser.getValue().toString()));
+            LblStatus.setText(msg);
+            LblStatus.setVisible(true);
+            Reset(null);
+            updateSymbolsToAll(currentUser.getUserName(), false, true);
+            updateStocksTView(RdioMine.isSelected() ? currentUser.getUserName() : "All");
+        }catch (IllegalArgumentException e){
+            LblStatus.setText(e.getMessage());
+            LblStatus.setVisible(true);
+            Reset(null);
+        }
     }
 
     public void userChosen(ActionEvent actionEvent) {
