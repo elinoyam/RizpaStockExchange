@@ -49,6 +49,7 @@ public class PrimaryController implements Initializable {
     public TableColumn CompanyNameClmn;
     public TableColumn MKTPriceClmn;
     public TableColumn TurnOverClmn;
+    public TableColumn QuantityClmn;
     public RadioButton RdioMine;
     public RadioButton RdioAll;
     private User currentUser;
@@ -100,16 +101,25 @@ public class PrimaryController implements Initializable {
         });
         ///////////// Table View
 
-        //IDClmn = new TableColumn<StockDT,String>()
+        /*stocksViewTable = new TableView<StockDT>();
+        IDClmn = new TableColumn<StockDT,String>();
         SymbolClmn = new TableColumn<StockDT,String>("Symbol");
         CompanyNameClmn = new TableColumn<StockDT,String>("Company");
         MKTPriceClmn = new TableColumn<StockDT, Float>("Market Price");
         TurnOverClmn = new TableColumn<StockDT, Float>("Turnover");
 
-        SymbolClmn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+        SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
         CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<>("companyName"));
         MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<>("sharePrice"));
         TurnOverClmn.setCellValueFactory(new PropertyValueFactory<>("TransTurnover"));
+*/
+
+        SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
+        CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<StockDT, String>("companyName"));
+        QuantityClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Integer>("quantity"));
+        MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("sharePrice"));
+        TurnOverClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("transactionsTurnOver"));
+
 
     }
 
@@ -173,6 +183,9 @@ public class PrimaryController implements Initializable {
                         for(User u:RSEEngine.getUsers().values())
                             ChbUser.getItems().add(u.getUserName());
                         ChbUser.getItems().add("Admin");
+                        ChbUser.setValue("Admin");
+                        RdioMine.setDisable(true);
+                        RdioMine.setSelected(false);
                     });
                 }
                 } catch (FileNotFoundException | JAXBException | InterruptedException e) {
@@ -208,25 +221,29 @@ public class PrimaryController implements Initializable {
     }
 
     public void Submit(ActionEvent actionEvent) {
-        if(ChbSymbol.getValue() == null || ChbType.getValue() == null ||TxtQuantity.getText().isEmpty() /*|| TxtPrice.getText().isEmpty()*/) {
+        if(ChbSymbol.getValue() == null || ChbType.getValue() == null || TxtQuantity.getText().isEmpty()) {
             LblStatus.setText("All fields must be filled to submit a trade command request.");
             return;
         }
-        else if(!ChbType.getValue().equals("MKT") && TxtPrice.getText().isEmpty() ){
+        else if((!ChbType.getValue().equals("MKT")) && TxtPrice.getText().isEmpty() ){
             LblStatus.setText("If not MKT command, you must enter a wanted price.");
             return;
         }
+
         TradeCommand.direction dir;
         TradeCommand.commandType type = TradeCommand.commandType.valueOf(ChbType.getValue().toString());
         if (RdioSell.isSelected())
             dir = TradeCommand.direction.SELL;
         else
             dir = TradeCommand.direction.BUY;
-        String msg = RSEEngine.addTradeCommand(ChbSymbol.getValue().toString(),dir,type,Integer.parseInt(TxtQuantity.getText()),Float.parseFloat(TxtPrice.getText()),RSEEngine.getUser(ChbUser.getValue().toString()));
+
+        float price = ChbType.getValue().equals("MKT") ? 0:Float.parseFloat(TxtPrice.getText());
+        String msg = RSEEngine.addTradeCommand(ChbSymbol.getValue().toString(),dir,type,Integer.parseInt(TxtQuantity.getText()),price,RSEEngine.getUser(ChbUser.getValue().toString()));
         LblStatus.setText(msg);
         LblStatus.setVisible(true);
         Reset(null);
         updateSymbolsToAll(currentUser.getUserName(),false,true);
+        updateStocksTView(RdioMine.isSelected() ? currentUser.getUserName():"All");
     }
 
     public void userChosen(ActionEvent actionEvent) {
@@ -235,11 +252,14 @@ public class PrimaryController implements Initializable {
         if (ChbUser.getValue().equals("Admin")) {
             BtnSubmit.setDisable(true);
             updateSymbolsToAll("All",true,true);
-
+            RdioAll.setSelected(true);
+            RdioMine.setDisable(true);
             TabStock.setDisable(true);
             currentUser = null;
+            updateStocksTView("All");
         } else {
             // for the show stock tab
+            RdioMine.setDisable(false);
             BtnSubmit.setDisable(false);
             TabStock.setDisable(false);
             ChbStock.getItems().clear();
@@ -252,6 +272,11 @@ public class PrimaryController implements Initializable {
 
             else
                 updateSymbolsToAll(currentUserName,false,true);
+
+            if(RdioMine.isSelected())
+                updateStocksTView(currentUserName);
+            else
+                updateStocksTView("All");
         }
     }
 
@@ -295,13 +320,16 @@ public class PrimaryController implements Initializable {
             for(StockDT stock:Stocks) {
                 stocksViewTable.getItems().add(stock);
             }
+            QuantityClmn.setVisible(false);
         }
         else{
             currentUser = RSEEngine.getUser(string);
             for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
                 StockDT stock = RSEEngine.showStock(hold.getStock().getSymbol());
+                stock.setQuantity(currentUser.getUserStockHoldings(hold.getStock().getSymbol()));
                 stocksViewTable.getItems().add(stock);
             }
+            QuantityClmn.setVisible(true);
         }
     }
 
@@ -311,5 +339,16 @@ public class PrimaryController implements Initializable {
 
     public void RdioMineClicked(ActionEvent actionEvent) {
         updateStocksTView(currentUser.getUserName());
+    }
+
+    public void SetType(ActionEvent actionEvent) {
+        if (ChbType.getValue() == null)
+            TxtPrice.setDisable(false);
+        else if(ChbType.getValue().equals(TradeCommand.commandType.MKT.toString())) {
+            TxtPrice.clear();
+            TxtPrice.setDisable(true);
+        }
+        else
+            TxtPrice.setDisable(false);
     }
 }

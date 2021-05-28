@@ -8,6 +8,7 @@ public class StockDT {
     /**
      * The variables that defines a stock.
      */
+    private int quantity;
     private final String companyName;
     private final String symbol;
     private final float sharePrice;
@@ -26,6 +27,19 @@ public class StockDT {
      * @param buy a list of the buy trade commands.
      * @param sell a list of the sell trade commands.
      */
+    public StockDT()
+    {
+        this.companyName = "";
+        this.quantity = 0;
+        this.stockTransactions = null;
+        this.sharePrice = 0;
+        this.sellCommandDTs = null;
+        this.buyCommandDTs = null;
+        this.symbol = "";
+        this.transactionsTurnOver = 0;
+
+    }
+
     public StockDT(String companyName, String symbol, float sharePrice, List<Transaction> transactions, float turnOver,List<TradeCommandDT> buy, List<TradeCommandDT> sell){
         this.companyName = companyName;
         this.symbol = symbol;
@@ -34,7 +48,25 @@ public class StockDT {
         this.transactionsTurnOver = turnOver;
         buyCommandDTs = buy;
         sellCommandDTs = sell;
+        this.quantity = 0;
     }
+
+    //////////////// test
+
+    public StockDT(String symbol,String companyName,float sharePrice,float Turnover, int quantity)
+    {
+        this.symbol = symbol;
+        this.companyName = companyName;
+        this.sharePrice = sharePrice;
+        this.transactionsTurnOver = Turnover;
+        this.stockTransactions = null;
+        this.buyCommandDTs = null;
+        this.sellCommandDTs = null;
+        this.quantity = quantity;
+    }
+
+
+    ////////////////
 
     /**
      * A ctor of a class instance from a stock instance.
@@ -48,6 +80,7 @@ public class StockDT {
         this.transactionsTurnOver = stock.getTransactionsTurnOver();
         buyCommandDTs = stock.getBuyCommandsList();
         sellCommandDTs = stock.getSellCommandsList();
+        this.quantity = 0;
     }
 
     /**
@@ -67,6 +100,19 @@ public class StockDT {
      * @return the share price.
      */
     public float getSharePrice(){ return sharePrice;}
+
+
+    public float getTransactionsTurnOver() {
+        return transactionsTurnOver;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
     /**
      * A method that creates an output string with all the data about the stock.
