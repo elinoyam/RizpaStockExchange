@@ -144,7 +144,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
-                  <Text fx:id="txtStatus" strokeType="OUTSIDE" strokeWidth="0.0" visible="false" />
+                  <Text fx:id="txtStatus" lineSpacing="0.25" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" visible="false" wrappingWidth="200.0" />
                   <ProgressBar fx:id="PBarStatus" disable="true" prefHeight="40.0" prefWidth="200.0" progress="0.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

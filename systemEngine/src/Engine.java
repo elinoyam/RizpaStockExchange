@@ -359,7 +359,7 @@ public class Engine implements Trader {
      */
     @Override
     public String addTradeCommand(String companySymbol, TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice,User user) throws InputMismatchException {
-        if(wantedPrice<=0)
+        if(command!= TradeCommand.commandType.MKT && wantedPrice<=0)
             throw new IllegalArgumentException("Command has been canceled. \n"+ " Price must be a positive number.");
         if(quantity<=0)
             throw new IllegalArgumentException("Command has been canceled. \n"+ " Shares quantity must be a positive number.");
