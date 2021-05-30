@@ -292,9 +292,24 @@ public class Stock {
         TradeCommand sell = sellCommands.peek(); // get the first selling trade
         boolean flag = true;
         int sumShares = 0;
+        boolean needToReturn = false;
+        List<TradeCommand> save = new LinkedList<>();
 
-        if (buy.getPrice() < sell.getPrice())
+        if (buy.getPrice() < sell.getPrice()&& !buy.getUser().equals(sell.getUser()))
             return -1;
+        while(buy.getPrice() < sell.getPrice()&& buy.getUser().equals(sell.getUser())&& priorityFlag.equals(TradeCommand.direction.BUY)){
+            needToReturn = true;
+            save.add(sell);
+            sellCommands.remove();
+            sell = sellCommands.peek();
+        }
+        while(buy.getPrice() < sell.getPrice()&& buy.getUser().equals(sell.getUser())&& priorityFlag.equals(TradeCommand.direction.SELL)){
+            needToReturn = true;
+            save.add(buy);
+            buyCommands.remove();
+            buy = buyCommands.peek();
+        }
+
 
         while (flag && !(buy.getPrice() < sell.getPrice())) {
             // get the minimum quantity for the trade
@@ -324,6 +339,14 @@ public class Stock {
                 sellCommands.remove();
             }
         }
+        if(needToReturn&&priorityFlag.equals(TradeCommand.direction.BUY))
+            while(!save.isEmpty())
+                sellCommands.add(save.remove(0));
+        else if(needToReturn&&priorityFlag.equals(TradeCommand.direction.SELL))
+            while(!save.isEmpty())
+                buyCommands.add(save.remove(0));
+
+
         return sumShares;
     }
 

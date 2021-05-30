@@ -453,7 +453,7 @@ enum View {
 
         stockMKTPrice.setName(stock.getSymbol() +" market price");
         for(Transaction tran: transactions){
-            stockMKTPrice.getData().add(new XYChart.Data<>(tran.getDateStamp().toString(),tran.getPrice()));
+            stockMKTPrice.getData().add(new XYChart.Data<>(tran.getDateStamp().format(Transaction.getDateTimeFormat()),tran.getPrice()));
         }
 
         ChrtView.getData().add(stockMKTPrice);

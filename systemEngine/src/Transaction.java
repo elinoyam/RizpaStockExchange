@@ -61,7 +61,13 @@ public class Transaction {
             }
             else{
                 seller.getUserStocks().get(stock.getSymbol()).setQuantity( seller.getUserStocks().get(stock.getSymbol()).getQuantity()-quantity);
-                buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
+                if(!buyer.getUserStocks().containsKey(stock.getSymbol()))
+                    buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
+                else{
+                    buyer.getUserStocks().get(stock.getSymbol()).setQuantity(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()+quantity);
+                    buyer.getUserStocks().get(stock.getSymbol()).setSharePrice(soldPrice);
+                    buyer.getUserStocks().get(stock.getSymbol()).setTotalHold(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()*soldPrice);
+                }
             }
 
         }
