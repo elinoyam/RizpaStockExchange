@@ -297,17 +297,31 @@ public class Stock {
 
         if (buy.getPrice() < sell.getPrice()&& !buy.getUser().equals(sell.getUser()))
             return -1;
-        while(buy.getPrice() < sell.getPrice()&& buy.getUser().equals(sell.getUser())&& priorityFlag.equals(TradeCommand.direction.BUY)){
+        else if(buy.getUser().equals(sell.getUser())&& priorityFlag.equals(TradeCommand.direction.BUY)) {
             needToReturn = true;
-            save.add(sell);
-            sellCommands.remove();
-            sell = sellCommands.peek();
+            while (!sellCommands.isEmpty() && buy.getPrice() >= sell.getPrice() && buy.getUser().equals(sell.getUser()) && priorityFlag.equals(TradeCommand.direction.BUY)) {
+                save.add(sell);
+                sellCommands.remove();
+                sell = sellCommands.peek();
+            }
+            if (sellCommands.isEmpty() && (sell == null || buy.getUser().equals(sell.getUser()))){  // the while loop stopped because there is no more commands to check
+                while(!save.isEmpty())
+                    sellCommands.add(save.remove(0)); // restore all the same user old sell commands
+                return -1; // there isn't any matching command of a different user
+            }
         }
-        while(buy.getPrice() < sell.getPrice()&& buy.getUser().equals(sell.getUser())&& priorityFlag.equals(TradeCommand.direction.SELL)){
+        else if(buy.getUser().equals(sell.getUser())&& priorityFlag.equals(TradeCommand.direction.SELL)) {
             needToReturn = true;
-            save.add(buy);
-            buyCommands.remove();
-            buy = buyCommands.peek();
+            while (!buyCommands.isEmpty() && buy.getPrice() >= sell.getPrice() && buy.getUser().equals(sell.getUser()) && priorityFlag.equals(TradeCommand.direction.SELL)) {
+                save.add(buy);
+                buyCommands.remove();
+                buy = buyCommands.peek();
+            }
+            if (buyCommands.isEmpty() && (buy == null || buy.getUser().equals(sell.getUser()))) { // the while loop stopped because there is no more commands to check
+                while (!save.isEmpty())
+                    buyCommands.add(save.remove(0)); // restore all the same user old buy commands
+                return -1; // there isn't any matching command of a different user
+            }
         }
 
 
