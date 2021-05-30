@@ -21,7 +21,7 @@ public class UIApp extends Application {
         UX.setBuilderFactory(new JavaFXBuilderFactory());
         Parent load = UX.load(url.openStream());
         Scene primaryScene = new Scene(load , 800,500);
-        primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());
+        //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());
         primaryStage.setScene(primaryScene);
         this.primaryStage.show();
 

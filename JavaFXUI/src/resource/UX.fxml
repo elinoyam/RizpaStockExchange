@@ -28,13 +28,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" styleClass="Dark-UX" fx:controller="PrimaryController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" styleClass="Dark-UX" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PrimaryController">
    <right>
-      <ScrollPane BorderPane.alignment="CENTER">
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <content>
-            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="245.0" styleClass="Dark-UX">
+            <VBox maxHeight="1.7976931348623157E308">
                <children>
-                  <ToolBar maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="240.0">
+                  <ToolBar maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="240.0" VBox.vgrow="NEVER">
                      <items>
                         <Button fx:id="BtnSave" disable="true" mnemonicParsing="false" onAction="#Save" prefHeight="30.0" prefWidth="31.0">
                            <graphic>
@@ -61,104 +61,112 @@
                         </ChoiceBox>
                      </items>
                   </ToolBar>
-                  <HBox alignment="CENTER" prefHeight="23.0" prefWidth="227.0">
-                     <children>
-                        <RadioButton fx:id="RdioBuy" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#BuyStockClicked" selected="true" text="Buy">
-                           <HBox.margin>
-                              <Insets bottom="2.0" left="2.0" right="30.0" top="2.0" />
-                           </HBox.margin>
-                           <toggleGroup>
-                              <ToggleGroup fx:id="BuySell1" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="RdioSell" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#SellStockClicked" text="Sell" toggleGroup="$BuySell1">
-                           <HBox.margin>
-                              <Insets bottom="2.0" left="30.0" right="2.0" top="2.0" />
-                           </HBox.margin>
-                        </RadioButton>
-                     </children>
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <Label text="Symbol">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <ChoiceBox fx:id="ChbSymbol" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefHeight="35.0" prefWidth="200.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </ChoiceBox>
-                  <Label text="Type">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <ChoiceBox fx:id="ChbType" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" onAction="#typeChosen" prefHeight="35.0" prefWidth="200.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </ChoiceBox>
-                  <Label text="Price">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextField fx:id="TxtPrice" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextField>
-                  <Label text="Quantity">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextField fx:id="TxtQuantity" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextField>
-                  <HBox alignment="CENTER" prefHeight="23.0" prefWidth="227.0">
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                     <children>
-                        <Button fx:id="BtnSubmit" disable="true" mnemonicParsing="false" onAction="#Submit" text="Submit">
-                           <HBox.margin>
-                              <Insets bottom="2.0" left="2.0" right="25.0" top="2.0" />
-                           </HBox.margin>
-                        </Button>
-                        <Button fx:id="BtnReset" disable="true" mnemonicParsing="false" onAction="#Reset" text="Reset">
-                           <HBox.margin>
-                              <Insets bottom="2.0" left="25.0" right="2.0" top="2.0" />
-                           </HBox.margin>
-                        </Button>
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <Text fx:id="txtStatus" lineSpacing="0.25" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" visible="false" wrappingWidth="200.0" />
-                  <ProgressBar fx:id="PBarStatus" disable="true" prefHeight="40.0" prefWidth="200.0" progress="0.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </ProgressBar>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308">
+                     <content>
+                        <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="245.0" styleClass="Dark-UX">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="23.0" prefWidth="227.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <RadioButton fx:id="RdioBuy" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#BuyStockClicked" selected="true" text="Buy">
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="30.0" top="2.0" />
+                                       </HBox.margin>
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="BuySell1" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="RdioSell" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#SellStockClicked" text="Sell" toggleGroup="$BuySell1">
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="30.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                 </children>
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <Label text="Symbol">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <ChoiceBox fx:id="ChbSymbol" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefHeight="35.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </ChoiceBox>
+                              <Label text="Type">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <ChoiceBox fx:id="ChbType" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" onAction="#typeChosen" prefHeight="35.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </ChoiceBox>
+                              <Label text="Price">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="TxtPrice" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <Label text="Quantity">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="TxtQuantity" disable="true" maxHeight="35.0" maxWidth="200.0" minHeight="35.0" minWidth="100.0" prefColumnCount="1" prefHeight="35.0" prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="227.0" VBox.vgrow="ALWAYS">
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                                 <children>
+                                    <Button fx:id="BtnSubmit" disable="true" mnemonicParsing="false" onAction="#Submit" text="Submit">
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="25.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button fx:id="BtnReset" disable="true" mnemonicParsing="false" onAction="#Reset" text="Reset">
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="25.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <Text fx:id="txtStatus" lineSpacing="0.25" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" visible="false" wrappingWidth="200.0" VBox.vgrow="ALWAYS" />
+                              <ProgressBar fx:id="PBarStatus" disable="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="200.0" progress="0.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </ProgressBar>
+                           </children>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
          </content>
       </ScrollPane>
    </right>
    <center>
-      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" styleClass="Dark-UX">
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="Dark-UX" BorderPane.alignment="CENTER">
          <content>
-            <TabPane cache="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="41.0" tabMaxWidth="160.0" tabMinHeight="41.0" tabMinWidth="30.0" styleClass="Dark-UX">
+            <TabPane cache="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" styleClass="Dark-UX" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="41.0" tabMaxWidth="160.0" tabMinHeight="41.0" tabMinWidth="30.0">
               <tabs>
                   <Tab>
                      <graphic>
@@ -233,15 +241,15 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab fx:id="TabStock" closable="false" disable="true" text="Stock Details" styleClass="Dark-UX">
+                <Tab fx:id="TabStock" closable="false" disable="true" styleClass="Dark-UX" text="Stock Details">
                      <content>
                         <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="400.0" minWidth="500.0" styleClass="Dark-UX">
                            <content>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="435.0" minWidth="541.0">
                                  <children>
-                                    <HBox minHeight="101.0" minWidth="540.0" VBox.vgrow="ALWAYS" styleClass="Dark-UX">
+                                    <HBox fx:id="HBDetails" alignment="CENTER" minHeight="101.0" minWidth="540.0" styleClass="Dark-UX" VBox.vgrow="ALWAYS">
                                        <children>
-                                          <Pane prefHeight="101.0" prefWidth="161.0">
+                                          <Pane fx:id="PaneOwner" prefHeight="101.0" prefWidth="161.0">
                                              <children>
                                                 <Label fx:id="LblOwnerName" layoutX="20.0" layoutY="14.0" prefHeight="20.0" prefWidth="227.0" text="&lt;name&gt; owns:" underline="true">
                                                    <font>
@@ -266,39 +274,51 @@
                                                 <Label fx:id="LblMktPrice" layoutX="225.0" layoutY="42.0" text="Market Price: &lt;number&gt;" />
                                                 <Label fx:id="LblCompany" layoutX="21.0" layoutY="68.0" text="Company: &lt;name&gt;" />
                                                 <Label layoutX="21.0" layoutY="42.0" text="Symbol:" />
-                                                <ChoiceBox fx:id="ChbView" layoutX="224.0" layoutY="68.0" prefHeight="27.0" prefWidth="133.0" />
+                                                <ChoiceBox fx:id="ChbView" layoutX="224.0" layoutY="68.0" onAction="#viewChosen" prefHeight="27.0" prefWidth="133.0" />
                                              </children>
                                           </Pane>
                                        </children>
                                     </HBox>
-                                    <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" VBox.vgrow="ALWAYS" styleClass="Dark-UX">
+                                    <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" styleClass="Dark-UX" VBox.vgrow="ALWAYS">
                                        <children>
-                                          <LineChart fx:id="ChrtView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" HBox.hgrow="ALWAYS">
-                                            <xAxis>
-                                              <CategoryAxis maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" side="BOTTOM" />
-                                            </xAxis>
-                                            <yAxis>
-                                              <NumberAxis maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" side="LEFT" />
-                                            </yAxis>
-                                          </LineChart>
-                                          <TableView fx:id="tradeViewTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" visible="false" HBox.hgrow="ALWAYS">
-                                            <columns>
-                                              <TableColumn prefWidth="75.0" text="C1" />
-                                              <TableColumn prefWidth="75.0" text="C2" />
-                                            </columns>
-                                             <columnResizePolicy>
-                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                             </columnResizePolicy>
-                                          </TableView>
-                                          <TableView fx:id="transViewTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" visible="false" HBox.hgrow="ALWAYS">
-                                             <columns>
-                                                <TableColumn prefWidth="75.0" text="C1" />
-                                                <TableColumn prefWidth="75.0" text="C2" />
-                                             </columns>
-                                             <columnResizePolicy>
-                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                             </columnResizePolicy>
-                                          </TableView>
+                                          <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <LineChart fx:id="ChrtView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0">
+                                                  <xAxis>
+                                                    <CategoryAxis maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" side="BOTTOM" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                    <NumberAxis maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" side="LEFT" />
+                                                  </yAxis>
+                                                </LineChart>
+                                             </children>
+                                          </Pane>
+                                          <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <TableView fx:id="tradeViewTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" visible="false">
+                                                  <columns>
+                                                    <TableColumn prefWidth="75.0" text="C1" />
+                                                    <TableColumn prefWidth="75.0" text="C2" />
+                                                  </columns>
+                                                   <columnResizePolicy>
+                                                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                   </columnResizePolicy>
+                                                </TableView>
+                                             </children>
+                                          </Pane>
+                                          <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <TableView fx:id="transViewTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" visible="false">
+                                                   <columns>
+                                                      <TableColumn prefWidth="75.0" text="C1" />
+                                                      <TableColumn prefWidth="75.0" text="C2" />
+                                                   </columns>
+                                                   <columnResizePolicy>
+                                                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                   </columnResizePolicy>
+                                                </TableView>
+                                             </children>
+                                          </Pane>
                                        </children>
                                     </HBox>
                                  </children>
@@ -307,13 +327,13 @@
                         </ScrollPane>
                      </content>
                 </Tab>
-                <Tab fx:id="TabAllStocks" disable="true" text="All Stocks" styleClass="Dark-UX">
+                <Tab fx:id="TabAllStocks" disable="true" styleClass="Dark-UX" text="All Stocks">
                      <content>
                         <ScrollPane fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="200.0" styleClass="Dark-UX">
                            <content>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="Dark-UX">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" VBox.vgrow="NEVER" styleClass="Dark-UX">
+                                    <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" styleClass="Dark-UX" VBox.vgrow="NEVER">
                                        <children>
                                           <RadioButton fx:id="RdioMine" mnemonicParsing="false" onAction="#RdioMineClicked" text="Mine">
                                              <HBox.margin>

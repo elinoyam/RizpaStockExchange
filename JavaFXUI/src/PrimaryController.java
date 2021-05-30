@@ -11,6 +11,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -55,8 +56,11 @@ public class PrimaryController implements Initializable {
     public TableColumn QuantityClmn;
     public RadioButton RdioMine;
     public RadioButton RdioAll;
-    public Pane PaneView;
+    public Pane PaneOwner;
     public LineChart<LocalDateTime,Float> ChrtView;
+    public TableView tradeViewTable;
+    public TableView transViewTable;
+    public HBox HBDetails;
 
 
     private User currentUser;
@@ -114,7 +118,6 @@ enum View {
         RSEEngine = Engine.getInstance();
 
 
-
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
             ChbType.getItems().add(c.toString());
 
@@ -135,10 +138,16 @@ enum View {
                 } else {
                     String symbol = ChbStock.getValue().toString();
                     StockDT chosenStock = RSEEngine.getSingleStockData(symbol);
-                    int numberOfHoldings = currentUser.getUserStockHoldings(symbol);
-                    LblQuantity.setText("Quantity:  " + numberOfHoldings);
+                    if(currentUser == null) {
+                        LblQuantity.setText("Quantity: Admin has NaN");
+                        LblTotalValue.setText("Total Value: Admin has NaN");
+
+                    }else {
+                        int numberOfHoldings = currentUser.getUserStockHoldings(symbol);
+                        LblQuantity.setText("Quantity:  " + numberOfHoldings);
+                        LblTotalValue.setText("Total Value: " + chosenStock.getSharePrice() * numberOfHoldings);
+                    }
                     LblCompany.setText("Company: " + chosenStock.getCompanyName());
-                    LblTotalValue.setText("Total Value: " + chosenStock.getSharePrice() * numberOfHoldings);
                     LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
                     if(!(ChbView.getValue() == null) &&ChbView.getValue().toString()=="Share Price Tendency")
                         showStockTransInLineChart(symbol);
@@ -322,9 +331,12 @@ enum View {
             updateSymbolsToAll("All",true,true);
             RdioAll.setSelected(true);
             RdioMine.setDisable(true);
-            TabStock.setDisable(true);
             currentUser = null;
             updateStocksTView("All");
+
+            LblOwnerName.setText("Admin doesn't own stocks: ");
+            HBDetails.getChildren().remove(PaneOwner);
+
         } else {
             // for the show stock tab
             RdioMine.setDisable(false);
@@ -347,6 +359,9 @@ enum View {
                 updateStocksTView("All");
             if(TabStock.isSelected() && !(ChbView.getValue()== null) && ChbView.getValue().toString().equals("Share Price Tendency") && !(ChbStock.getValue()==(null)))
                 showStockTransInLineChart(ChbStock.getValue().toString());
+
+            if(!HBDetails.getChildren().contains(PaneOwner))
+                HBDetails.getChildren().add(0,PaneOwner);
         }
     }
 
@@ -422,21 +437,35 @@ enum View {
             TxtPrice.setDisable(false);
     }
 
-
     public void viewChosen(ActionEvent actionEvent) {
         View choice = View.getView(ChbView.getValue().toString());
         switch (choice) {
             case TREND:
+                transViewTable.setVisible(false);
+                tradeViewTable.setVisible(false);
+                ChrtView.setVisible(true);
                 if(!(ChbStock.getValue()==null))
                     showStockTransInLineChart(ChbStock.getValue().toString());
                 break;
             case BUY_COMMANDS:
+                transViewTable.setVisible(false);
+                tradeViewTable.setVisible(true);
+                ChrtView.setVisible(false);
                 break;
             case SELL_COMMANDS:
+                transViewTable.setVisible(false);
+                tradeViewTable.setVisible(true);
+                ChrtView.setVisible(false);
                 break;
             case ALL_COMMANDS:
+                transViewTable.setVisible(false);
+                tradeViewTable.setVisible(true);
+                ChrtView.setVisible(false);
                 break;
             case TRANSACTIONS:
+                transViewTable.setVisible(true);
+                tradeViewTable.setVisible(false);
+                ChrtView.setVisible(false);
                 break;
         }
 
