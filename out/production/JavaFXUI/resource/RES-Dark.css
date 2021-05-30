@@ -1,19 +1,65 @@
 .root {
     /*-fx-background-image: url("background.jpg");*/
-    -fx-background-color: BLACK;
+    -fx-background-color: #2A5058;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Arial Narrow";
+}
+.Dark-UX {
+    -fx-background-color: #2A5058;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+
+}
+.tab{
+    -fx-background-color: #61a2b1;
+    -fx-border-color: #2A5058;
+
+}
+.menu-bar {
+    -fx-background-color: #61a2b1;
+    -fx-border-color: #2A5058;
 }
 
+.progress-bar:filled {
+    -fx-background-color: #2A5058;
+    -fx-border-color: #61a2b1;
+}
+
+.choice-box {
+    -fx-background-color: #61a2b1;
+    -fx-border-color: #2A5058;
+    -fx-text-fill: #ffffff;
+}
+.choice-box:expanded{
+    -fx-background-color: #85c5d4;
+}
+.text-field {
+    -fx-background-color: #61a2b1;
+    -fx-border-color: #2A5058;
+    -fx-text-fill: #ffffff;
+
+}
+.radio-button{
+    /*-fx-background-color: #61a2b1;*/
+    /*-fx-border-color: #2A5058;*/
+    -fx-fill: #2A5058;
+    -fx-font-weight: bold;
+    -fx-progress-color: #61a2b1;
+    -fx-text-fill: #ffffff;
+}
 .label {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333333;
+    -fx-text-fill: #ffffff;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
 #txtStatus {
-    -fx-fill: FIREBRICK;
+    -fx-fill: #61a2b1;
     -fx-font-weight: bold;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+    -fx-text-fill: #ffffff;
 }
 
 .button {

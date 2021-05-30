@@ -28,11 +28,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PrimaryController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" styleClass="Dark-UX" fx:controller="PrimaryController">
    <right>
       <ScrollPane BorderPane.alignment="CENTER">
          <content>
-            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="245.0">
+            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="245.0" styleClass="Dark-UX">
                <children>
                   <ToolBar maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="240.0">
                      <items>
@@ -156,9 +156,9 @@
       </ScrollPane>
    </right>
    <center>
-      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" styleClass="Dark-UX">
          <content>
-            <TabPane cache="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="41.0" tabMaxWidth="160.0" tabMinHeight="41.0" tabMinWidth="30.0">
+            <TabPane cache="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="41.0" tabMaxWidth="160.0" tabMinHeight="41.0" tabMinWidth="30.0" styleClass="Dark-UX">
               <tabs>
                   <Tab>
                      <graphic>
@@ -169,9 +169,9 @@
                         </ImageView>
                      </graphic>
                      <content>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
+                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" styleClass="Dark-UX">
                            <content>
-                              <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="300.0">
+                              <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="300.0" styleClass="Dark-UX">
                                  <children>
                                     <Label text="Effects" />
                                     <Pane>
@@ -233,13 +233,13 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab fx:id="TabStock" closable="false" disable="true" text="Stock Details">
+                <Tab fx:id="TabStock" closable="false" disable="true" text="Stock Details" styleClass="Dark-UX">
                      <content>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="400.0" minWidth="500.0">
+                        <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="400.0" minWidth="500.0" styleClass="Dark-UX">
                            <content>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="435.0" minWidth="541.0">
                                  <children>
-                                    <HBox minHeight="101.0" minWidth="540.0" VBox.vgrow="ALWAYS">
+                                    <HBox minHeight="101.0" minWidth="540.0" VBox.vgrow="ALWAYS" styleClass="Dark-UX">
                                        <children>
                                           <Pane prefHeight="101.0" prefWidth="161.0">
                                              <children>
@@ -271,7 +271,7 @@
                                           </Pane>
                                        </children>
                                     </HBox>
-                                    <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" VBox.vgrow="ALWAYS">
+                                    <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" VBox.vgrow="ALWAYS" styleClass="Dark-UX">
                                        <children>
                                           <LineChart fx:id="ChrtView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" HBox.hgrow="ALWAYS">
                                             <xAxis>
@@ -307,13 +307,13 @@
                         </ScrollPane>
                      </content>
                 </Tab>
-                <Tab fx:id="TabAllStocks" disable="true" text="All Stocks">
+                <Tab fx:id="TabAllStocks" disable="true" text="All Stocks" styleClass="Dark-UX">
                      <content>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="200.0">
+                        <ScrollPane fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="200.0" styleClass="Dark-UX">
                            <content>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="Dark-UX">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" VBox.vgrow="NEVER">
+                                    <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" VBox.vgrow="NEVER" styleClass="Dark-UX">
                                        <children>
                                           <RadioButton fx:id="RdioMine" mnemonicParsing="false" onAction="#RdioMineClicked" text="Mine">
                                              <HBox.margin>
