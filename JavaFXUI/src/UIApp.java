@@ -26,6 +26,7 @@ public class UIApp extends Application {
         Parent load = UX.load(url.openStream());
         controller = UX.getController();
         primaryScene = new Scene(load , 800,500);
+        addStyleSheet(style.DARK);
         primaryStage.setScene(primaryScene);
         this.primaryStage.show();
 
@@ -33,12 +34,13 @@ public class UIApp extends Application {
     }
 
     public void addStyleSheet(style chosenStyle){
-        primaryScene.getStylesheets().clear();
+        if(!primaryScene.getStylesheets().isEmpty())
+            primaryScene.getStylesheets().clear();
         switch (chosenStyle){
             case BASE:
                 break;
             case GREY:
-                //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());
+                primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Grey.css").toExternalForm());
                 break;
             case DARK:
                 primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());

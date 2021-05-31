@@ -12,26 +12,26 @@
 
 }
 .Dark-UX2 {
-    -fx-background-color: #a7a7a7;
+    -fx-background-color: #a47070;
     -fx-text-fill: black;
     -fx-font-family: "Arial Narrow";
     -fx-font-weight: bold;
 
 }
 #rightScrollPane{
-    -fx-background-color: #a7a7a7;
+    -fx-background-color: #795050;
 }
 #rightVBox{
-    -fx-background-color: #a7a7a7;
+    -fx-background-color: #795050;
 }
 .tab{
-    -fx-background-color: #61a2b1;
-    -fx-border-color: #2A5058;
+    -fx-background-color: #ba1347;
+    -fx-border-color: #c16681;
 
 }
 .menu-bar {
-    -fx-background-color: #61a2b1;
-    -fx-border-color: #2A5058;
+    -fx-background-color: #c16681;
+    -fx-border-color: #960077;
 }
 
 .progress-bar:filled {
@@ -40,29 +40,29 @@
 }
 
 .choice-box {
-    -fx-background-color: #61a2b1;
-    -fx-border-color: #2A5058;
+    -fx-background-color: grey;
+    -fx-border-color: #ba1347;
     -fx-text-fill: #ffffff;
-    -fx-mark-color: #00ffe1;
+    -fx-mark-color: #ff6c77;
 }
 .choice-box .context-menu {
-    -fx-background-color: #08505a;
+    -fx-background-color: #ba1347;
     -fx-text-fill: #ffffff;
 
 }
 
 .text-field {
-    -fx-background-color: #61a2b1;
-    -fx-border-color: #2A5058;
+    -fx-background-color: grey;
+    -fx-border-color: #ba1347;
     -fx-text-fill: #ffffff;
 
 }
 .radio-button{
     /*-fx-background-color: #61a2b1;*/
     /*-fx-border-color: #2A5058;*/
-    -fx-fill: #2A5058;
+    -fx-fill: #ba1347;
     -fx-font-weight: bold;
-    -fx-progress-color: #61a2b1;
+    -fx-progress-color: #ba1347;
     -fx-text-fill: #ffffff;
 }
 .label {
@@ -73,9 +73,9 @@
 }
 
 #txtStatus {
-    -fx-fill: #115767;
+    -fx-fill: #f3efef;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+    /*-fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );*/
     -fx-text-fill: #ffffff;
 }
 
@@ -83,10 +83,10 @@
     -fx-text-fill: white;
     -fx-font-family: "Arial Narrow";
     -fx-font-weight: bold;
-    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-background-color: linear-gradient(#ba1347, #2A5058);
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }
 
 .button:hover {
-    -fx-background-color: linear-gradient(#2A5058, #61a2b1);
+    -fx-background-color: linear-gradient(#2A5058, #ba1347);
 }

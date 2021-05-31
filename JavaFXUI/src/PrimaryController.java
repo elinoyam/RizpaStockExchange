@@ -1,8 +1,5 @@
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -16,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -64,15 +62,31 @@ public class PrimaryController implements Initializable {
     public Slider SlidEffects;
     public Slider SlidTheme;
 
+    public Slider getSlidEffects() {
+
+        return SlidEffects;
+    }
 
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
     private Object lock1 = new Object();
-
+    private BooleanProperty styleSliderChanged = new SimpleBooleanProperty();
     private Engine RSEEngine;
 
-enum View {
+    public boolean isStyleSliderChanged() {
+        return styleSliderChanged.get();
+    }
+
+    public BooleanProperty styleSliderChangedProperty() {
+        return styleSliderChanged;
+    }
+
+    public void setStyleSliderChanged(boolean styleSliderChanged) {
+        this.styleSliderChanged.set(styleSliderChanged);
+    }
+
+    enum View {
 
     TREND(1,"Share Price Tendency"),
     BUY_COMMANDS(2,"Buy Trade Commands"),
@@ -119,6 +133,7 @@ enum View {
     public void initialize(URL location, ResourceBundle resources) {
         RSEEngine = Engine.getInstance();
 
+        styleSliderChanged.bind(SlidTheme.valueChangingProperty());
 
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
             ChbType.getItems().add(c.toString());
