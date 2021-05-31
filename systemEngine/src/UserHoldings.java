@@ -2,11 +2,13 @@ public class UserHoldings {
     private final String symbol;
     private final Stock stock;
     private int quantity;
+    private int freeShares;
     private float totalHold;
     private float sharePrice;
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+        this.totalHold = quantity*stock.getSharePrice(); // the total hold needs to be updated according to the new quantity
     }
 
     public float getTotalHold() {
@@ -30,7 +32,7 @@ public class UserHoldings {
     public UserHoldings(String symbol, Stock stock, int quantity, float sharePrice) {
         this.symbol = symbol;
         this.stock = stock;
-        this.quantity = quantity;
+        this.freeShares = this.quantity = quantity;
         this.sharePrice = sharePrice;
         totalHold = sharePrice*quantity;
     }
@@ -45,5 +47,13 @@ public class UserHoldings {
 
     public Stock getStock() {
         return stock;
+    }
+
+    public int getFreeShares() {
+        return freeShares;
+    }
+
+    public void setFreeShares(int freeShares) {
+        this.freeShares = freeShares;
     }
 }

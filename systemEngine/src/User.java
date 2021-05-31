@@ -58,5 +58,17 @@ public class User {
         return userStocks.get(stockSymbol).getQuantity();
     }
 
+    public int getUserFreeHoldings(Stock stock){
+        if(!userStocks.containsKey(stock.getSymbol()))
+            throw new InvalidKeyException("The user "+ userName +" don't have shares of the stock " + stock.getSymbol());
+        return userStocks.get(stock.getSymbol()).getFreeShares();
+    }
+    public int getUserFreeHoldings(String stockSymbol){
+        if(!userStocks.containsKey(stockSymbol))
+            throw new InvalidKeyException("The user "+ userName +" don't have shares of the stock " + stockSymbol);
+        return userStocks.get(stockSymbol).getFreeShares();
+    }
+
+
 
 }

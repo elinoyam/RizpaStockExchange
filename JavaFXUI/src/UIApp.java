@@ -9,7 +9,11 @@ import java.net.URL;
 
 public class UIApp extends Application {
 
+    enum style {BASE, GREY, DARK}
+
     private Stage primaryStage;
+    private Scene primaryScene;
+    private PrimaryController controller;
 
 
     @Override
@@ -20,12 +24,26 @@ public class UIApp extends Application {
         UX.setLocation(url);
         UX.setBuilderFactory(new JavaFXBuilderFactory());
         Parent load = UX.load(url.openStream());
-        Scene primaryScene = new Scene(load , 800,500);
-        //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());
+        controller = UX.getController();
+        primaryScene = new Scene(load , 800,500);
         primaryStage.setScene(primaryScene);
         this.primaryStage.show();
 
 
+    }
+
+    public void addStyleSheet(style chosenStyle){
+        primaryScene.getStylesheets().clear();
+        switch (chosenStyle){
+            case BASE:
+                break;
+            case GREY:
+                //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());
+                break;
+            case DARK:
+                primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Dark.css").toExternalForm());
+                break;
+        }
     }
 
     public static void main(String[] args) {

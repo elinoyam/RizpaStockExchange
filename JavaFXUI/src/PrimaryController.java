@@ -61,6 +61,8 @@ public class PrimaryController implements Initializable {
     public TableView tradeViewTable;
     public TableView transViewTable;
     public HBox HBDetails;
+    public Slider SlidEffects;
+    public Slider SlidTheme;
 
 
     private User currentUser;
@@ -240,7 +242,7 @@ enum View {
                         BtnSave.setDisable(false);
                         ChbUser.setDisable(false);
                         BtnReset.setDisable(false);
-                        BtnSubmit.setDisable(false);
+//                        BtnSubmit.setDisable(false);
                         ChbSymbol.setDisable(false);
                         ChbType.setDisable(false);
                         TxtQuantity.setDisable(false);

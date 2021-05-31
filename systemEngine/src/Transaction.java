@@ -17,11 +17,12 @@ public class Transaction {
      * All the variables that defines a made transaction
      */
     final private LocalDateTime dateStamp;
-    //final private User buyer; //for future needs
-    //final private User seller; //for future needs
     final private int quantity;
     final private float turnOver; // =quantity * price
     final private float price; // save the price the shares really sold for
+    final private User buyer;
+    final private User seller;
+
 
     public User getBuyer() {
         return buyer;
@@ -30,9 +31,6 @@ public class Transaction {
     public User getSeller() {
         return seller;
     }
-
-    final private User buyer;
-    final private User seller;
 
     /**
      * A ctor of a transaction instance.
@@ -64,9 +62,11 @@ public class Transaction {
                 if(!buyer.getUserStocks().containsKey(stock.getSymbol()))
                     buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
                 else{
-                    buyer.getUserStocks().get(stock.getSymbol()).setQuantity(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()+quantity);
-                    buyer.getUserStocks().get(stock.getSymbol()).setSharePrice(soldPrice);
-                    buyer.getUserStocks().get(stock.getSymbol()).setTotalHold(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()*soldPrice);
+                    UserHoldings holdings = buyer.getUserStocks().get(stock.getSymbol());
+                    holdings.setQuantity(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()+quantity);
+                    holdings.setSharePrice(soldPrice);
+                    holdings.setTotalHold(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()*soldPrice);
+                    holdings.setFreeShares(holdings.getFreeShares()+quantity);
                 }
             }
 

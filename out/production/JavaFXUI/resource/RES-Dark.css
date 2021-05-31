@@ -11,6 +11,19 @@
     -fx-font-weight: bold;
 
 }
+.Dark-UX2 {
+    -fx-background-color: #a7a7a7;
+    -fx-text-fill: black;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+
+}
+#rightScrollPane{
+    -fx-background-color: #a7a7a7;
+}
+#rightVBox{
+    -fx-background-color: #a7a7a7;
+}
 .tab{
     -fx-background-color: #61a2b1;
     -fx-border-color: #2A5058;
@@ -30,10 +43,14 @@
     -fx-background-color: #61a2b1;
     -fx-border-color: #2A5058;
     -fx-text-fill: #ffffff;
+    -fx-mark-color: #00ffe1;
 }
-.choice-box:expanded{
-    -fx-background-color: #85c5d4;
+.choice-box .context-menu {
+    -fx-background-color: #08505a;
+    -fx-text-fill: #ffffff;
+
 }
+
 .text-field {
     -fx-background-color: #61a2b1;
     -fx-border-color: #2A5058;
@@ -56,7 +73,7 @@
 }
 
 #txtStatus {
-    -fx-fill: #61a2b1;
+    -fx-fill: #115767;
     -fx-font-weight: bold;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
     -fx-text-fill: #ffffff;

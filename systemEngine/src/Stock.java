@@ -230,8 +230,8 @@ public class Stock {
      */
    public String addTradeCommand(TradeCommand.direction dir, TradeCommand.commandType command, int quantity, float wantedPrice, User user){
        TradeCommand tr;
-       if(dir == TradeCommand.direction.SELL && quantity> user.getUserStockHoldings(this.getSymbol()))
-           throw new IllegalArgumentException("Command has been canceled. \n"+user.getUserName() + " has only " + user.getUserStockHoldings(this.getSymbol())+ " shares of this stock.");
+       if(dir == TradeCommand.direction.SELL && quantity> user.getUserFreeHoldings(this.getSymbol()))
+           throw new IllegalArgumentException("Command has been canceled. \n"+user.getUserName() + " has only " + user.getUserFreeHoldings(this.getSymbol())+ " shares of this stock left to trade.");
        if(command != TradeCommand.commandType.MKT)
            tr = new TradeCommand(dir, command, quantity, wantedPrice, this.getSymbol(),user);
         else{
@@ -399,6 +399,8 @@ public class Stock {
                 buyCommands.add(command);
                 break;
             case SELL:
+                UserHoldings holdings = command.getUser().getUserStocks().get(command.getSymbol());
+                holdings.setFreeShares(holdings.getFreeShares()-command.getQuantity());
                 sellCommands.add(command);
                 break;
         }
