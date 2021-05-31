@@ -192,7 +192,7 @@ enum View {
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
 
-            //ChbSymbol.getItems().re
+
             ChbStock.getItems().removeAll(ChbStock.getItems());
             ChbUser.getItems().removeAll(ChbUser.getItems());
             ChbSymbol.getItems().removeAll(ChbSymbol.getItems());
@@ -483,8 +483,8 @@ enum View {
         XYChart.Series stockMKTPrice = new XYChart.Series();
 
         stockMKTPrice.setName(stock.getSymbol() +" market price");
-        for(Transaction tran: transactions){
-            stockMKTPrice.getData().add(new XYChart.Data<>(tran.getDateStamp().format(Transaction.getDateTimeFormat()),tran.getPrice()));
+        for(int i = transactions.size()-1;i>=0;i--){//Transaction tran: transactions){
+            stockMKTPrice.getData().add(new XYChart.Data<>(" " +transactions.get(i).getDateStamp().format(Transaction.getDateTimeFormat()).toString()+" ",transactions.get(i).getPrice()));
         }
 
         ChrtView.getData().add(stockMKTPrice);

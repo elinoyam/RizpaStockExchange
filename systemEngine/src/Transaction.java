@@ -53,22 +53,22 @@ public class Transaction {
             this.buyer = buyer;
             this.seller = seller;
 
-            if(seller.getUserStockHoldings(stock.getSymbol()) == quantity){
+            if(seller.getUserStockHoldings(stock.getSymbol()) == quantity)
                 seller.getUserStocks().remove(stock.getSymbol());
-                buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
-            }
-            else{
+            else
                 seller.getUserStocks().get(stock.getSymbol()).setQuantity( seller.getUserStocks().get(stock.getSymbol()).getQuantity()-quantity);
-                if(!buyer.getUserStocks().containsKey(stock.getSymbol()))
+
+            if(!buyer.getUserStocks().containsKey(stock.getSymbol()))
                     buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
-                else{
+            else{
                     UserHoldings holdings = buyer.getUserStocks().get(stock.getSymbol());
-                    holdings.setQuantity(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()+quantity);
+                    holdings.setQuantity(holdings.getQuantity()+quantity);
                     holdings.setSharePrice(soldPrice);
-                    holdings.setTotalHold(buyer.getUserStocks().get(stock.getSymbol()).getQuantity()*soldPrice);
+                    holdings.setTotalHold(holdings.getQuantity()*soldPrice);
                     holdings.setFreeShares(holdings.getFreeShares()+quantity);
-                }
             }
+
+
 
         }
     }
