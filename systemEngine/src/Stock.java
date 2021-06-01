@@ -154,7 +154,7 @@ public class Stock {
         for(int i=0;i<size;++i) {
             TradeCommand command = buyCommands.poll();
             tmp.add(command);
-            res.add(new TradeCommandDT(command.getDirection(),command.getCommandType(),command.getQuantity(),command.getPrice(),command.getSymbol(),command.getDate()));
+            res.add(new TradeCommandDT(command.getDirection(),command.getQuantity(),command.getSymbol(), command.getPrice(),command.getDate(),command.getCommandType(),command.getUser()));
         }
         buyCommands = tmp;
         return res;
@@ -171,7 +171,7 @@ public class Stock {
         for(int i=0;i<size;++i){
             TradeCommand command = sellCommands.poll();
             tmp.add(command);
-            res.add(new TradeCommandDT(command.getDirection(),command.getCommandType(),command.getQuantity(),command.getPrice(),command.getSymbol(),command.getDate()));
+            res.add(new TradeCommandDT(command.getDirection(),command.getQuantity(),command.getSymbol(), command.getPrice(),command.getDate(),command.getCommandType(),command.getUser()));
         }
         sellCommands = tmp;
         return res;
@@ -396,11 +396,13 @@ public class Stock {
     private String LMTHandler(TradeCommand command){
         switch (command.getDirection()){ // this is the only command that always saves the command to the queue
             case BUY:
+                command.getUser().addUserTradeCommand(command,command.getDirection());
                 buyCommands.add(command);
                 break;
             case SELL:
                 UserHoldings holdings = command.getUser().getUserStocks().get(command.getSymbol());
                 holdings.setFreeShares(holdings.getFreeShares()-command.getQuantity());
+                command.getUser().addUserTradeCommand(command,command.getDirection());
                 sellCommands.add(command);
                 break;
         }

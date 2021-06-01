@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -56,16 +57,34 @@ public class PrimaryController implements Initializable {
     public RadioButton RdioAll;
     public Pane PaneOwner;
     public LineChart<LocalDateTime,Float> ChrtView;
-    public TableView tradeViewTable;
-    public TableView transViewTable;
     public HBox HBDetails;
     public Slider SlidEffects;
     public Slider SlidTheme;
 
-    public Slider getSlidEffects() {
+    public VBox ttVBox;
+    //public HBox HBView;
+    public HBox HBoxTrade;
+    public HBox HBoxTrans;
+    public HBox HBoxRdio;
+    public TableView transViewTable;
+    public TableView tradeViewTable;
+    public TableColumn TSColumn;
+    public TableColumn TSColumn1;
+    public TableColumn UserColumn;
+    public TableColumn SellerColumn;
+    public TableColumn BuyerColumn;
+    public TableColumn TypeColumn;
+    public TableColumn PColumn;
+    public TableColumn QColumn;
+    public TableColumn TColumn;
+    public TableColumn PColumn1;
+    public TableColumn QColumn1;
+    public TableColumn TColumn1;
+    public TableColumn DirColumn;
+    public RadioButton rdioViewMine;
+    public RadioButton rdioViewAll;
 
-        return SlidEffects;
-    }
+
 
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
@@ -84,6 +103,23 @@ public class PrimaryController implements Initializable {
 
     public void setStyleSliderChanged(boolean styleSliderChanged) {
         this.styleSliderChanged.set(styleSliderChanged);
+    }
+
+    public void symbolChosen(ActionEvent actionEvent) {
+        if(!ChbType.getSelectionModel().isEmpty() && TradeCommand.commandType.valueOf(ChbType.getValue().toString()) == TradeCommand.commandType.MKT && !ChbSymbol.getSelectionModel().isEmpty()) {
+            StockDT sDT = RSEEngine.getSingleStockData(ChbSymbol.getValue().toString());
+            TxtPrice.setText(""+sDT.getSharePrice());
+         }
+    }
+
+    public void AllViewSelected(ActionEvent actionEvent) {
+        UserColumn.setVisible(true);
+        tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
+    }
+
+    public void MineViewSelected(ActionEvent actionEvent) {
+        UserColumn.setVisible(false);
+        tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
     }
 
     enum View {
@@ -133,6 +169,8 @@ public class PrimaryController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         RSEEngine = Engine.getInstance();
 
+        ttVBox.getChildren().removeAll(HBoxTrade,HBoxTrans,HBoxRdio);
+
         styleSliderChanged.bind(SlidTheme.valueChangingProperty());
 
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
@@ -152,6 +190,7 @@ public class PrimaryController implements Initializable {
                     LblMktPrice.setText("Market Price: <number>");
                     if(!ChrtView.getData().isEmpty())
                         ChrtView.getData().clear();
+                    ChbView.setDisable(true);
                 } else {
                     String symbol = ChbStock.getValue().toString();
                     StockDT chosenStock = RSEEngine.getSingleStockData(symbol);
@@ -168,6 +207,8 @@ public class PrimaryController implements Initializable {
                     LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
                     if(!(ChbView.getValue() == null) &&ChbView.getValue().toString()=="Share Price Tendency")
                         showStockTransInLineChart(symbol);
+                    ChbView.setDisable(false);
+                    tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
                 }
 
             }
@@ -187,11 +228,30 @@ public class PrimaryController implements Initializable {
                 txtStatus.setText(statusString.getValue());});
         });
 
+        TSColumn1.setComparator(TSColumn1.getComparator().reversed());
+        tradeViewTable.getSortOrder().add(TSColumn1);
+
+
+        //Stocks
         SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
         CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<StockDT, String>("companyName"));
         QuantityClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Integer>("quantity"));
         MKTPriceClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("sharePrice"));
         TurnOverClmn.setCellValueFactory(new PropertyValueFactory<StockDT, Float>("transactionsTurnOver"));
+
+        //TradeCommands
+        TSColumn1.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("formattedDateTime"));
+        UserColumn.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("user"));
+        TypeColumn.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("commandType"));
+        QColumn1.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("quantity"));
+        PColumn1.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("wantedPrice"));
+        TColumn1.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("turnover"));
+        DirColumn.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("direction"));
+
+        //Transaction
+
+
+
 
     }
 
@@ -338,6 +398,7 @@ public class PrimaryController implements Initializable {
             txtStatus.setVisible(true);
             Reset(null);
         }
+        tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
     }
 
     public void userChosen(ActionEvent actionEvent) {
@@ -441,13 +502,19 @@ public class PrimaryController implements Initializable {
 
     public void RdioMineClicked(ActionEvent actionEvent) {
         updateStocksTView(currentUser.getUserName());
+
     }
 
     public void typeChosen(ActionEvent actionEvent) {
         if (ChbType.getValue() == null)
             TxtPrice.setDisable(false);
         else if(ChbType.getValue().equals(TradeCommand.commandType.MKT.toString())) {
-            TxtPrice.clear();
+            if (!ChbSymbol.getSelectionModel().isEmpty()) {
+                StockDT sDT = RSEEngine.getSingleStockData(ChbSymbol.getValue().toString());
+                TxtPrice.setText(""+sDT.getSharePrice());
+            }
+            else
+                TxtPrice.clear();
             TxtPrice.setDisable(true);
         }
         else
@@ -455,34 +522,43 @@ public class PrimaryController implements Initializable {
     }
 
     public void viewChosen(ActionEvent actionEvent) {
+
+        if(ChbView.getValue()==null)
+            return;
         View choice = View.getView(ChbView.getValue().toString());
+
+        transViewTable.getItems().clear();
+        DirColumn.setVisible(false);
+        if(!ttVBox.getChildren().isEmpty())
+            ttVBox.getChildren().clear();
+
+
         switch (choice) {
             case TREND:
-                transViewTable.setVisible(false);
-                tradeViewTable.setVisible(false);
-                ChrtView.setVisible(true);
+                ttVBox.getChildren().add(ChrtView);
                 if(!(ChbStock.getValue()==null))
                     showStockTransInLineChart(ChbStock.getValue().toString());
                 break;
+
             case BUY_COMMANDS:
-                transViewTable.setVisible(false);
-                tradeViewTable.setVisible(true);
-                ChrtView.setVisible(false);
+                ttVBox.getChildren().addAll(HBoxRdio,HBoxTrade);
+                tradeCommandViewUpdate(currentUser == null ? "All":currentUser.toString());
                 break;
+
             case SELL_COMMANDS:
-                transViewTable.setVisible(false);
-                tradeViewTable.setVisible(true);
-                ChrtView.setVisible(false);
+                ttVBox.getChildren().addAll(HBoxRdio,HBoxTrade);
+                tradeCommandViewUpdate(currentUser == null ? "All":currentUser.toString());
                 break;
+
             case ALL_COMMANDS:
-                transViewTable.setVisible(false);
-                tradeViewTable.setVisible(true);
-                ChrtView.setVisible(false);
+                DirColumn.setVisible(true);
+                ttVBox.getChildren().addAll(HBoxRdio,HBoxTrade);
+                tradeCommandViewUpdate(currentUser == null ? "All":currentUser.toString());
                 break;
+
             case TRANSACTIONS:
-                transViewTable.setVisible(true);
-                tradeViewTable.setVisible(false);
-                ChrtView.setVisible(false);
+                ttVBox.getChildren().addAll(HBoxRdio,HBoxTrans);
+
                 break;
         }
 
@@ -505,5 +581,77 @@ public class PrimaryController implements Initializable {
         ChrtView.getData().add(stockMKTPrice);
 
     }
+
+
+    public void tradeCommandViewUpdate(String user) {
+        if(ChbView.getValue()==null || ChbStock.getValue()==null)
+            return;
+
+        tradeViewTable.getItems().clear();
+        if(!rdioViewMine.isSelected())
+            user = "All";
+
+        if (user.equals("All")) {
+            switch (ChbView.getValue().toString()) {
+                case "Buy Trade Commands":
+                    tradeViewTable.getItems().addAll(RSEEngine.getSingleStockData(ChbStock.getValue().toString()).getBuysCommands());
+                    break;
+                case "Sell Trade Commands":
+                    tradeViewTable.getItems().addAll(RSEEngine.getSingleStockData(ChbStock.getValue().toString()).getSellsCommands());
+                    break;
+                case "All Trade Commands":
+                    tradeViewTable.getItems().addAll(RSEEngine.getSingleStockData(ChbStock.getValue().toString()).getBuysCommands());
+                    tradeViewTable.getItems().addAll(RSEEngine.getSingleStockData(ChbStock.getValue().toString()).getSellsCommands());
+                default:
+                    return;
+            }
+
+        } else {
+            switch (ChbView.getValue().toString()) {
+                case "Buy Trade Commands":
+                    if (!currentUser.getUserBuyCommands().isEmpty()) {
+                        for (TradeCommand tc : currentUser.getUserBuyCommands().values()) {
+                            if (tc.getSymbol().equals(ChbStock.getValue().toString())) {
+                                TradeCommandDT dt = new TradeCommandDT(tc.getDirection(), tc.getQuantity(), tc.getSymbol(), tc.getPrice(), tc.getDate(), tc.getCommandType(), currentUser);
+                                tradeViewTable.getItems().add(dt);
+                            }
+                        }
+                    }
+                    break;
+                case "Sell Trade Commands":
+                    if (!currentUser.getUserSellCommands().isEmpty()) {
+                        for (TradeCommand tc : currentUser.getUserSellCommands().values()) {
+                            if (tc.getSymbol().equals(ChbStock.getValue().toString())) {
+                                TradeCommandDT dt = new TradeCommandDT(tc.getDirection(), tc.getQuantity(), tc.getSymbol(), tc.getPrice(), tc.getDate(), tc.getCommandType(), currentUser);
+                                tradeViewTable.getItems().add(dt);
+                            }
+                        }
+                    }
+                    break;
+                case "All Trade Commands":
+                    if (!currentUser.getUserBuyCommands().isEmpty()) {
+                        for (TradeCommand tc : currentUser.getUserBuyCommands().values()) {
+                            if (tc.getSymbol().equals(ChbStock.getValue().toString())) {
+                                TradeCommandDT dt = new TradeCommandDT(tc.getDirection(), tc.getQuantity(), tc.getSymbol(), tc.getPrice(), tc.getDate(), tc.getCommandType(), currentUser);
+                                tradeViewTable.getItems().add(dt);
+                            }
+                        }
+                    }
+                    if (!currentUser.getUserSellCommands().isEmpty()) {
+                        for (TradeCommand tc : currentUser.getUserSellCommands().values()) {
+                            if (tc.getSymbol().equals(ChbStock.getValue().toString())) {
+                                TradeCommandDT dt = new TradeCommandDT(tc.getDirection(), tc.getQuantity(), tc.getSymbol(), tc.getPrice(), tc.getDate(), tc.getCommandType(), currentUser);
+                                tradeViewTable.getItems().add(dt);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    return;
+            }
+        }
+        tradeViewTable.sort();
+    }
+
 }
 

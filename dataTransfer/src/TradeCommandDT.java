@@ -19,7 +19,10 @@ public class TradeCommandDT {
     final private String symbol;
     final private float wantedPrice;
     final private LocalDateTime DateTimeStamp;
+    final private String formattedDateTime;
     final private TradeCommand.commandType commandType;
+    private User user;
+    final private float turnover;
 
     /**
      * A ctor of class instance from the needed variables to define a trade command.
@@ -37,6 +40,21 @@ public class TradeCommandDT {
         this.wantedPrice = whatPrice;
         this.commandType = type;
         this.DateTimeStamp = dateTimeStamp;
+        this.formattedDateTime = dateTimeStamp.format(dateTimeFormat);
+        this.user = null;
+        this.turnover = whatPrice * howMany;
+    }
+
+    public TradeCommandDT(TradeCommand.direction direction, int quantity, String symbol, float wantedPrice, LocalDateTime dateTimeStamp, TradeCommand.commandType commandType, User user) {
+        this.direction = direction;
+        this.quantity = quantity;
+        this.symbol = symbol;
+        this.wantedPrice = wantedPrice;
+        DateTimeStamp = dateTimeStamp;
+        this.formattedDateTime = dateTimeStamp.format(dateTimeFormat);
+        this.commandType = commandType;
+        this.user = user;
+        this.turnover = wantedPrice*quantity;
     }
 
     /**
@@ -52,7 +70,7 @@ public class TradeCommandDT {
      * @return the traded stock symbol.
      */
     public String getSymbol() {
-        return this.symbol;
+        return symbol;
     }
 
     /**
@@ -60,7 +78,7 @@ public class TradeCommandDT {
      * @return  the quantity of share to trade with.
      */
     public int getQuantity() {
-        return this.quantity;
+        return quantity;
     }
 
     /**
@@ -68,7 +86,7 @@ public class TradeCommandDT {
      * @return the desired price per share.
      */
     public float getPrice() {
-        return this.wantedPrice;
+        return wantedPrice;
     }
 
     /**
@@ -76,7 +94,7 @@ public class TradeCommandDT {
      * @return the trade command type.
      */
     public TradeCommand.commandType getCommandType() {
-        return this.commandType;
+        return commandType;
     }
 
     /**
@@ -88,7 +106,29 @@ public class TradeCommandDT {
                 "Total turn over for command is " + (quantity*wantedPrice);
     }
 
+    public String getFormattedDateTime() {
+        return formattedDateTime;
+    }
+
     public LocalDateTime getDateTimeStamp() {
         return DateTimeStamp;
     }
+
+    public float getWantedPrice() {
+        return wantedPrice;
+    }
+
+    public float getTurnover() {
+        return turnover;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+
 }
