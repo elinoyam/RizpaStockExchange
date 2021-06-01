@@ -90,18 +90,18 @@ public class PrimaryController implements Initializable {
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
     private Object lock1 = new Object();
-    private BooleanProperty styleSliderChanged = new SimpleBooleanProperty();
+    private DoubleProperty styleSliderChanged = new SimpleDoubleProperty();
     private Engine RSEEngine;
 
-    public boolean isStyleSliderChanged() {
+    public double isStyleSliderChanged() {
         return styleSliderChanged.get();
     }
 
-    public BooleanProperty styleSliderChangedProperty() {
+    public DoubleProperty styleSliderChangedProperty() {
         return styleSliderChanged;
     }
 
-    public void setStyleSliderChanged(boolean styleSliderChanged) {
+    public void setStyleSliderChanged(double styleSliderChanged) {
         this.styleSliderChanged.set(styleSliderChanged);
     }
 
@@ -171,7 +171,7 @@ public class PrimaryController implements Initializable {
 
         ttVBox.getChildren().removeAll(HBoxTrade,HBoxTrans,HBoxRdio);
 
-        styleSliderChanged.bind(SlidTheme.valueChangingProperty());
+        styleSliderChanged.bind(SlidTheme.valueProperty());
 
         for(TradeCommand.commandType c: TradeCommand.commandType.values())
             ChbType.getItems().add(c.toString());

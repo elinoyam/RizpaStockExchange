@@ -337,20 +337,25 @@ public class Stock {
             // need to check if there's any leftover shares
             if (buy.getQuantity() - sell.getQuantity() > 0) { // there are more buying shares awaiting
                 buy.setQuantity(buy.getQuantity() - sell.getQuantity()); // updating the number of shares to buy
+                sell.getUser().removeUserTradeCommand(sell.getDate(), TradeCommand.direction.SELL,sell);    // remove this trade command from the user sell commands list
                 sellCommands.remove(); // removing the first sell command
                 sell = sellCommands.peek(); // check if there are more shares to trade
                 if (sell == null)
                     flag = false;
             } else if (sell.getQuantity() - buy.getQuantity() > 0) {
                 sell.setQuantity(sell.getQuantity() - buy.getQuantity());
+                buy.getUser().removeUserTradeCommand(buy.getDate(), TradeCommand.direction.BUY,buy);     // remove this trade command from the user buy commands list
                 buyCommands.remove();
                 buy = buyCommands.peek(); // check if there are more shares to trade
                 if (buy == null)
                     flag = false;
             } else { // the quantities were equal - remove both of them from the queue
                 flag = false;
-                buyCommands.remove();
-                sellCommands.remove();
+                buy.getUser().removeUserTradeCommand(buy.getDate(), TradeCommand.direction.BUY,buy);
+                buyCommands.remove();   // remove this trade command from the user buy commands list
+                sell.getUser().removeUserTradeCommand(sell.getDate(), TradeCommand.direction.SELL,sell);
+                sellCommands.remove();  // remove this trade command from the user sell commands list
+
             }
         }
         if(needToReturn&&priorityFlag.equals(TradeCommand.direction.BUY))

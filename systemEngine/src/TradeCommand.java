@@ -62,6 +62,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
             this.commandType = type;
             this.dateTimeStamp = LocalDateTime.now();
             this.user = usr;
+            user.addUserTradeCommand(this,dir);
         }
     }
 
@@ -80,6 +81,7 @@ public class TradeCommand implements Comparable<TradeCommand>{
             this.commandType = type;
             this.dateTimeStamp = dateTimeStamp;
             this.user = usr;
+            user.addUserTradeCommand(this,dir);
         }
     }
 

@@ -68,7 +68,6 @@ public class UIApp extends Application {
         primaryStage.setScene(primaryScene);
         this.primaryStage.show();
 
-
     }
 
     public void addStyleSheet(int oldValue , int newValue){

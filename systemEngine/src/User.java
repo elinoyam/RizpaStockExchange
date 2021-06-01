@@ -1,4 +1,7 @@
 import javax.management.openmbean.InvalidKeyException;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -14,15 +17,23 @@ public class User {
 
     private Map<String,UserHoldings> userStocks;
     private float totalHoldingsValue;
+    private List<Transaction> userTransactions;
+    private Map<LocalDateTime,TradeCommand> userBuyCommands;
+    private Map<LocalDateTime,TradeCommand> userSellCommands;
 
     User(String name){
         this.userName = name;
         this.userStocks = new TreeMap<>();
         totalHoldingsValue =0;
-
+        this.userTransactions = new LinkedList<>();
+        userBuyCommands = new TreeMap<>();
+        userSellCommands = new TreeMap<>();
     }
     User(String name,Map<String,UserHoldings> stocks){
         this.userName = name;
+        this.userTransactions = new LinkedList<>();
+        userBuyCommands = new TreeMap<>();
+        userSellCommands = new TreeMap<>();
         if(!stocks.equals(null))
             this.userStocks = stocks;
         else
@@ -31,6 +42,24 @@ public class User {
         for(UserHoldings stock : userStocks.values()){
             totalHoldingsValue += (stock.getStock().getSharePrice()*stock.getQuantity());
         }
+    }
+
+    public void addUserTradeCommand(TradeCommand command,TradeCommand.direction dir){
+        if(dir == TradeCommand.direction.SELL)
+            userSellCommands.put(command.getDate(),command);
+        else
+            userBuyCommands.put(command.getDate(),command);
+    }
+
+    public void removeUserTradeCommand(LocalDateTime time, TradeCommand.direction dir, TradeCommand command){
+        if(dir == TradeCommand.direction.SELL)
+            userSellCommands.remove(time,command);
+        else
+            userBuyCommands.remove(time,command);
+    }
+
+    public void addUserTransaction(Transaction transaction){
+        userTransactions.add(transaction);
     }
 
     public String getUserName() {
@@ -70,5 +99,20 @@ public class User {
     }
 
 
+    public Map<LocalDateTime, TradeCommand> getUserBuyCommands() {
+        return userBuyCommands;
+    }
 
+    public List<Transaction> getUserTransactions() {
+        return userTransactions;
+    }
+
+    public Map<LocalDateTime, TradeCommand> getUserSellCommands() {
+        return userSellCommands;
+    }
+
+    @Override
+    public String toString() {
+        return userName;
+    }
 }
