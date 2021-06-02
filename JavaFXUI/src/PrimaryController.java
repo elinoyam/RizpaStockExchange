@@ -5,7 +5,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
@@ -100,15 +102,13 @@ public class PrimaryController implements Initializable {
 
 
 
-
-
-
+    ///////////
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
-    private Object lock1 = new Object();
     private DoubleProperty styleSliderChanged = new SimpleDoubleProperty();
     private Engine RSEEngine;
+    FileLoadTask task;
 
     public double isStyleSliderChanged() {
         return styleSliderChanged.get();
@@ -189,6 +189,15 @@ public class PrimaryController implements Initializable {
         RSEEngine = Engine.getInstance();
 
         ttVBox.getChildren().removeAll(HBoxTrade,HBoxTrans,HBoxRdio);
+
+        EnableAnimated(false);
+        SlidEffects.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                boolean state = newValue.intValue()==0 ? false:true;
+                EnableAnimated(state);
+            }
+        });
 
         styleSliderChanged.bind(SlidTheme.valueProperty());
 
@@ -281,10 +290,17 @@ public class PrimaryController implements Initializable {
         PColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("price"));
     }
 
+    private void EnableAnimated(boolean state) {
+        ChrtShares.setAnimated(state);
+        ChrtView.setAnimated(state);
+        ChrtWorth.setAnimated(state);
+    }
+
     public void Save(ActionEvent actionEvent) {
     }
 
     public void Load(ActionEvent actionEvent) throws JAXBException, FileNotFoundException, InterruptedException {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open XML File");
         fileChooser.getExtensionFilters().addAll(
@@ -292,85 +308,47 @@ public class PrimaryController implements Initializable {
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
-
-
-            ChbStock.getItems().removeAll(ChbStock.getItems());
-            ChbUser.getItems().removeAll(ChbUser.getItems());
-            ChbSymbol.getItems().removeAll(ChbSymbol.getItems());
-
-            new Thread(()->{
-                try {synchronized (lock1) {
-                    BtnSave.setDisable(true);
-                    ChbUser.setDisable(true);
-                    BtnReset.setDisable(true);
-                    BtnSubmit.setDisable(true);
-                    ChbSymbol.setDisable(true);
-                    ChbType.setDisable(true);
-                    TxtQuantity.setDisable(true);
-                    TxtPrice.setDisable(true);
-                    TabStock.setDisable(true);
-                    TabAllStocks.setDisable(true);
-                    RdioSell.setDisable(true);
-                    RdioBuy.setDisable(true);
-
-
-                    readingProgress.setValue(0);
-                    statusString.setValue("Fetching File..");
-                    txtStatus.setVisible(true);
-                    lock1.wait(1000);
-                    RSEEngine.uploadDataFromFile(selectedFile.getAbsolutePath(),readingProgress,statusString);
-
-                    lock1.wait(500);
-                    statusString.setValue("Reading of file completed!");
-                    readingProgress.setValue(1);
-                    Platform.runLater(()->{
-                        StockDT[] stocks = RSEEngine.showAllStocks().toArray(new StockDT[0]); //gets an array of the existing stocks
-                        for (StockDT st : stocks) {                                        //for each stock it prints the full data about the stock.
-                            System.out.println(st.toString());
-                        } // TODO: before submission we need to delete it
-
-
-                        updateSymbolsToAll("All",true,true);
-                        updateStocksTView("All");
-
-                        for(User u:RSEEngine.getUsers().values())
-                            ChbUser.getItems().add(u.getUserName());
-                        ChbUser.getItems().add("Admin");
-                        ChbUser.setValue("Admin");
-                        RdioMine.setDisable(true);
-                        RdioMine.setSelected(false);
-                        TabPortfolio.setDisable(true);
-
-                        BtnSave.setDisable(false);
-                        ChbUser.setDisable(false);
-                        BtnReset.setDisable(false);
-//                        BtnSubmit.setDisable(false);
-                        ChbSymbol.setDisable(false);
-                        ChbType.setDisable(false);
-                        TxtQuantity.setDisable(false);
-                        TxtPrice.setDisable(false);
-                        TabStock.setDisable(false);
-                        TabAllStocks.setDisable(false);
-                        RdioSell.setDisable(false);
-                        RdioBuy.setDisable(false);
-                        RdioBuy.setSelected(true);
-                    });
+            txtStatus.setVisible(true);
+            task = new FileLoadTask(selectedFile.getAbsolutePath(),RSEEngine);
+            txtStatus.textProperty().bind(task.messageProperty());
+            PBarStatus.progressProperty().bind(task.progressProperty());
+            task.valueProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    EnableComponents(newValue.booleanValue());
+                    txtStatus.textProperty().unbind();
+                    PBarStatus.progressProperty().unbind();
                 }
-                } catch (FileNotFoundException | JAXBException | InterruptedException|NullPointerException e) {
-                    System.out.println("Problem in reading the Xml file.\n");
-                    System.out.println(e.getMessage());
-                    e.printStackTrace();
-
-                    Platform.runLater(()->{
-                        txtStatus.setText("Invalid File." /*+ e.getMessage()*/ + " Please select a new valid file.");
-                        readingProgress.setValue(0);}
-                        );
-                    Thread.currentThread().stop();
-
-                }
-            }).start();
+            });
+            new Thread(task).start();
 
         }
+    }
+
+    private void EnableComponents(boolean state){
+
+        updateSymbolsToAll("All",state,state);
+        updateStocksTView("All");
+
+        for(User u:RSEEngine.getUsers().values())
+            ChbUser.getItems().add(u.getUserName());
+        ChbUser.getItems().add("Admin");
+        ChbUser.setValue("Admin");
+        RdioMine.setDisable(state);
+        RdioMine.setSelected(!state);
+        TabPortfolio.setDisable(state);
+        BtnSave.setDisable(!state);
+        ChbUser.setDisable(!state);
+        BtnReset.setDisable(!state);
+        ChbSymbol.setDisable(!state);
+        ChbType.setDisable(!state);
+        TxtQuantity.setDisable(!state);
+        TxtPrice.setDisable(!state);
+        TabStock.setDisable(!state);
+        TabAllStocks.setDisable(!state);
+        RdioSell.setDisable(!state);
+        RdioBuy.setDisable(!state);
+        RdioBuy.setSelected(state);
     }
 
     public void Reset(ActionEvent actionEvent) {
@@ -443,6 +421,8 @@ public class PrimaryController implements Initializable {
             currentUser = null;
             updateStocksTView("All");
             TabPortfolio.setDisable(true);
+            if(TabPortfolio.isSelected())
+                TabAllStocks.getTabPane().getSelectionModel().select(TabAllStocks);
             LblOwnerName.setText("Admin doesn't own stocks: ");
             HBDetails.getChildren().remove(PaneOwner);
 
