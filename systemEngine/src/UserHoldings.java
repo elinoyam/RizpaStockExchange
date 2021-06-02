@@ -11,7 +11,13 @@ public class UserHoldings {
         this.totalHold = quantity*stock.getSharePrice(); // the total hold needs to be updated according to the new quantity
     }
 
+    /**
+     *
+     * @return the total holds the user have of this stock.
+     * the function is updating the total holdings according to the current share price.
+     */
     public float getTotalHold() {
+        totalHold = stock.getSharePrice() *quantity;
         return totalHold;
     }
 
@@ -26,7 +32,6 @@ public class UserHoldings {
     public void setSharePrice(float sharePrice) {
         this.sharePrice = sharePrice;
     }
-
 
 
     public UserHoldings(String symbol, Stock stock, int quantity, float sharePrice) {

@@ -43,6 +43,7 @@ public class PrimaryController implements Initializable {
     public RadioButton RdioSell;
     public Tab TabStock;
     public Tab TabAllStocks;
+    public Tab TabPortfolio;
     public ChoiceBox ChbUser;
     public ProgressBar PBarStatus;
     public Text txtStatus;
@@ -89,6 +90,16 @@ public class PrimaryController implements Initializable {
     public TableColumn DirColumn;
     public RadioButton rdioViewMine;
     public RadioButton rdioViewAll;
+
+
+
+    public Text txtWelcome;
+    public Text txtTotalWorth;
+    public PieChart ChrtShares;
+    public StackedAreaChart ChrtWorth;
+
+
+
 
 
 
@@ -187,6 +198,10 @@ public class PrimaryController implements Initializable {
         for(View v:View.values())
             ChbView.getItems().add(v.opText);
 
+        TabPortfolio.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(currentUser!=null && TabPortfolio.isSelected()){
+                portfolioUpdate(currentUser.getUserName());
+            }});
 
         ChbStock.valueProperty().addListener(new ChangeListener(){
             @Override
@@ -324,6 +339,7 @@ public class PrimaryController implements Initializable {
                         ChbUser.setValue("Admin");
                         RdioMine.setDisable(true);
                         RdioMine.setSelected(false);
+                        TabPortfolio.setDisable(true);
 
                         BtnSave.setDisable(false);
                         ChbUser.setDisable(false);
@@ -404,6 +420,7 @@ public class PrimaryController implements Initializable {
             Reset(null);
             updateSymbolsToAll(currentUser.getUserName(), false, true);
             updateStocksTView(RdioMine.isSelected() ? currentUser.getUserName() : "All");
+            txtTotalWorth.setText("Total Worth: "+currentUser.getTotalHoldingsValue());
         }catch (IllegalArgumentException e){
             txtStatus.setText(e.getMessage());
             txtStatus.setVisible(true);
@@ -425,7 +442,7 @@ public class PrimaryController implements Initializable {
             rdioViewMine.setDisable(true);
             currentUser = null;
             updateStocksTView("All");
-
+            TabPortfolio.setDisable(true);
             LblOwnerName.setText("Admin doesn't own stocks: ");
             HBDetails.getChildren().remove(PaneOwner);
 
@@ -440,6 +457,9 @@ public class PrimaryController implements Initializable {
             currentUser = RSEEngine.getUser(currentUserName);
 
             LblOwnerName.setText(currentUserName + " owns: ");
+            TabPortfolio.setDisable(false);
+            portfolioUpdate(ChbUser.getValue().toString());
+
             if (RdioSell.isSelected())
                 updateSymbolsToAll(currentUserName,true,true);
 

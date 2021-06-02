@@ -11,9 +11,7 @@ import java.util.TreeMap;
 public class User {
     private final String userName;
 
-    public Map<String, UserHoldings> getUserStocks() {
-        return userStocks;
-    }
+
 
     private Map<String,UserHoldings> userStocks;
     private float totalHoldingsValue;
@@ -67,7 +65,13 @@ public class User {
     }
 
     public float getTotalHoldingsValue() {
+        totalHoldingsValue =0;
+        for(UserHoldings hold: userStocks.values())
+            totalHoldingsValue += hold.getQuantity()*hold.getStock().getSharePrice();
         return totalHoldingsValue;
+    }
+    public void setTotalHoldingsValue(float newValue) {
+        totalHoldingsValue=newValue;
     }
 
     /**
@@ -112,6 +116,9 @@ public class User {
         return userSellCommands;
     }
 
+    public Map<String, UserHoldings> getUserStocks() {
+        return userStocks;
+    }
     @Override
     public String toString() {
         return userName;
