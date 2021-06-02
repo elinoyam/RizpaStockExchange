@@ -1,10 +1,15 @@
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class PrimaryController implements Initializable {
     public Button BtnReset;
@@ -115,11 +121,13 @@ public class PrimaryController implements Initializable {
     public void AllViewSelected(ActionEvent actionEvent) {
         UserColumn.setVisible(true);
         tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
+        transViewUpdate(currentUser==null ? "All":currentUser.getUserName());
     }
 
     public void MineViewSelected(ActionEvent actionEvent) {
         UserColumn.setVisible(false);
         tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
+        transViewUpdate(currentUser==null ? "All":currentUser.getUserName());
     }
 
     enum View {
@@ -209,6 +217,7 @@ public class PrimaryController implements Initializable {
                         showStockTransInLineChart(symbol);
                     ChbView.setDisable(false);
                     tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
+                    transViewUpdate(currentUser==null ? "All":currentUser.getUserName());
                 }
 
             }
@@ -249,10 +258,12 @@ public class PrimaryController implements Initializable {
         DirColumn.setCellValueFactory(new PropertyValueFactory<TradeCommandDT, String>("direction"));
 
         //Transaction
-
-
-
-
+        TSColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("formattedTimestamp"));
+        SellerColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("seller"));
+        BuyerColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("buyer"));
+        QColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("quantity"));
+        TColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("turnover"));
+        PColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("price"));
     }
 
     public void Save(ActionEvent actionEvent) {
@@ -399,6 +410,7 @@ public class PrimaryController implements Initializable {
             Reset(null);
         }
         tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
+        transViewUpdate(currentUser==null ? "All":currentUser.getUserName());
     }
 
     public void userChosen(ActionEvent actionEvent) {
@@ -409,6 +421,8 @@ public class PrimaryController implements Initializable {
             updateSymbolsToAll("All",true,true);
             RdioAll.setSelected(true);
             RdioMine.setDisable(true);
+            rdioViewAll.setSelected(true);
+            rdioViewMine.setDisable(true);
             currentUser = null;
             updateStocksTView("All");
 
@@ -418,6 +432,7 @@ public class PrimaryController implements Initializable {
         } else {
             // for the show stock tab
             RdioMine.setDisable(false);
+            rdioViewMine.setDisable(false);
             BtnSubmit.setDisable(false);
             TabStock.setDisable(false);
             ChbStock.getItems().clear();
@@ -558,7 +573,7 @@ public class PrimaryController implements Initializable {
 
             case TRANSACTIONS:
                 ttVBox.getChildren().addAll(HBoxRdio,HBoxTrans);
-
+                transViewUpdate(currentUser == null ? "All":currentUser.toString());
                 break;
         }
 
@@ -581,7 +596,6 @@ public class PrimaryController implements Initializable {
         ChrtView.getData().add(stockMKTPrice);
 
     }
-
 
     public void tradeCommandViewUpdate(String user) {
         if(ChbView.getValue()==null || ChbStock.getValue()==null)
@@ -607,6 +621,7 @@ public class PrimaryController implements Initializable {
             }
 
         } else {
+            currentUser = RSEEngine.getUser(user);
             switch (ChbView.getValue().toString()) {
                 case "Buy Trade Commands":
                     if (!currentUser.getUserBuyCommands().isEmpty()) {
@@ -653,5 +668,41 @@ public class PrimaryController implements Initializable {
         tradeViewTable.sort();
     }
 
+    public void transViewUpdate(String user){
+
+        if(ChbStock.getValue()==null)
+            return;
+
+        transViewTable.getItems().clear();
+
+        if(user.equals("All") || rdioViewAll.isSelected()) {
+            transViewTable.getItems().addAll(RSEEngine.showAllTransactions().values()
+                    .stream()
+                    .filter(p-> p.getSymbol().equals(ChbStock.getValue()))
+                    .collect(Collectors.toList()));
+        } else {
+            currentUser = RSEEngine.getUser(user);
+            transViewTable.getItems().addAll(currentUser.getUserTransactions()
+                 .stream()
+                 .filter(p-> p.getSymbol().equals(ChbStock.getValue()))
+                    .collect(Collectors.toList()));
+        }
+    }
+
+    public void portfolioUpdate(String user){
+        if(user == null || user.equals("All"))
+            return;
+
+        txtWelcome.setText(currentUser.getUserName()+ "'s Portfolio");
+        txtTotalWorth.setText("Total Worth: "+currentUser.getTotalHoldingsValue());
+        List<PieChart.Data> sharesData = currentUser.getUserStocks().values()
+                .stream()
+                .map(p-> new PieChart.Data(p.getSymbol(),p.getTotalHold()))
+                .collect(Collectors.toList());
+        ObservableList<PieChart.Data> shares = FXCollections.observableArrayList(sharesData);
+        ChrtShares.setData(shares);
+        sharesData.forEach(data -> data.nameProperty().bind(
+                Bindings.concat(data.getName(),"\n", data.pieValueProperty())));
+    }
 }
 

@@ -17,12 +17,15 @@ public class Transaction {
      * All the variables that defines a made transaction
      */
     final private LocalDateTime dateStamp;
+    final private String formattedTimestamp;
+    final private String symbol;
     final private int quantity;
-    final private float turnOver; // =quantity * price
+    final private float turnover; // =quantity * price
     final private float price; // save the price the shares really sold for
     final private User buyer;
     final private User seller;
 
+    public String getSymbol() { return symbol; }
 
     public User getBuyer() {
         return buyer;
@@ -47,11 +50,18 @@ public class Transaction {
             throw new InputMismatchException("Invalid price per share, should be a positive real number.");
         else {
             dateStamp = LocalDateTime.now();
+            formattedTimestamp = dateStamp.format(dateTimeFormat);
+            this.symbol = stock.getSymbol();
             this.quantity = quantity;
             this.price = soldPrice;
-            this.turnOver = quantity * soldPrice;
+            this.turnover = quantity * soldPrice;
             this.buyer = buyer;
             this.seller = seller;
+
+            this.buyer.addUserTransaction(this);
+            this.seller.addUserTransaction(this);
+            buyer.setTotalHoldingsValue(buyer.getTotalHoldingsValue()+turnover);
+            seller.setTotalHoldingsValue(seller.getTotalHoldingsValue()-turnover);
 
             if(seller.getUserStockHoldings(stock.getSymbol()) == quantity)
                 seller.getUserStocks().remove(stock.getSymbol());
@@ -73,7 +83,7 @@ public class Transaction {
         }
     }
 
-    public Transaction(int quantity, float soldPrice, LocalDateTime datetimeStamp, User buyer, User seller){
+    public Transaction(int quantity, float soldPrice, LocalDateTime datetimeStamp, User buyer, User seller, String stock) {
 
         if(quantity<=0)
             throw new InputMismatchException("Invalid number of traded shares, should be a positive integer.");
@@ -81,13 +91,21 @@ public class Transaction {
             throw new InputMismatchException("Invalid price per share, should be a positive real number.");
         else {
             dateStamp = datetimeStamp;
+            formattedTimestamp = dateStamp.format(dateTimeFormat);
+            this.symbol = stock;
             this.quantity = quantity;
             this.price = soldPrice;
-            this.turnOver = quantity * soldPrice;
+            this.turnover = quantity * soldPrice;
             this.buyer = buyer;
             this.seller = seller;
+
+            this.buyer.addUserTransaction(this);
+            this.seller.addUserTransaction(this);
+            buyer.setTotalHoldingsValue(buyer.getTotalHoldingsValue()+turnover);
+            seller.setTotalHoldingsValue(seller.getTotalHoldingsValue()-turnover);
         }
     }
+
     /**
      * A method that creates a string with all the data about the transaction.
      * @return all the data about the transaction.
@@ -101,8 +119,8 @@ public class Transaction {
      * A getter of the made transaction turnover.
      * @return
      */
-    public float getTurnOver() {
-        return turnOver;
+    public float getTurnover() {
+        return turnover;
     }
 
     /**
@@ -143,5 +161,9 @@ public class Transaction {
 
     public static DateTimeFormatter getDateTimeFormat() {
         return dateTimeFormat;
+    }
+
+    public String getFormattedTimestamp() {
+        return formattedTimestamp;
     }
 }

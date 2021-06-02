@@ -193,7 +193,7 @@ public class Stock {
         float res =0;
 
         for(Transaction tr : stockTransactions){                               //Go through all the transactions and summing their turn over total
-            res+= tr.getTurnOver();
+            res+= tr.getTurnover();
         }
         return res;
     }

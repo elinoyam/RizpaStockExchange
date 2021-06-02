@@ -5,6 +5,8 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.StackedAreaChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
@@ -241,13 +243,13 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab fx:id="TabStock" closable="false" disable="true" styleClass="Dark-UX" text="Stock Details">
+                <Tab fx:id="TabStock" closable="false" styleClass="Dark-UX" text="Stock Details">
                      <content>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="400.0" minWidth="500.0" styleClass="Dark-UX2">
+                        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="400.0" prefWidth="500.0" styleClass="Dark-UX2">
                            <content>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="435.0" minWidth="541.0">
                                  <children>
-                                    <HBox fx:id="HBDetails" alignment="CENTER" minHeight="101.0" minWidth="540.0" styleClass="Dark-UX2" VBox.vgrow="ALWAYS">
+                                    <HBox fx:id="HBDetails" alignment="CENTER" minHeight="101.0" minWidth="540.0" spacing="3.0" styleClass="Dark-UX2" VBox.vgrow="ALWAYS">
                                        <children>
                                           <Pane fx:id="PaneOwner" prefHeight="101.0" prefWidth="161.0">
                                              <children>
@@ -278,12 +280,18 @@
                                              </children>
                                           </Pane>
                                        </children>
+                                       <VBox.margin>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </VBox.margin>
+                                       <padding>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </padding>
                                     </HBox>
-                                    <HBox fx:id="HBView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" styleClass="Dark-UX2" VBox.vgrow="ALWAYS">
+                                    <HBox fx:id="HBView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" spacing="3.0" styleClass="Dark-UX2" VBox.vgrow="ALWAYS">
                                        <children>
-                                          <VBox fx:id="ttVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                                          <VBox fx:id="ttVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="3.0" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <HBox fx:id="HBoxRdio" alignment="CENTER_LEFT" maxHeight="35.0" maxWidth="1.7976931348623157E308" prefHeight="35.0" VBox.vgrow="ALWAYS">
+                                                <HBox fx:id="HBoxRdio" alignment="CENTER_LEFT" maxHeight="35.0" maxWidth="1.7976931348623157E308" prefHeight="35.0" spacing="3.0" VBox.vgrow="ALWAYS">
                                                    <children>
                                                       <RadioButton fx:id="rdioViewMine" mnemonicParsing="false" onAction="#MineViewSelected" text="Mine">
                                                          <HBox.margin>
@@ -302,18 +310,33 @@
                                                          </HBox.margin>
                                                       </RadioButton>
                                                    </children>
+                                                   <padding>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </padding>
+                                                   <VBox.margin>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </VBox.margin>
                                                 </HBox>
-                                                <LineChart fx:id="ChrtView" legendVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="325.0" minWidth="541.0" prefHeight="327.0" prefWidth="541.0">
+                                                <LineChart fx:id="ChrtView" legendVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="541.0" VBox.vgrow="ALWAYS">
                                                   <xAxis>
                                                     <CategoryAxis maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" side="BOTTOM" />
                                                   </xAxis>
                                                   <yAxis>
                                                     <NumberAxis maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" side="LEFT" />
                                                   </yAxis>
+                                                   <opaqueInsets>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </opaqueInsets>
+                                                   <VBox.margin>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </VBox.margin>
+                                                   <padding>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </padding>
                                                 </LineChart>
-                                                <HBox fx:id="HBoxTrans" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                                <HBox fx:id="HBoxTrans" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="3.0" VBox.vgrow="ALWAYS">
                                                    <children>
-                                                      <TableView fx:id="transViewTable" focusTraversable="false">
+                                                      <TableView fx:id="transViewTable" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="327.0" prefWidth="541.0" HBox.hgrow="ALWAYS">
                                                          <columns>
                                                             <TableColumn fx:id="TSColumn" prefWidth="75.0" sortType="DESCENDING" text="Timestamp" />
                                                             <TableColumn fx:id="SellerColumn" prefWidth="75.0" text="Seller" />
@@ -325,12 +348,24 @@
                                                          <columnResizePolicy>
                                                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                                          </columnResizePolicy>
+                                                         <HBox.margin>
+                                                            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                         </HBox.margin>
+                                                         <padding>
+                                                            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                         </padding>
                                                       </TableView>
                                                    </children>
+                                                   <VBox.margin>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </VBox.margin>
+                                                   <padding>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </padding>
                                                 </HBox>
-                                                <HBox fx:id="HBoxTrade" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                                <HBox fx:id="HBoxTrade" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="3.0" VBox.vgrow="ALWAYS">
                                                    <children>
-                                                      <TableView fx:id="tradeViewTable">
+                                                      <TableView fx:id="tradeViewTable" prefHeight="327.0" prefWidth="541.0" HBox.hgrow="ALWAYS">
                                                          <columns>
                                                             <TableColumn fx:id="TSColumn1" prefWidth="75.0" text="Timestamp" />
                                                             <TableColumn fx:id="UserColumn" prefWidth="75.0" text="User" />
@@ -343,19 +378,43 @@
                                                          <columnResizePolicy>
                                                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                                          </columnResizePolicy>
+                                                         <HBox.margin>
+                                                            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                         </HBox.margin>
+                                                         <padding>
+                                                            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                         </padding>
                                                       </TableView>
                                                    </children>
+                                                   <VBox.margin>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </VBox.margin>
+                                                   <padding>
+                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                   </padding>
                                                 </HBox>
                                              </children>
                                              <HBox.margin>
-                                                <Insets />
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                                              </HBox.margin>
+                                             <padding>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </padding>
                                           </VBox>
                                        </children>
+                                       <VBox.margin>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </VBox.margin>
+                                       <padding>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </padding>
                                     </HBox>
                                  </children>
                               </VBox>
                            </content>
+                           <padding>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </padding>
                         </ScrollPane>
                      </content>
                 </Tab>
@@ -400,6 +459,74 @@
                         </ScrollPane>
                      </content>
                 </Tab>
+                  <Tab fx:id="TabPortfolio" closable="false" disable="true" text="Portfolio">
+                     <content>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                           <content>
+                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                 <children>
+                                    <HBox alignment="CENTER" prefHeight="60.0" prefWidth="539.0" VBox.vgrow="NEVER">
+                                       <children>
+                                          <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="54.0" prefWidth="539.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <Text fx:id="txtWelcome" lineSpacing="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt;Name&gt;'s Portfolio">
+                                                   <font>
+                                                      <Font size="28.0" />
+                                                   </font>
+                                                </Text>
+                                                <Text fx:id="txtTotalWorth" strokeType="OUTSIDE" strokeWidth="0.0" text="Total Worth:">
+                                                   <font>
+                                                      <Font size="19.0" />
+                                                   </font>
+                                                </Text>
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </padding>
+                                             <HBox.margin>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </HBox.margin>
+                                          </VBox>
+                                       </children>
+                                    </HBox>
+                                    <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="340.0" prefWidth="539.0" spacing="3.0" VBox.vgrow="ALWAYS">
+                                       <padding>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </padding>
+                                       <VBox.margin>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <PieChart fx:id="ChrtShares" legendVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="345.0" prefWidth="304.0" title="Shares Holding" HBox.hgrow="ALWAYS">
+                                             <HBox.margin>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </HBox.margin>
+                                             <padding>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </padding>
+                                          </PieChart>
+                                          <StackedAreaChart fx:id="ChrtWorth" legendVisible="false" maxHeight="1.7976931348623157E308" prefHeight="338.0" prefWidth="306.0" HBox.hgrow="ALWAYS">
+                                            <xAxis>
+                                              <NumberAxis side="BOTTOM" />
+                                            </xAxis>
+                                            <yAxis>
+                                              <NumberAxis side="LEFT" />
+                                            </yAxis>
+                                             <HBox.margin>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </HBox.margin>
+                                             <padding>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                             </padding>
+                                          </StackedAreaChart>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
+                     </content>
+                  </Tab>
               </tabs>
                <opaqueInsets>
                   <Insets />

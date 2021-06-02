@@ -171,7 +171,7 @@ public class Engine implements Trader {
             {
                 RseTransactions newRseTran = new RseTransactions();
                 newRseTran.setRsePrice(tran.getPrice());
-                newRseTran.setRseTurnover(tran.getTurnOver());
+                newRseTran.setRseTurnover(tran.getTurnover());
                 newRseTran.setRseDateTime(tran.getDateStamp().toString());
                 newRseTran.setRseQuantity(tran.getQuantity());
                 rseTransactions.add(newRseTran);
@@ -317,7 +317,7 @@ public class Engine implements Trader {
             transactions = new LinkedList<>();
             rseTransactions = rs.getRseTransactions();
             for (RseTransactions tran : rseTransactions)
-                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime()), users.get(tran.getRseBuyer()),users.get(tran.getRseSeller())));
+                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime()), users.get(tran.getRseBuyer()),users.get(tran.getRseSeller()),tran.getRseStock()));
         }
         return new Stock(company,symbol,price,buyCommands,sellCommands,transactions);
     }
@@ -376,6 +376,15 @@ public class Engine implements Trader {
      */
     public List<StockDT> showAllCommands(){ // fifth option - for future use. for now just return the same as showAllStocks()
         return showAllStocks(); // same data is in both of them
+    }
+
+
+    public Map<LocalDateTime, Transaction> showAllTransactions() {
+        Map<LocalDateTime,Transaction> transactions = new TreeMap<>();
+        for(Stock s: stocks.values())
+            for(Transaction tr: s.getStockTransactions())
+                transactions.put(tr.getDateStamp(),tr);
+        return transactions;
     }
 
     /**

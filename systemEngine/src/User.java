@@ -99,6 +99,7 @@ public class User {
     }
 
 
+
     public Map<LocalDateTime, TradeCommand> getUserBuyCommands() {
         return userBuyCommands;
     }

@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "rse-transactions")
 public class RseTransactions {
 
+    @XmlElement(name = "rse-date-and-time",required = false)
+    protected String symbol;
     @XmlElement(name = "rse-date-and-time",required = true)
     protected String rseDateTime;
     @XmlElement(name = "rse-quantity", required = true)
@@ -100,4 +102,6 @@ public class RseTransactions {
     public void setRseTurnover(float rseTurnover) {
         this.rseTurnover = rseTurnover;
     }
+
+    public String getRseStock() { return symbol; }
 }
