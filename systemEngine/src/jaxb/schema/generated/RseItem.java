@@ -42,13 +42,12 @@ public class RseItem {
     protected String symbol;
     @XmlAttribute(name = "quantity", required = true)
     protected int quantity;
+    @XmlAttribute (name = "share-price")
+    protected float sharePrice;
 
     public float getSharePrice() {
         return sharePrice;
     }
-
-    @XmlAttribute (name = "share-price")
-    protected float sharePrice;
 
     /**
      * Gets the value of the symbol property.

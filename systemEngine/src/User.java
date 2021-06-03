@@ -11,8 +11,6 @@ import java.util.TreeMap;
 public class User {
     private final String userName;
 
-
-
     private Map<String,UserHoldings> userStocks;
     private float totalHoldingsValue;
     private List<Transaction> userTransactions;
@@ -38,7 +36,7 @@ public class User {
             this.userStocks = new TreeMap<>();
         totalHoldingsValue =0;
         for(UserHoldings stock : userStocks.values()){
-            totalHoldingsValue += (stock.getStock().getSharePrice()*stock.getQuantity());
+            totalHoldingsValue += stock.getTotalHold();//(stock.getStock().getSharePrice()*stock.getQuantity());TODO:!
         }
     }
 
@@ -67,7 +65,8 @@ public class User {
     public float getTotalHoldingsValue() {
         totalHoldingsValue =0;
         for(UserHoldings hold: userStocks.values())
-            totalHoldingsValue += hold.getQuantity()*hold.getStock().getSharePrice();
+            totalHoldingsValue += hold.getTotalHold();
+            //totalHoldingsValue += hold.getQuantity()*hold.getStock().getSharePrice(); TODO:!
         return totalHoldingsValue;
     }
     public void setTotalHoldingsValue(float newValue) {

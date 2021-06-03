@@ -69,7 +69,7 @@ public class Transaction {
                 seller.getUserStocks().get(stock.getSymbol()).setQuantity( seller.getUserStocks().get(stock.getSymbol()).getQuantity()-quantity);
 
             if(!buyer.getUserStocks().containsKey(stock.getSymbol()))
-                    buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity,soldPrice));
+                    buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity/*,soldPrice TODO:!*/));
             else{
                     UserHoldings holdings = buyer.getUserStocks().get(stock.getSymbol());
                     holdings.setQuantity(holdings.getQuantity()+quantity);

@@ -1,3 +1,6 @@
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+
 import java.util.*;
 
 /**
@@ -9,7 +12,7 @@ public class Stock {
      */
     private final String companyName;
     private final String symbol;
-    private float sharePrice; // NEED TO BE UPDATED
+    private FloatProperty sharePrice; // NEED TO BE UPDATED
     private List<Transaction> stockTransactions; // Transactions that already been done (to calculate the full value of the transactions)
     private Queue <TradeCommand> buyCommands;
     private Queue <TradeCommand> sellCommands;
@@ -29,7 +32,8 @@ public class Stock {
         else {
             this.companyName = companyName;
             this.symbol = symbol;
-            this.sharePrice = startPrice;
+            this.sharePrice = new SimpleFloatProperty(startPrice);
+            //this.sharePrice = startPrice;
             stockTransactions = new LinkedList<>();
             buyCommands = new PriorityQueue<>(1, Collections.reverseOrder()); //Max Queue
             sellCommands = new PriorityQueue<>(1);                            //Min Queue
@@ -54,7 +58,8 @@ public class Stock {
         else {
             this.companyName = companyName;
             this.symbol = symbol;
-            this.sharePrice = startPrice;
+            this.sharePrice = new SimpleFloatProperty(startPrice);
+            //this.sharePrice = startPrice;
             this.stockTransactions = transactions==null ? new LinkedList<>():transactions;
             this.buyCommands = buyCommands==null ? new PriorityQueue<>(1,Comparator.reverseOrder()):buyCommands; //Max Queue
             this.sellCommands = sellCommands==null ? new PriorityQueue<>(1):sellCommands;                        //Min Queue
@@ -119,9 +124,14 @@ public class Stock {
      * A getter of the share price
      * @return the share price
      */
-    public float getSharePrice() {
+    public FloatProperty getSharePriceProperty() {
         return sharePrice;
     }
+
+    public Float getSharePrice() {
+        return sharePrice.getValue();
+    }
+
 
     /**
      * A getter of the symbol.
@@ -207,7 +217,8 @@ public class Stock {
      */
     public void addTransaction(int quantity, float price, User buyer, User seller){
         stockTransactions.add(0,new Transaction(quantity,price, buyer, seller,this));
-        sharePrice = price;
+        sharePrice.set(price);
+        //sharePrice = price; //TODO:!
     }
 
     /**
@@ -216,7 +227,8 @@ public class Stock {
      */
     public void addTransaction(Transaction trans){
         stockTransactions.add(0, trans);                                        //Adds to the beginning of the list.
-        sharePrice = trans.getPrice();
+        sharePrice.set(trans.getPrice());
+        //sharePrice = trans.getPrice(); TODO:!
     }
 
     /**
@@ -331,7 +343,8 @@ public class Stock {
             float price = (priorityFlag==TradeCommand.direction.BUY) ? sell.getPrice():buy.getPrice();
             Transaction transaction = new Transaction(finalQuantity, price, buy.getUser(), sell.getUser(),this);
             stockTransactions.add(0, transaction); // add the new transaction
-            sharePrice = price;
+            sharePrice.set(price);
+            //sharePrice = price; TODO:!
             sumShares += finalQuantity; // add the shares that been traded until now
 
             // need to check if there's any leftover shares
@@ -432,7 +445,8 @@ public class Stock {
      */
     public float getMKTSellPrice(int quantity){
         int count =0; // count the number of shares until it get to the wanted quantity
-        float savePrice=sharePrice;
+        float savePrice = sharePrice.get();
+        //float savePrice=sharePrice; TODO:!
         boolean found = false;
         Queue<TradeCommand> tmp = new PriorityQueue<>(1);
         while(count<quantity && !sellCommands.isEmpty() && !found){
@@ -456,7 +470,8 @@ public class Stock {
      */
     public float getMKTBuyPrice(int quantity){
         int count =0; // count the number of shares until it get to the wanted quantity
-        float savePrice=sharePrice;
+        float savePrice=sharePrice.get();
+        //float savePrice=sharePrice; TODO:!
         boolean found = false;
         Queue<TradeCommand> tmp = new PriorityQueue<>(1,Collections.reverseOrder());
         while(count<quantity && !buyCommands.isEmpty()&& !found){
