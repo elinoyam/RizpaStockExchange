@@ -1,7 +1,7 @@
 .root {
     /*-fx-background-image: url("background.jpg");*/
     -fx-background-color: #2A5058;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: BLACK;
     -fx-font-family: "Arial Narrow";
 }
 .Dark-UX {
@@ -44,17 +44,24 @@
     -fx-border-color: #2A5058;
     -fx-text-fill: #ffffff;
     -fx-mark-color: #00ffe1;
+    text-decoration-color: white;
 }
+/*.choice-box > .label { -fx-text-fill: white; }*/
+.choice-box .menu-item > .label { -fx-text-fill: white; }
+.choice-box .menu-item:focused { -fx-background-color: white; }
+.choice-box .menu-item:focused > .label { -fx-text-fill: black; }
+
 .choice-box .context-menu {
     -fx-background-color: #08505a;
     -fx-text-fill: #ffffff;
+    text-decoration-color: BLUE;
 
 }
 
 .text-field {
     -fx-background-color: #61a2b1;
     -fx-border-color: #2A5058;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: white;
 
 }
 .radio-button{
@@ -68,7 +75,7 @@
 .label {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: BLACK;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 

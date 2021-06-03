@@ -396,7 +396,7 @@ public class PrimaryController implements Initializable {
             txtStatus.setText(msg);
             txtStatus.setVisible(true);
             Reset(null);
-            updateSymbolsToAll(currentUser.getUserName(), false, true);
+
             updateStocksTView(RdioMine.isSelected() ? currentUser.getUserName() : "All");
             txtTotalWorth.setText("Total Worth: "+currentUser.getTotalHoldingsValue());
         }catch (IllegalArgumentException e){
@@ -415,7 +415,7 @@ public class PrimaryController implements Initializable {
             return;
         if (ChbUser.getValue().equals("Admin")) {
             BtnSubmit.setDisable(true);
-            updateSymbolsToAll("All",true,true);
+            updateSymbolsToAll("All",true,false);
             RdioAll.setSelected(true);
             RdioMine.setDisable(true);
             rdioViewAll.setSelected(true);
@@ -443,10 +443,10 @@ public class PrimaryController implements Initializable {
             portfolioUpdate(ChbUser.getValue().toString());
 
             if (RdioSell.isSelected())
-                updateSymbolsToAll(currentUserName,true,true);
+                updateSymbolsToAll(currentUserName,true,false);
 
-            else
-                updateSymbolsToAll(currentUserName,false,true);
+//            else
+//                updateSymbolsToAll(currentUserName,false,true);
 
             if(RdioMine.isSelected())
                 updateStocksTView(currentUserName);
@@ -476,6 +476,7 @@ public class PrimaryController implements Initializable {
             for(StockDT Stock:Stocks) {
                 if(symbol)
                     ChbSymbol.getItems().add(Stock.getSymbol());
+
                 if(stock)
                     ChbStock.getItems().add(Stock.getSymbol());
             }
@@ -485,8 +486,11 @@ public class PrimaryController implements Initializable {
             for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
                 if(symbol)
                     ChbSymbol.getItems().add(hold.getSymbol());
-                if(stock)
-                    ChbStock.getItems().add(hold.getSymbol());
+
+                //if(stock)
+                //   ChbStock.getItems().add(hold.getSymbol());
+
+
             }
         }
     }

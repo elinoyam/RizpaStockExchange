@@ -111,6 +111,8 @@ class FileLoadTask extends Task<Boolean> {
     protected void uploadDataFromFile() throws FileNotFoundException, JAXBException, IllegalArgumentException {
         // need to upload all the stocks from xml file
         MultiKeyMap<String, Stock> tmpStocks = new MultiKeyMap<>();
+        Map<String, User> tmpUsers = new TreeMap<>();
+
 
         try {
             File xmlPath = new File(path);
@@ -119,9 +121,11 @@ class FileLoadTask extends Task<Boolean> {
             incDoneSubTasks();//2
             if (!isXMLFile(path))
                 throw new IllegalArgumentException("The given file is not a xml file.");
-            deserializeFrom(inputStream, tmpStocks);
+            deserializeFrom(inputStream, tmpStocks,tmpUsers);
             engine.getStocks().clear();
             engine.setStocks(tmpStocks);
+            engine.getUsers().clear();
+            engine.setUsers(tmpUsers);
             updateMessage("Fetching data from file ended.");
             incDoneSubTasks();//3
         } catch (JAXBException e) {
@@ -143,7 +147,7 @@ class FileLoadTask extends Task<Boolean> {
             return false;
     }
 
-    private void deserializeFrom(InputStream in, MultiKeyMap<String, Stock> tmpStocks) throws JAXBException, IllegalArgumentException, InputMismatchException, DateTimeException {
+    private void deserializeFrom(InputStream in, MultiKeyMap<String, Stock> tmpStocks,Map<String, User> tmpUsers) throws JAXBException, IllegalArgumentException, InputMismatchException, DateTimeException {
         try {
             synchronized (lock2) {
                 int i=1;

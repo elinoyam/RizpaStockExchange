@@ -1,7 +1,7 @@
 .root {
     /*-fx-background-image: url("background.jpg");*/
     -fx-background-color: #2A5058;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: BLACK;
     -fx-font-family: "Arial Narrow";
 }
 .Dark-UX {
@@ -38,6 +38,9 @@
     -fx-background-color: #2A5058;
     -fx-border-color: #61a2b1;
 }
+.choice-box .menu-item > .label { -fx-text-fill: white; }
+.choice-box .menu-item:focused { -fx-background-color: white; }
+.choice-box .menu-item:focused > .label { -fx-text-fill: black; }
 
 .choice-box {
     -fx-background-color: grey;
@@ -46,7 +49,7 @@
     -fx-mark-color: #ff6c77;
 }
 .choice-box .context-menu {
-    -fx-background-color: #ba1347;
+    -fx-background-color: BLACK;
     -fx-text-fill: #ffffff;
 
 }
@@ -68,7 +71,7 @@
 .label {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: BLACK;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
