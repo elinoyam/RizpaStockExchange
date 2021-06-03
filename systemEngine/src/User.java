@@ -1,9 +1,12 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
 import javax.management.openmbean.InvalidKeyException;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This class saves all the data about a specific user in the system
@@ -12,18 +15,23 @@ public class User {
     private final String userName;
 
     private Map<String,UserHoldings> userStocks;
-    private float totalHoldingsValue;
+    private SortedMap<LocalDateTime,Float> totalHoldingsValue;
     private List<Transaction> userTransactions;
     private Map<LocalDateTime,TradeCommand> userBuyCommands;
     private Map<LocalDateTime,TradeCommand> userSellCommands;
 
+
     User(String name){
         this.userName = name;
         this.userStocks = new TreeMap<>();
-        totalHoldingsValue =0;
+        totalHoldingsValue = new TreeMap<>();
+        totalHoldingsValue.put(LocalDateTime.now(),Float.valueOf(0));
         this.userTransactions = new LinkedList<>();
         userBuyCommands = new TreeMap<>();
         userSellCommands = new TreeMap<>();
+
+        updateWorth();
+
     }
     User(String name,Map<String,UserHoldings> stocks){
         this.userName = name;
@@ -34,9 +42,23 @@ public class User {
             this.userStocks = stocks;
         else
             this.userStocks = new TreeMap<>();
-        totalHoldingsValue =0;
-        for(UserHoldings stock : userStocks.values()){
-            totalHoldingsValue += stock.getTotalHold();//(stock.getStock().getSharePrice()*stock.getQuantity());TODO:!
+        totalHoldingsValue = new TreeMap<>();
+        float initTotalWorth = 0;
+        for(UserHoldings hold: stocks.values())
+            initTotalWorth += hold.getTotalHold();
+        totalHoldingsValue.put(LocalDateTime.now(),initTotalWorth);
+        updateWorth();
+    }
+
+    private void updateWorth(){
+        for(UserHoldings hold: userStocks.values())
+        {
+            hold.getTotalHoldProperty().addListener(new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                        setTotalHoldingsValue(LocalDateTime.now(),getTotalHoldingsValue()-oldValue.floatValue()+newValue.floatValue());
+                }
+            });
         }
     }
 
@@ -62,15 +84,13 @@ public class User {
         return userName;
     }
 
+
     public float getTotalHoldingsValue() {
-        totalHoldingsValue =0;
-        for(UserHoldings hold: userStocks.values())
-            totalHoldingsValue += hold.getTotalHold();
-            //totalHoldingsValue += hold.getQuantity()*hold.getStock().getSharePrice(); TODO:!
-        return totalHoldingsValue;
+        return totalHoldingsValue.get(totalHoldingsValue.lastKey());
     }
-    public void setTotalHoldingsValue(float newValue) {
-        totalHoldingsValue=newValue;
+
+    public void setTotalHoldingsValue(LocalDateTime timestamp,float newValue) {
+        totalHoldingsValue.put(timestamp,newValue);
     }
 
     /**
@@ -118,6 +138,11 @@ public class User {
     public Map<String, UserHoldings> getUserStocks() {
         return userStocks;
     }
+
+    public SortedMap<LocalDateTime,Float> getWorthHistory(){
+        return this.totalHoldingsValue;
+    }
+
     @Override
     public String toString() {
         return userName;

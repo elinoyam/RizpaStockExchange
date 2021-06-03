@@ -54,7 +54,7 @@ public class UIApp extends Application {
         UX.setBuilderFactory(new JavaFXBuilderFactory());
         Parent load = UX.load(url.openStream());
         controller = UX.getController();
-        primaryScene = new Scene(load , 800,500);
+        primaryScene = new Scene(load , 800,550);
        // primaryScene.getStylesheets().add(getClass().getResource("resource/RSE-Dark.css").toExternalForm());
         //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Grey.css").toExternalForm());
         controller.styleSliderChangedProperty().addListener(/*new ChangeListener(){

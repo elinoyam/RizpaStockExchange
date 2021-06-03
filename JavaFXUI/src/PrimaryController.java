@@ -5,14 +5,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.StackedAreaChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -27,16 +22,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PrimaryController implements Initializable {
     public Button BtnReset;
     public Button BtnSubmit;
     public Button BtnLoad;
-    public Button BtnSave;
     public TextField TxtPrice;
     public TextField TxtQuantity;
     public ChoiceBox ChbSymbol;
@@ -71,7 +63,6 @@ public class PrimaryController implements Initializable {
     public Slider SlidTheme;
 
     public VBox ttVBox;
-    //public HBox HBView;
     public HBox HBoxTrade;
     public HBox HBoxTrans;
     public HBox HBoxRdio;
@@ -98,7 +89,7 @@ public class PrimaryController implements Initializable {
     public Text txtWelcome;
     public Text txtTotalWorth;
     public PieChart ChrtShares;
-    public StackedAreaChart ChrtWorth;
+    public AreaChart<LocalDateTime,Float> ChrtWorth;
 
 
 
@@ -108,6 +99,7 @@ public class PrimaryController implements Initializable {
     private StringProperty statusString = new SimpleStringProperty();
     private DoubleProperty styleSliderChanged = new SimpleDoubleProperty();
     private Engine RSEEngine;
+    private Map<String,XYChart.Data> initSharePrice = new TreeMap<>();
     FileLoadTask task;
 
     public double isStyleSliderChanged() {
@@ -264,7 +256,6 @@ public class PrimaryController implements Initializable {
         TSColumn1.setComparator(TSColumn1.getComparator().reversed());
         tradeViewTable.getSortOrder().add(TSColumn1);
 
-
         //Stocks
         SymbolClmn.setCellValueFactory(new PropertyValueFactory<StockDT,String>("symbol"));
         CompanyNameClmn.setCellValueFactory(new PropertyValueFactory<StockDT, String>("companyName"));
@@ -288,6 +279,7 @@ public class PrimaryController implements Initializable {
         QColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("quantity"));
         TColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("turnover"));
         PColumn.setCellValueFactory(new PropertyValueFactory<Transaction, String>("price"));
+
     }
 
     private void EnableAnimated(boolean state) {
@@ -318,6 +310,13 @@ public class PrimaryController implements Initializable {
                     EnableComponents(newValue.booleanValue());
                     txtStatus.textProperty().unbind();
                     PBarStatus.progressProperty().unbind();
+                    LocalDateTime now = LocalDateTime.now();
+                    RSEEngine.getStocks().values()
+                            .stream()
+                            .forEach((p)-> {
+                                initSharePrice.put(p.getSymbol(),new XYChart.Data(" " + now.format(TradeCommand.getDateTimeFormat())+ " ",p.getSharePrice()));
+                            });
+
                 }
             });
             new Thread(task).start();
@@ -326,18 +325,19 @@ public class PrimaryController implements Initializable {
     }
 
     private void EnableComponents(boolean state){
-
         updateSymbolsToAll("All",state,state);
         updateStocksTView("All");
 
+        if(state)
+            ChbUser.getItems().clear();
         for(User u:RSEEngine.getUsers().values())
             ChbUser.getItems().add(u.getUserName());
+
         ChbUser.getItems().add("Admin");
         ChbUser.setValue("Admin");
         RdioMine.setDisable(state);
         RdioMine.setSelected(!state);
         TabPortfolio.setDisable(state);
-        BtnSave.setDisable(!state);
         ChbUser.setDisable(!state);
         BtnReset.setDisable(!state);
         ChbSymbol.setDisable(!state);
@@ -406,6 +406,8 @@ public class PrimaryController implements Initializable {
         }
         tradeCommandViewUpdate(currentUser==null ? "All":currentUser.getUserName());
         transViewUpdate(currentUser==null ? "All":currentUser.getUserName());
+        portfolioUpdate(currentUser==null ? "All":currentUser.getUserName());
+
     }
 
     public void userChosen(ActionEvent actionEvent) {
@@ -486,7 +488,6 @@ public class PrimaryController implements Initializable {
                 if(stock)
                     ChbStock.getItems().add(hold.getSymbol());
             }
-
         }
     }
 
@@ -587,6 +588,8 @@ public class PrimaryController implements Initializable {
         List<Transaction> transactions = stock.getTransactions();
 
         XYChart.Series stockMKTPrice = new XYChart.Series();
+
+        stockMKTPrice.getData().add(initSharePrice.get(stock.getSymbol()));
 
         stockMKTPrice.setName(stock.getSymbol() +" market price");
         for(int i = transactions.size()-1;i>=0;i--){//Transaction tran: transactions){
@@ -703,6 +706,37 @@ public class PrimaryController implements Initializable {
         ChrtShares.setData(shares);
         sharesData.forEach(data -> data.nameProperty().bind(
                 Bindings.concat(data.getName(),"\n", data.pieValueProperty())));
+        showWorthInChart(user);
+    }
+
+    public void showWorthInChart(String userName){
+        if(!ChrtWorth.getData().isEmpty())
+            ChrtWorth.getData().clear();
+        User user = RSEEngine.getUser(userName);
+        SortedMap<LocalDateTime,Float> worthHistory = user.getWorthHistory();
+
+        XYChart.Series worthInTimestamp = new XYChart.Series();
+
+        worthInTimestamp.setName(userName + " Worth Graph");
+
+        for (Map.Entry mapElement : worthHistory.entrySet()) {
+            LocalDateTime key = (LocalDateTime) mapElement.getKey();
+
+            // Finding the value
+            Float value = (Float) mapElement.getValue();
+
+            worthInTimestamp.getData().add(new XYChart.Data(" "+key.format(TradeCommand.getDateTimeFormat())+" ", value));
+        }
+        ChrtWorth.getData().add(worthInTimestamp);
+
+        /*
+        stockMKTPrice.setName(stock.getSymbol() +" market price");
+        for(int i = transactions.size()-1;i>=0;i--){//Transaction tran: transactions){
+            stockMKTPrice.getData().add(new XYChart.Data<>(" " +transactions.get(i).getDateStamp().format(Transaction.getDateTimeFormat()).toString()+" ",transactions.get(i).getPrice()));
+        }
+
+        ChrtView.getData().add(stockMKTPrice);
+*/
     }
 }
 

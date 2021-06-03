@@ -1,3 +1,6 @@
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
@@ -54,27 +57,36 @@ public class Transaction {
             this.symbol = stock.getSymbol();
             this.quantity = quantity;
             this.price = soldPrice;
+            Engine.getInstance().getStocks().get(symbol).getSharePriceProperty().set(soldPrice);
             this.turnover = quantity * soldPrice;
             this.buyer = buyer;
             this.seller = seller;
 
             this.buyer.addUserTransaction(this);
             this.seller.addUserTransaction(this);
-            buyer.setTotalHoldingsValue(buyer.getTotalHoldingsValue()+turnover);
-            seller.setTotalHoldingsValue(seller.getTotalHoldingsValue()-turnover);
+            //buyer.setTotalHoldingsValue(LocalDateTime.now(),buyer.getUserStocks().get(symbol).getTotalHold());
+            //seller.setTotalHoldingsValue(LocalDateTime.now(),seller.getUserStocks().get(symbol).getTotalHold());
 
             if(seller.getUserStockHoldings(stock.getSymbol()) == quantity)
                 seller.getUserStocks().remove(stock.getSymbol());
             else
                 seller.getUserStocks().get(stock.getSymbol()).setQuantity( seller.getUserStocks().get(stock.getSymbol()).getQuantity()-quantity);
 
-            if(!buyer.getUserStocks().containsKey(stock.getSymbol()))
-                    buyer.getUserStocks().put(stock.getSymbol(),new UserHoldings(stock.getSymbol(),stock,quantity/*,soldPrice TODO:!*/));
+            if(!buyer.getUserStocks().containsKey(stock.getSymbol())) {
+                buyer.getUserStocks().put(stock.getSymbol(), new UserHoldings(stock.getSymbol(), stock, quantity, LocalDateTime.now()));
+                buyer.setTotalHoldingsValue(LocalDateTime.now(),buyer.getTotalHoldingsValue()+turnover);
+                buyer.getUserStocks().get(stock.getSymbol()).getTotalHoldProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                        buyer.setTotalHoldingsValue(LocalDateTime.now(),buyer.getTotalHoldingsValue()-oldValue.floatValue()+newValue.floatValue());
+                    }
+                });
+            }
             else{
                     UserHoldings holdings = buyer.getUserStocks().get(stock.getSymbol());
                     holdings.setQuantity(holdings.getQuantity()+quantity);
-                    holdings.setSharePrice(soldPrice);
-                    holdings.setTotalHold(holdings.getQuantity()*soldPrice);
+                    //holdings.setSharePrice(soldPrice);
+                    //holdings.setTotalHold(holdings.getQuantity()*soldPrice);
                     holdings.setFreeShares(holdings.getFreeShares()+quantity);
             }
 
@@ -101,8 +113,8 @@ public class Transaction {
 
             this.buyer.addUserTransaction(this);
             this.seller.addUserTransaction(this);
-            buyer.setTotalHoldingsValue(buyer.getTotalHoldingsValue()+turnover);
-            seller.setTotalHoldingsValue(seller.getTotalHoldingsValue()-turnover);
+            buyer.setTotalHoldingsValue(LocalDateTime.now(),buyer.getTotalHoldingsValue()+turnover);
+            seller.setTotalHoldingsValue( LocalDateTime.now(),seller.getTotalHoldingsValue()-turnover);
         }
     }
 

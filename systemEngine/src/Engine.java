@@ -273,7 +273,7 @@ public class Engine implements Trader {
                 for (RseUser user : rse.getRseUsers().getRseUser()) {
                     Map<String, UserHoldings> holdings = new TreeMap<>();
                     for (RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
-                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity()/*, item.getSharePrice() TODO:!*/));
+                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity(), LocalDateTime.now()/*, item.getSharePrice() TODO:!*/));
                     users.put(user.getName(), new User(user.getName(), holdings));
                 }
                 doubleProperty.setValue(0.8);

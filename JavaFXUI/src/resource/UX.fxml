@@ -2,11 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.chart.StackedAreaChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
@@ -30,23 +30,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="490.0" prefWidth="800.0" styleClass="Dark-UX" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PrimaryController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" styleClass="Dark-UX" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PrimaryController">
    <right>
       <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <content>
-            <VBox maxHeight="1.7976931348623157E308">
+            <VBox fx:id="VBoxSidebar" maxHeight="1.7976931348623157E308">
                <children>
                   <ToolBar maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="240.0" VBox.vgrow="NEVER">
                      <items>
-                        <Button fx:id="BtnSave" disable="true" mnemonicParsing="false" onAction="#Save" prefHeight="30.0" prefWidth="31.0">
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@saveImage.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
                         <Button fx:id="BtnLoad" mnemonicParsing="false" onAction="#Load" prefHeight="55.0" prefWidth="58.0">
                            <graphic>
                               <ImageView fitHeight="31.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -62,12 +53,18 @@
                            </padding>
                         </ChoiceBox>
                      </items>
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </padding>
                   </ToolBar>
-                  <ScrollPane fx:id="rightScrollPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308">
+                  <ScrollPane fx:id="rightScrollPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox fx:id="rightVBox" alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="245.0" styleClass="Dark-UX">
+                        <VBox fx:id="rightVBox" alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="245.0" spacing="3.0" styleClass="Dark-UX">
                            <children>
-                              <HBox alignment="CENTER" prefHeight="23.0" prefWidth="227.0" VBox.vgrow="ALWAYS">
+                              <HBox alignment="CENTER" prefHeight="23.0" prefWidth="227.0" VBox.vgrow="NEVER">
                                  <children>
                                     <RadioButton fx:id="RdioBuy" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#BuyStockClicked" selected="true" text="Buy">
                                        <HBox.margin>
@@ -130,7 +127,7 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
                               </TextField>
-                              <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="227.0" VBox.vgrow="ALWAYS">
+                              <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="227.0">
                                  <cursor>
                                     <Cursor fx:constant="DEFAULT" />
                                  </cursor>
@@ -151,14 +148,23 @@
                                  </VBox.margin>
                               </HBox>
                               <Text fx:id="txtStatus" lineSpacing="0.25" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" visible="false" wrappingWidth="200.0" VBox.vgrow="ALWAYS" />
-                              <ProgressBar fx:id="PBarStatus" disable="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="200.0" progress="0.0">
+                              <ProgressBar fx:id="PBarStatus" disable="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="200.0" progress="0.0" VBox.vgrow="NEVER">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
                               </ProgressBar>
                            </children>
+                           <padding>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </padding>
                         </VBox>
                      </content>
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                     </padding>
                   </ScrollPane>
                </children>
             </VBox>
@@ -183,11 +189,11 @@
                            <content>
                               <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="300.0" styleClass="Dark-UX2">
                                  <children>
-                                    <Label text="Effects" />
-                                    <Pane>
+                                    <VBox alignment="TOP_CENTER" fillWidth="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="290.0" VBox.vgrow="NEVER">
                                        <children>
-                                          <Slider fx:id="SlidEffects" layoutX="13.0" majorTickUnit="1.0" max="1.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
-                                          <HBox alignment="TOP_CENTER" layoutY="30.0" prefHeight="13.0" prefWidth="282.0">
+                                          <Label text="Effects" />
+                                          <Slider fx:id="SlidEffects" majorTickUnit="1.0" max="1.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
+                                          <HBox alignment="TOP_CENTER" prefHeight="13.0" prefWidth="282.0">
                                              <children>
                                                 <Label text="Off">
                                                    <HBox.margin>
@@ -205,12 +211,12 @@
                                              </padding>
                                           </HBox>
                                        </children>
-                                    </Pane>
-                                    <Label text="Theme" />
-                                    <Pane>
+                                    </VBox>
+                                    <VBox alignment="TOP_CENTER" fillWidth="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="290.0" VBox.vgrow="NEVER">
                                        <children>
-                                          <Slider fx:id="SlidTheme" layoutX="13.0" majorTickUnit="1.0" max="2.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
-                                          <HBox alignment="TOP_CENTER" layoutY="30.0" prefHeight="13.0" prefWidth="282.0">
+                                          <Label text="Theme" />
+                                          <Slider fx:id="SlidTheme" majorTickUnit="1.0" max="2.0" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefHeight="30.0" prefWidth="252.0" showTickMarks="true" snapToTicks="true" />
+                                          <HBox alignment="TOP_CENTER" prefHeight="13.0" prefWidth="282.0">
                                              <children>
                                                 <Label text="Light">
                                                    <HBox.margin>
@@ -233,7 +239,7 @@
                                              </padding>
                                           </HBox>
                                        </children>
-                                    </Pane>
+                                    </VBox>
                                  </children>
                                  <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -243,13 +249,13 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab fx:id="TabStock" closable="false" styleClass="Dark-UX" text="Stock Details">
+                <Tab fx:id="TabStock" closable="false" disable="true" styleClass="Dark-UX" text="Stock Details">
                      <content>
                         <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="400.0" prefWidth="500.0" styleClass="Dark-UX2">
                            <content>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="435.0" minWidth="541.0">
                                  <children>
-                                    <HBox fx:id="HBDetails" alignment="CENTER" minHeight="101.0" minWidth="540.0" spacing="3.0" styleClass="Dark-UX2" VBox.vgrow="ALWAYS">
+                                    <HBox fx:id="HBDetails" alignment="CENTER" minHeight="101.0" minWidth="540.0" spacing="3.0" styleClass="Dark-UX2" VBox.vgrow="NEVER">
                                        <children>
                                           <Pane fx:id="PaneOwner" prefHeight="101.0" prefWidth="161.0">
                                              <children>
@@ -467,7 +473,7 @@
                                  <children>
                                     <HBox alignment="CENTER" prefHeight="60.0" prefWidth="539.0" VBox.vgrow="NEVER">
                                        <children>
-                                          <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="54.0" prefWidth="539.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                                          <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="54.0" prefWidth="539.0" spacing="10.0" HBox.hgrow="NEVER">
                                              <children>
                                                 <Text fx:id="txtWelcome" lineSpacing="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&lt;Name&gt;'s Portfolio">
                                                    <font>
@@ -505,9 +511,9 @@
                                                 <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                                              </padding>
                                           </PieChart>
-                                          <StackedAreaChart fx:id="ChrtWorth" legendVisible="false" maxHeight="1.7976931348623157E308" prefHeight="338.0" prefWidth="306.0" HBox.hgrow="ALWAYS">
+                                          <AreaChart fx:id="ChrtWorth" legendVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                                             <xAxis>
-                                              <NumberAxis side="BOTTOM" />
+                                              <CategoryAxis side="BOTTOM" />
                                             </xAxis>
                                             <yAxis>
                                               <NumberAxis side="LEFT" />
@@ -518,7 +524,7 @@
                                              <padding>
                                                 <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                                              </padding>
-                                          </StackedAreaChart>
+                                          </AreaChart>
                                        </children>
                                     </HBox>
                                  </children>

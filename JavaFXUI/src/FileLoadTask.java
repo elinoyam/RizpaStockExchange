@@ -146,7 +146,7 @@ class FileLoadTask extends Task<Boolean> {
     private void deserializeFrom(InputStream in, MultiKeyMap<String, Stock> tmpStocks) throws JAXBException, IllegalArgumentException, InputMismatchException, DateTimeException {
         try {
             synchronized (lock2) {
-                int i=0;
+                int i=1;
                 JAXBContext jc = JAXBContext.newInstance(engine.getJaxbXmlPackageName());
                 Unmarshaller u = jc.createUnmarshaller();
                 updateMessage("Unmarshalling...");
@@ -172,12 +172,12 @@ class FileLoadTask extends Task<Boolean> {
                 incDoneSubTasks();//1
                 updateMessage("Starting to read users data...");
                 lock2.wait(timeout);
-                i=0;
+                i=1;
                 for (RseUser user : rse.getRseUsers().getRseUser()) {
                     Map<String, UserHoldings> holdings = new TreeMap<>();
                     for (RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
-                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity()/*, item.getSharePrice() TODO:!*/));
-                    engine.getUsers().put(user.getName(), new User(user.getName(), holdings));
+                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity(), LocalDateTime.now()/*, item.getSharePrice() TODO:!*/));
+                    tmpUsers.put(user.getName(), new User(user.getName(), holdings));
                     incDoneSubTasks();
                     updateMessage("Reading user "+(i++)+"/"+rse.getRseUsers().getRseUser().size()+"...");
                     lock2.wait(timeout);
