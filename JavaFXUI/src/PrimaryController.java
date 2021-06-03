@@ -307,16 +307,20 @@ public class PrimaryController implements Initializable {
             task.valueProperty().addListener(new ChangeListener<Boolean>() {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    EnableComponents(newValue.booleanValue());
-                    txtStatus.textProperty().unbind();
-                    PBarStatus.progressProperty().unbind();
-                    LocalDateTime now = LocalDateTime.now();
-                    RSEEngine.getStocks().values()
-                            .stream()
-                            .forEach((p)-> {
-                                initSharePrice.put(p.getSymbol(),new XYChart.Data(" " + now.format(TradeCommand.getDateTimeFormat())+ " ",p.getSharePrice()));
-                            });
-
+                    if(newValue.booleanValue()) {
+                        EnableComponents(newValue.booleanValue());
+                        txtStatus.textProperty().unbind();
+                        PBarStatus.progressProperty().unbind();
+                        LocalDateTime now = LocalDateTime.now();
+                        RSEEngine.getStocks().values()
+                                .stream()
+                                .forEach((p) -> {
+                                    initSharePrice.put(p.getSymbol(), new XYChart.Data(" " + now.format(TradeCommand.getDateTimeFormat()) + " ", p.getSharePrice()));
+                                });
+                    }    else{
+                        txtStatus.textProperty().unbind();
+                        PBarStatus.progressProperty().unbind();
+                    }
                 }
             });
             new Thread(task).start();

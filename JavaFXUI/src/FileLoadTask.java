@@ -1,7 +1,3 @@
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import jaxb.schema.generated.*;
 
@@ -15,8 +11,6 @@ import java.io.InputStream;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.*;
-
-import static java.lang.Math.pow;
 
 class FileLoadTask extends Task<Boolean> {
 
@@ -34,7 +28,6 @@ class FileLoadTask extends Task<Boolean> {
         this.engine = engine;
         this.subTasks = defTotalWork;
         this.doneSubTasks = 0;
-        //super.updateValue(false);
     }
 
     public long getSubTasks() {
