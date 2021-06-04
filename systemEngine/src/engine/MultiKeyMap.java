@@ -1,4 +1,8 @@
-import java.util.*;
+package engine;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A data structure of a map that supports multi keys.

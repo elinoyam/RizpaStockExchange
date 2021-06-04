@@ -1,3 +1,6 @@
+package engine;
+
+import dto.StockDT;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 

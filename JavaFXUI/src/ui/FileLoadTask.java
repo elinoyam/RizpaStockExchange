@@ -1,3 +1,6 @@
+package ui;
+
+import engine.*;
 import javafx.concurrent.Task;
 import jaxb.schema.generated.*;
 
@@ -53,34 +56,6 @@ class FileLoadTask extends Task<Boolean> {
         updateProgress(doneSubTasks,getSubTasks());
     }
 
-    /* public long getSubTasks() {
-        return subTasks.getValue();
-    }
-
-    public LongProperty subTasksProperty() {
-        return subTasks;
-    }
-
-    public void setSubTasks(long subTasks) {
-        this.subTasks.setValue(subTasks);
-    }
-
-    public long getDoneSubTasks() {
-        return doneSubTasks.getValue();
-    }
-
-    public LongProperty doneSubTasksProperty() {
-        return doneSubTasks;
-    }
-
-    public void incDoneSubTasks() {
-        this.doneSubTasks.setValue(getDoneSubTasks()+1);
-    }
-
-    public void setDoneSubTasks(long doneSubTasks) {
-        this.doneSubTasks.setValue(doneSubTasks);
-    }*/
-
     @Override
     protected Boolean call() throws Exception {
         synchronized (lock1) {
@@ -103,7 +78,7 @@ class FileLoadTask extends Task<Boolean> {
 
     protected void uploadDataFromFile() throws FileNotFoundException, JAXBException, IllegalArgumentException {
         // need to upload all the stocks from xml file
-        MultiKeyMap<String, Stock> tmpStocks = new MultiKeyMap<>();
+        MultiKeyMap<String, Stock> tmpStocks = new MultiKeyMap<String, Stock>();
         Map<String, User> tmpUsers = new TreeMap<>();
 
 
@@ -172,8 +147,16 @@ class FileLoadTask extends Task<Boolean> {
                 i=1;
                 for (RseUser user : rse.getRseUsers().getRseUser()) {
                     Map<String, UserHoldings> holdings = new TreeMap<>();
-                    for (RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
-                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity(), LocalDateTime.now()/*, item.getSharePrice() TODO:!*/));
+                    for (RseItem item : user.getRseHoldings().getRseItem()) {  // make a list of all the stocks holdings of the user
+                        Stock stock = tmpStocks.get(item.getSymbol());
+                        if(tmpUsers.get(user.getName())!=null)
+                            throw new IllegalArgumentException("The user " + user.getName() + " is already exists!");
+                        if(item.getQuantity()<=0)
+                            throw new IllegalArgumentException("The quantity should be a positive integer!, and not "+ item.getQuantity());
+                        if(stock==null)
+                            throw new IllegalArgumentException(item.getSymbol()+" stock wasn't found!");
+                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), stock, item.getQuantity()));
+                    }
                     tmpUsers.put(user.getName(), new User(user.getName(), holdings));
                     incDoneSubTasks();
                     updateMessage("Reading user "+(i++)+"/"+rse.getRseUsers().getRseUser().size()+"...");

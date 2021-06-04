@@ -1,8 +1,12 @@
+package engine;
 
+import dto.StockDT;
+import dto.TradeCommandDT;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import jaxb.schema.generated.*;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -14,6 +18,7 @@ import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
 /**
  * This class main purpose is to handle all the data to execute the sell and buy commands of all the companies stocks.
  * The class Implements a singleton design pattern.
@@ -21,7 +26,8 @@ import java.util.*;
 public class Engine implements Trader {
     private static Engine instance = new Engine();                                 //the single instance of the class.
     private static final String JAXB_XML_PACKAGE_NAME = "jaxb.schema.generated";
-    private MultiKeyMap<String, Stock> stocks = new MultiKeyMap<>();        //will be search with their symbol
+
+    private MultiKeyMap<String,Stock> stocks = new MultiKeyMap<String, Stock>();//will be search with their symbol
     private Map<String, User> users = new TreeMap<>();
     private Object lock2 = new Object();
 
@@ -207,8 +213,7 @@ public class Engine implements Trader {
     public void uploadDataFromFile(String path, DoubleProperty doubleProperty, StringProperty stringProperty) throws FileNotFoundException, JAXBException, IllegalArgumentException // first option
     {
         // need to upload all the stocks from xml file
-        MultiKeyMap<String, Stock> tmpStocks = new MultiKeyMap<>();
-
+        MultiKeyMap<String,Stock> tmpStocks = new MultiKeyMap<String, Stock>();
         try {
             File xmlPath = new File(path);
             InputStream inputStream = new FileInputStream(new File(path));
@@ -273,7 +278,7 @@ public class Engine implements Trader {
                 for (RseUser user : rse.getRseUsers().getRseUser()) {
                     Map<String, UserHoldings> holdings = new TreeMap<>();
                     for (RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
-                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity(), LocalDateTime.now()/*, item.getSharePrice() TODO:!*/));
+                        holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity()));
                     users.put(user.getName(), new User(user.getName(), holdings));
                 }
                 doubleProperty.setValue(0.8);

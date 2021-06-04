@@ -1,3 +1,8 @@
+package dto;
+
+import engine.Stock;
+import engine.Transaction;
+
 import java.util.LinkedList;
 import java.util.List;
 

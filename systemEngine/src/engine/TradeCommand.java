@@ -1,3 +1,5 @@
+package engine;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
@@ -15,12 +17,12 @@ public class TradeCommand implements Comparable<TradeCommand>{
     /**
      * A enum of possible trade directions.
      */
-    enum direction {BUY, SELL}
+    public enum direction {BUY, SELL}
 
     /**
      * A enum of possible trade command types.
      */
-    enum commandType{LMT,MKT/*TODO:,FOK,IOC*/}
+    public enum commandType{LMT,MKT/*TODO:,FOK,IOC*/}
 
     /**
      * A variable that defines a format of showing the date and time

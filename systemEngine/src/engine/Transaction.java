@@ -1,3 +1,5 @@
+package engine;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -64,8 +66,6 @@ public class Transaction {
 
             this.buyer.addUserTransaction(this);
             this.seller.addUserTransaction(this);
-            //buyer.setTotalHoldingsValue(LocalDateTime.now(),buyer.getUserStocks().get(symbol).getTotalHold());
-            //seller.setTotalHoldingsValue(LocalDateTime.now(),seller.getUserStocks().get(symbol).getTotalHold());
 
             if(seller.getUserStockHoldings(stock.getSymbol()) == quantity)
                 seller.getUserStocks().remove(stock.getSymbol());
@@ -73,7 +73,7 @@ public class Transaction {
                 seller.getUserStocks().get(stock.getSymbol()).setQuantity( seller.getUserStocks().get(stock.getSymbol()).getQuantity()-quantity);
 
             if(!buyer.getUserStocks().containsKey(stock.getSymbol())) {
-                buyer.getUserStocks().put(stock.getSymbol(), new UserHoldings(stock.getSymbol(), stock, quantity, LocalDateTime.now()));
+                buyer.getUserStocks().put(stock.getSymbol(), new UserHoldings(stock.getSymbol(), stock, quantity));
                 buyer.setTotalHoldingsValue(LocalDateTime.now(),buyer.getTotalHoldingsValue()+turnover);
                 buyer.getUserStocks().get(stock.getSymbol()).getTotalHoldProperty().addListener(new ChangeListener<Number>() {
                     @Override
@@ -85,8 +85,6 @@ public class Transaction {
             else{
                     UserHoldings holdings = buyer.getUserStocks().get(stock.getSymbol());
                     holdings.setQuantity(holdings.getQuantity()+quantity);
-                    //holdings.setSharePrice(soldPrice);
-                    //holdings.setTotalHold(holdings.getQuantity()*soldPrice);
                     holdings.setFreeShares(holdings.getFreeShares()+quantity);
             }
 
@@ -124,7 +122,7 @@ public class Transaction {
      */
     @Override
     public String toString() {
-        return "Transaction made at "+ dateStamp.format(dateTimeFormat) + " of " + quantity +" shares at the price of " + price +" for each. ";
+        return "Engine.Transaction made at "+ dateStamp.format(dateTimeFormat) + " of " + quantity +" shares at the price of " + price +" for each. ";
     }
 
     /**

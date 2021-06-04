@@ -1,3 +1,8 @@
+package dto;
+
+import engine.TradeCommand;
+import engine.User;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

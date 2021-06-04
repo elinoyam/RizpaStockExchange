@@ -1,3 +1,5 @@
+package ui;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -7,13 +9,14 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
+
 public class UIApp extends Application {
 
     enum style {
 
         BASE(0,null),
-        GREY(1,"resource/RSE-Grey.css"),
-        DARK(2, "resource/RSE-Dark.css");
+        GREY(1, "/ui/resources/RSE-Grey.css"),
+        DARK(2, "/ui/resources/RSE-Dark.css");
 
         private final Integer id;
         private final String url;
@@ -48,21 +51,14 @@ public class UIApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader UX = new FXMLLoader();
-        URL url = getClass().getResource("resource/UX.fxml");
+        URL url = getClass().getResource("/ui/resources/UX.fxml");
         this.primaryStage = primaryStage;
         UX.setLocation(url);
         UX.setBuilderFactory(new JavaFXBuilderFactory());
         Parent load = UX.load(url.openStream());
         controller = UX.getController();
         primaryScene = new Scene(load , 800,550);
-       // primaryScene.getStylesheets().add(getClass().getResource("resource/RSE-Dark.css").toExternalForm());
-        //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Grey.css").toExternalForm());
-        controller.styleSliderChangedProperty().addListener(/*new ChangeListener(){
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue){
-                addStyleSheet(0,1);//Integer.getInteger(oldValue.toString()),Integer.getInteger(newValue.toString()));
-            }
-        }*/(observable, oldValue, newValue) -> {
+        controller.styleSliderChangedProperty().addListener((observable, oldValue, newValue) -> {
             addStyleSheet(oldValue.intValue(), newValue.intValue());
         });
         primaryStage.setScene(primaryScene);
@@ -74,9 +70,10 @@ public class UIApp extends Application {
         style oldStyle = style.getStyleByID(oldValue);
         style newStyle = style.getStyleByID(newValue);
         if(!oldStyle.equals(style.BASE))
+            //primaryScene.getStylesheets().remove(getClass().getClassLoader().getResource(oldStyle.getURL()));
             primaryScene.getStylesheets().remove(getClass().getResource(oldStyle.getURL()).toExternalForm());
-        //primaryScene.getStylesheets().add(getClass().getResource("resource/RES-Grey.css").toExternalForm());
         if(!newStyle.equals(style.BASE))
+            //primaryScene.getStylesheets().remove(getClass().getClassLoader().getResource(newStyle.getURL()));
             primaryScene.getStylesheets().add(getClass().getResource(newStyle.getURL()).toExternalForm());
     }
 

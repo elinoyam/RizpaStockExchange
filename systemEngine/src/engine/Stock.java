@@ -1,3 +1,6 @@
+package engine;
+
+import dto.TradeCommandDT;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
 
@@ -50,7 +53,7 @@ public class Stock {
      * @param transactions list of the made transactions.
      * @throws InputMismatchException will be thrown when one of the variables from above isn't valid.
      */
-    Stock(String companyName, String symbol, float startPrice,Queue<TradeCommand> buyCommands,Queue<TradeCommand> sellCommands, List<Transaction> transactions) throws InputMismatchException {
+    public Stock(String companyName, String symbol, float startPrice,Queue<TradeCommand> buyCommands,Queue<TradeCommand> sellCommands, List<Transaction> transactions) throws InputMismatchException {
         if (!symbolCheck(symbol))   //checks if the symbol is valid.
             throw new InputMismatchException("Invalid symbol, use upper letters only!");
         else if(!(startPrice>=0))   //checks if the start price is valid.

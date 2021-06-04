@@ -1,6 +1,5 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+package engine;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -33,7 +32,7 @@ public class User {
         updateWorth();
 
     }
-    User(String name,Map<String,UserHoldings> stocks){
+    public User(String name,Map<String,UserHoldings> stocks){
         this.userName = name;
         this.userTransactions = new LinkedList<>();
         userBuyCommands = new TreeMap<>();

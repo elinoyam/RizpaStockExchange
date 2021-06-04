@@ -1,13 +1,24 @@
+package ui;
+
+import dto.StockDT;
+import dto.TradeCommandDT;
+import engine.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.*;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -61,7 +72,6 @@ public class PrimaryController implements Initializable {
     public HBox HBDetails;
     public Slider SlidEffects;
     public Slider SlidTheme;
-
     public VBox ttVBox;
     public HBox HBoxTrade;
     public HBox HBoxTrans;
@@ -83,17 +93,13 @@ public class PrimaryController implements Initializable {
     public TableColumn DirColumn;
     public RadioButton rdioViewMine;
     public RadioButton rdioViewAll;
-
-
-
     public Text txtWelcome;
     public Text txtTotalWorth;
     public PieChart ChrtShares;
     public AreaChart<LocalDateTime,Float> ChrtWorth;
 
+    ///////////////////////////////////////////////////////
 
-
-    ///////////
     private User currentUser;
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
@@ -207,26 +213,16 @@ public class PrimaryController implements Initializable {
         ChbStock.valueProperty().addListener(new ChangeListener(){
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (ChbStock.getItems().isEmpty()) {
-                    LblQuantity.setText("Quantity:  <number>");
+                OwnerPaneUpdate(currentUser==null ? "All":currentUser.getUserName());
+                if (ChbStock.getValue()==null) {
                     LblCompany.setText("Company: <name>");
-                    LblTotalValue.setText("Total Value:  <number>");
                     LblMktPrice.setText("Market Price: <number>");
                     if(!ChrtView.getData().isEmpty())
                         ChrtView.getData().clear();
                     ChbView.setDisable(true);
                 } else {
                     String symbol = ChbStock.getValue().toString();
-                    StockDT chosenStock = RSEEngine.getSingleStockData(symbol);
-                    if(currentUser == null) {
-                        LblQuantity.setText("Quantity: Admin has NaN");
-                        LblTotalValue.setText("Total Value: Admin has NaN");
-
-                    }else {
-                        int numberOfHoldings = currentUser.getUserStockHoldings(symbol);
-                        LblQuantity.setText("Quantity:  " + numberOfHoldings);
-                        LblTotalValue.setText("Total Value: " + chosenStock.getSharePrice() * numberOfHoldings);
-                    }
+                    StockDT chosenStock = RSEEngine.showStock(symbol);
                     LblCompany.setText("Company: " + chosenStock.getCompanyName());
                     LblMktPrice.setText("Market Price: " + chosenStock.getSharePrice());
                     if(!(ChbView.getValue() == null) &&ChbView.getValue().toString()=="Share Price Tendency")
@@ -238,6 +234,7 @@ public class PrimaryController implements Initializable {
 
             }
         });
+
 
         readingProgress.addListener(new ChangeListener<Number>() {
             @Override
@@ -282,17 +279,42 @@ public class PrimaryController implements Initializable {
 
     }
 
+    private void OwnerPaneUpdate(String userName)
+    {
+        if(userName==null)
+            return;
+        User user = RSEEngine.getUser(userName);
+        if(user==null)
+            return;
+
+        if(ChbStock.getValue()==null)
+        {
+            LblQuantity.setText("Quantity:  <number>");
+            LblTotalValue.setText("Total Value:  <number>");
+        } else {
+            String symbol = ChbStock.getValue().toString();
+            StockDT chosenStock = RSEEngine.getSingleStockData(symbol);
+            if (userName.equals("All")) {
+                LblQuantity.setText("Quantity: Admin has NaN");
+                LblTotalValue.setText("Total Value: Admin has NaN");
+            } else {
+                int numberOfHoldings = 0;
+                if (currentUser.getUserStocks().containsKey(symbol))
+                    numberOfHoldings = currentUser.getUserStockHoldings(symbol);
+                LblQuantity.setText("Quantity:  " + numberOfHoldings);
+                LblTotalValue.setText("Total Value: " + chosenStock.getSharePrice() * numberOfHoldings);
+            }
+        }
+    }
+
     private void EnableAnimated(boolean state) {
         ChrtShares.setAnimated(state);
         ChrtView.setAnimated(state);
         ChrtWorth.setAnimated(state);
     }
 
-    public void Save(ActionEvent actionEvent) {
-    }
-
     public void Load(ActionEvent actionEvent) throws JAXBException, FileNotFoundException, InterruptedException {
-
+        PBarStatus.setVisible(true);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open XML File");
         fileChooser.getExtensionFilters().addAll(
@@ -321,6 +343,7 @@ public class PrimaryController implements Initializable {
                         txtStatus.textProperty().unbind();
                         PBarStatus.progressProperty().unbind();
                     }
+                    PBarStatus.setVisible(false);
                 }
             });
             new Thread(task).start();
@@ -438,7 +461,6 @@ public class PrimaryController implements Initializable {
             rdioViewMine.setDisable(false);
             BtnSubmit.setDisable(false);
             TabStock.setDisable(false);
-            ChbStock.getItems().clear();
             String currentUserName = ChbUser.getValue().toString();
             currentUser = RSEEngine.getUser(currentUserName);
 
@@ -449,9 +471,6 @@ public class PrimaryController implements Initializable {
             if (RdioSell.isSelected())
                 updateSymbolsToAll(currentUserName,true,false);
 
-//            else
-//                updateSymbolsToAll(currentUserName,false,true);
-
             if(RdioMine.isSelected())
                 updateStocksTView(currentUserName);
             else
@@ -460,7 +479,9 @@ public class PrimaryController implements Initializable {
                 showStockTransInLineChart(ChbStock.getValue().toString());
 
             if(!HBDetails.getChildren().contains(PaneOwner))
-                HBDetails.getChildren().add(0,PaneOwner);
+                HBDetails.getChildren().add(0, PaneOwner);
+            OwnerPaneUpdate(currentUser==null ? "All":currentUser.getUserName());
+
         }
     }
 
@@ -490,11 +511,6 @@ public class PrimaryController implements Initializable {
             for (UserHoldings hold : currentUser.getUserStocks().values()) {   // can show only the stocks that are in the user holdings
                 if(symbol)
                     ChbSymbol.getItems().add(hold.getSymbol());
-
-                //if(stock)
-                //   ChbStock.getItems().add(hold.getSymbol());
-
-
             }
         }
     }
@@ -736,15 +752,6 @@ public class PrimaryController implements Initializable {
             worthInTimestamp.getData().add(new XYChart.Data(" "+key.format(TradeCommand.getDateTimeFormat())+" ", value));
         }
         ChrtWorth.getData().add(worthInTimestamp);
-
-        /*
-        stockMKTPrice.setName(stock.getSymbol() +" market price");
-        for(int i = transactions.size()-1;i>=0;i--){//Transaction tran: transactions){
-            stockMKTPrice.getData().add(new XYChart.Data<>(" " +transactions.get(i).getDateStamp().format(Transaction.getDateTimeFormat()).toString()+" ",transactions.get(i).getPrice()));
-        }
-
-        ChrtView.getData().add(stockMKTPrice);
-*/
     }
 }
 

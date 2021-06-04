@@ -1,9 +1,9 @@
+package engine;
+
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-
-import java.time.LocalDateTime;
 
 public class UserHoldings {
     private final String symbol;
@@ -13,7 +13,7 @@ public class UserHoldings {
     private FloatProperty totalHold;
     private FloatProperty sharePrice;
 
-    public UserHoldings(String symbol, Stock stock, int quantity,LocalDateTime timestamp/*TODO: remove timestamp*/) {
+    public UserHoldings(String symbol, Stock stock, int quantity) {
         this.symbol = symbol;
         this.stock = stock;
         this.freeShares = quantity;
