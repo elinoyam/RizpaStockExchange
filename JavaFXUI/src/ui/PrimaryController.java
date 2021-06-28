@@ -104,7 +104,7 @@ public class PrimaryController implements Initializable {
     private DoubleProperty readingProgress = new SimpleDoubleProperty();
     private StringProperty statusString = new SimpleStringProperty();
     private DoubleProperty styleSliderChanged = new SimpleDoubleProperty();
-    private Engine RSEEngine;
+    private engine.Engine RSEEngine;
     private Map<String,XYChart.Data> initSharePrice = new TreeMap<>();
     FileLoadTask task;
 
@@ -184,7 +184,8 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        RSEEngine = Engine.getInstance();
+
+        RSEEngine = engine.Engine.getInstance();
 
         ttVBox.getChildren().removeAll(HBoxTrade,HBoxTrans,HBoxRdio);
 

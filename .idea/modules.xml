@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JavaFXUI/JavaFXUI.iml" filepath="$PROJECT_DIR$/JavaFXUI/JavaFXUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/WEB_UI/RSE_V3.iml" filepath="$PROJECT_DIR$/WEB_UI/RSE_V3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RizpaStockExchange.iml" filepath="$PROJECT_DIR$/RizpaStockExchange.iml" />
       <module fileurl="file://$PROJECT_DIR$/out/out.iml" filepath="$PROJECT_DIR$/out/out.iml" />
       <module fileurl="file://$PROJECT_DIR$/systemEngine/systemEngine.iml" filepath="$PROJECT_DIR$/systemEngine/systemEngine.iml" />
     </modules>
