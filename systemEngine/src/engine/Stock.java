@@ -3,6 +3,8 @@ package engine;
 import dto.TradeCommandDT;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
+import users.User;
+import users.UserHoldings;
 
 import java.util.*;
 

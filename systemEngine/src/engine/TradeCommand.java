@@ -1,5 +1,7 @@
 package engine;
 
+import users.User;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;

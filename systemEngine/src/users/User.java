@@ -1,5 +1,8 @@
-package engine;
+package users;
 
+import engine.Stock;
+import engine.TradeCommand;
+import engine.Transaction;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -16,7 +19,7 @@ public class User {
     private Map<String,UserHoldings> userStocks;
     private SortedMap<LocalDateTime,Float> totalHoldingsValue;
     private List<Transaction> userTransactions;
-    private Map<LocalDateTime,TradeCommand> userBuyCommands;
+    private Map<LocalDateTime, TradeCommand> userBuyCommands;
     private Map<LocalDateTime,TradeCommand> userSellCommands;
 
 

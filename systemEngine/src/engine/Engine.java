@@ -1,11 +1,14 @@
 package engine;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import dto.StockDT;
 import dto.TradeCommandDT;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import jaxb.schema.generated.*;
+import users.User;
+import users.UserHoldings;
+import users.UsersManager;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,8 +31,8 @@ public class Engine implements Trader {
     private static final String JAXB_XML_PACKAGE_NAME = "jaxb.schema.generated";
 
     private MultiKeyMap<String,Stock> stocks = new MultiKeyMap<String, Stock>();//will be search with their symbol
-    private Map<String, User> users = new TreeMap<>();
     private Object lock2 = new Object();
+    private UsersManager users = UsersManager.getInstance();
 
     private Engine() {
     }                                                             //private to prevent a creation of instances
@@ -210,7 +213,7 @@ public class Engine implements Trader {
      * @throws JAXBException            will be thrown in case the JAXB process failed.
      * @throws IllegalArgumentException will be thrown in case the the file isn't a xml file.
      */
-    public void uploadDataFromFile(String path, DoubleProperty doubleProperty, StringProperty stringProperty) throws FileNotFoundException, JAXBException, IllegalArgumentException // first option
+    public void uploadDataFromFile(String path, DoubleProperty doubleProperty, StringProperty stringProperty) throws FileNotFoundException, JAXBException, IllegalArgumentException, InvalidArgumentException // first option
     {
         // need to upload all the stocks from xml file
         MultiKeyMap<String,Stock> tmpStocks = new MultiKeyMap<String, Stock>();
@@ -256,7 +259,7 @@ public class Engine implements Trader {
      * @param tmpStocks a temporary MultiKeyMap of system's stocks (prevents a deletion of the previous system data in case there will be a failure).
      * @throws JAXBException will be thrown in case there is a problem in the process of JAXB.
      */
-    private void deserializeFrom(InputStream in, MultiKeyMap<String, Stock> tmpStocks, DoubleProperty doubleProperty, StringProperty stringProperty) throws JAXBException, IllegalArgumentException, InputMismatchException, DateTimeException {
+    private void deserializeFrom(InputStream in, MultiKeyMap<String, Stock> tmpStocks, DoubleProperty doubleProperty, StringProperty stringProperty) throws JAXBException, IllegalArgumentException, InputMismatchException, DateTimeException, InvalidArgumentException {
         try {
             synchronized (lock2) {
                 JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
@@ -279,7 +282,7 @@ public class Engine implements Trader {
                     Map<String, UserHoldings> holdings = new TreeMap<>();
                     for (RseItem item : user.getRseHoldings().getRseItem())      // make a list of all the stocks holdings of the user
                         holdings.put(item.getSymbol(), new UserHoldings(item.getSymbol(), tmpStocks.get(item.getSymbol()), item.getQuantity()));
-                    users.put(user.getName(), new User(user.getName(), holdings));
+                    users.addUser(user.getName(), new User(user.getName(), holdings));
                 }
                 doubleProperty.setValue(0.8);
                 lock2.wait(500);
@@ -316,7 +319,7 @@ public class Engine implements Trader {
             buyCommands = new PriorityQueue<>(1, Collections.reverseOrder());
             rseBuyCommands = rs.getRseBuyCommands();
             for (RseTradeCommand tc : rseBuyCommands)
-                buyCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime()), users.get(tc.getRseUser())));
+                buyCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime()), users.getUser(tc.getRseUser())));
         }
         Queue<TradeCommand> sellCommands = null;
         List<RseTradeCommand> rseSellCommands = null;
@@ -324,7 +327,7 @@ public class Engine implements Trader {
             sellCommands = new PriorityQueue<>(1);
             rseSellCommands = rs.getRseSellCommands();
             for (RseTradeCommand tc : rseSellCommands)
-                sellCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime()), users.get(tc.getRseUser())));
+                sellCommands.add(new TradeCommand(TradeCommand.direction.valueOf(tc.getRseDir()), TradeCommand.commandType.valueOf(tc.getRseType()), tc.getRseQuantity(), tc.getRsePrice(), tc.getRseSymbol(), LocalDateTime.parse(tc.getRseDateTime()), users.getUser(tc.getRseUser())));
         }
         List<Transaction> transactions = null;
         List<RseTransactions> rseTransactions = null;
@@ -332,7 +335,7 @@ public class Engine implements Trader {
             transactions = new LinkedList<>();
             rseTransactions = rs.getRseTransactions();
             for (RseTransactions tran : rseTransactions)
-                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime()), users.get(tran.getRseBuyer()), users.get(tran.getRseSeller()), tran.getRseStock()));
+                transactions.add(new Transaction(tran.getRseQuantity(), tran.getRsePrice(), LocalDateTime.parse(tran.getRseDateTime()), users.getUser(tran.getRseBuyer()), users.getUser(tran.getRseSeller()), tran.getRseStock()));
         }
         return new Stock(company, symbol, price, buyCommands, sellCommands, transactions);
     }
@@ -428,39 +431,6 @@ public class Engine implements Trader {
             return true;
         return false;
     }
-
-    // ******* Methods about users ******* //
-    public User getUser(String name) {
-        return users.get(name);
-    }
-
-    /**
-     * @param name   the name of the new user
-     * @param stocks the stocks the user hold shares
-     * @throws InvalidArgumentException if there is already a user with the given name
-     */
-    public void addUser(String name, Map<String, UserHoldings> stocks) throws InvalidArgumentException {
-        if (users.containsKey(name))
-            throw new InvalidArgumentException(new String[]{"A user with this name " + name + " is already in the system."});
-
-        users.put(name, new User(name, stocks));
-    }
-
-    /**
-     * @param name the name of the new user
-     * @throws InvalidArgumentException if there is already a user with the given name
-     */
-    public void addUser(String name) throws InvalidArgumentException {
-        if (users.containsKey(name))
-            throw new InvalidArgumentException(new String[]{"A user with this name " + name + " is already in the system."});
-
-        users.put(name, new User(name));
-    }
-
-    public Map<String, User> getUsers() { //TODO:Use DTO
-        return users;
-    }
-
     public MultiKeyMap<String, Stock> getStocks() {
         return stocks;
     }
@@ -468,11 +438,6 @@ public class Engine implements Trader {
     public void setStocks(MultiKeyMap<String, Stock> stocks) {
         this.stocks = stocks;
     }
-
-    public void setUsers(Map<String, User> users) {
-        this.users = users;
-    }
-
     public String getJaxbXmlPackageName() {
         return JAXB_XML_PACKAGE_NAME;
     }

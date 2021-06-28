@@ -2,6 +2,8 @@ package engine;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import users.User;
+import users.UserHoldings;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

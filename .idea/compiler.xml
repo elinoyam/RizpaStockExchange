@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="RSE_V3" />
+        <module name="WEB_UI" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="RSE_V3" target="1.8" />
+      <module name="WEB_UI" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
