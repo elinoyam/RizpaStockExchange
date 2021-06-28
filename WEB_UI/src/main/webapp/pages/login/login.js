@@ -1,4 +1,5 @@
 
+/*
 $(function() { // onload...do
     //add a function to the submit event
     $("#loginForm").submit(function() {
@@ -7,7 +8,7 @@ $(function() { // onload...do
             url: this.action,
             timeout: 2000,
             error: function(errorObject) {
-                console.error("Failed to login !");
+                console.error("Failed to login!");
                 $("#error-placeholder").append(errorObject.responseText)
             },
             success: function(nextPageUrl) {
@@ -18,4 +19,4 @@ $(function() { // onload...do
         // by default - we'll always return false so it doesn't redirect the user.
         return false;
     });
-});
+});*/

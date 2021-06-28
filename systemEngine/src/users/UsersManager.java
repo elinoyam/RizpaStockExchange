@@ -57,4 +57,7 @@ public class UsersManager {
       users = newUsers;
     }
 
+    public boolean isExists(String name){
+        return users.containsKey(name);
+    }
 }

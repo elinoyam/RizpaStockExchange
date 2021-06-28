@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class User {
     private final String userName;
-
+    private boolean isAdmin;
     private Map<String,UserHoldings> userStocks;
     private SortedMap<LocalDateTime,Float> totalHoldingsValue;
     private List<Transaction> userTransactions;
@@ -23,17 +23,16 @@ public class User {
     private Map<LocalDateTime,TradeCommand> userSellCommands;
 
 
-    User(String name){
-        this.userName = name;
+    User(String _username,boolean _isAdmin){
+        this.userName = _username;
         this.userStocks = new TreeMap<>();
         totalHoldingsValue = new TreeMap<>();
         totalHoldingsValue.put(LocalDateTime.now(),Float.valueOf(0));
         this.userTransactions = new LinkedList<>();
-        userBuyCommands = new TreeMap<>();
-        userSellCommands = new TreeMap<>();
-
+        this.userBuyCommands = new TreeMap<>();
+        this.userSellCommands = new TreeMap<>();
         updateWorth();
-
+        this.isAdmin =_isAdmin;
     }
     public User(String name,Map<String,UserHoldings> stocks){
         this.userName = name;
