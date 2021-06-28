@@ -34,9 +34,11 @@ public class Engine implements Trader {
     private Object lock2 = new Object();
     private UsersManager users = UsersManager.getInstance();
 
-    private Engine() {
-    }                                                             //private to prevent a creation of instances
+    private Engine(){}//private to prevent a creation of instances
 
+    public UsersManager getUsersManager(){
+        return users;
+    }
     /**
      * A method that let access to the single instance of the class.
      *

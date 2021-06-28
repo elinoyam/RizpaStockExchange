@@ -35,11 +35,11 @@ public class UsersManager {
      * @param name the name of the new user
      * @throws InvalidArgumentException if there is already a user with the given name
      */
-    public void addUser(String name) throws InvalidArgumentException {
+    public void addUser(String name, boolean isAdmin) throws InvalidArgumentException {
         if (users.containsKey(name))
             throw new InvalidArgumentException(new String[]{"A user with this name " + name + " is already in the system."});
 
-        users.put(name, new User(name));
+        users.put(name, new User(name, isAdmin));
     }
 
     public void addUser(String name, User user) throws InvalidArgumentException {
