@@ -14,9 +14,7 @@
           <element id="module-output" name="WEB_UI" />
         </element>
       </element>
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/WEB_UI/target/${project.artifactId}-${project.version}/META-INF/MANIFEST.MF" />
-      </element>
+      <element id="directory" name="META-INF" />
       <element id="javaee-facet-resources" facet="WEB_UI/web/Web" />
     </root>
   </artifact>
