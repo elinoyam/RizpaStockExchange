@@ -1,12 +1,24 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html class="bg">
 <head>
-  <title>JSP - Hello World</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Welcome To Rizpa Stock Exchange</title>
+
+  <script src="/common/jquery-2.0.3.min.js"></script>
+  <script src="/pages/login/login.js"></script>
+  <link rel="stylesheet" type="text/css" href="pages/login/login.css">
 </head>
-<body>
-<h1><%= "Hello World!" %></h1>
-<br/>
-<a href="hello-servlet">Hello Servlet</a>
+
+<body id="login-page">
+<div id="login-form" class="container">
+  <h1 id="main-header" >Welcome To Rizpa Stock Exchange</h1>
+  <br/>
+  <h2>Please enter your name: </h2>
+  <form id="loginForm" method="GET" action="loginShortResponse">
+    <input type="text" name="username" class=""/>
+    <input type="submit" value="Login"/>
+  </form>
+  <div id="error-placeholder" class="alert-danger" role="alert"></div>
+</div>
 </body>
 </html>
